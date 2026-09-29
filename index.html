@@ -3,221 +3,380 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Портал коллег</title>
+    <title>Мои Документы - Портал коллег</title>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f5f5;
             min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 10px;
         }
         
-        .container {
-            width: 100%;
-            max-width: 1100px;
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-            overflow: hidden;
-            min-height: 90vh;
-            display: flex;
-            flex-direction: column;
-        }
-        
-        /* ===== HEADER ===== */
-        .header {
-            padding: 14px 20px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        /* ===== ШАПКА ===== */
+        .top-header {
+            background: linear-gradient(135deg, #5d2e1f 0%, #7a3d2a 100%);
             color: white;
+            padding: 15px 30px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
         }
         
-        .header-left { display: flex; align-items: center; gap: 12px; }
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
         
-        .back-btn {
-            padding: 6px 12px;
-            background: rgba(255,255,255,0.2);
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .logo-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #e8653a 0%, #d4542a 100%);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            font-weight: 700;
             color: white;
-            border: 1px solid rgba(255,255,255,0.4);
-            border-radius: 16px;
-            cursor: pointer;
-            font-size: 13px;
-            display: none;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
         }
         
-        .header h1 { font-size: 18px; }
-        
-        .user-info { display: flex; align-items: center; gap: 10px; font-size: 13px; }
-        
-        .user-avatar-small {
-            width: 32px; height: 32px; border-radius: 50%;
-            background: rgba(255,255,255,0.3);
-            display: flex; align-items: center; justify-content: center;
-            font-weight: 700; cursor: pointer; overflow: hidden;
-            border: 2px solid rgba(255,255,255,0.5);
+        .logo-text {
+            font-size: 24px;
+            font-weight: 700;
+            letter-spacing: 1px;
         }
         
-        .user-avatar-small img { width: 100%; height: 100%; object-fit: cover; }
-        
-        .logout-btn, .avatar-btn {
-            padding: 6px 14px;
-            background: rgba(255,255,255,0.2);
-            color: white;
-            border: 1px solid rgba(255,255,255,0.4);
-            border-radius: 16px;
-            cursor: pointer;
+        .logo-text span {
+            display: block;
             font-size: 12px;
+            font-weight: 400;
+            opacity: 0.9;
+            margin-top: 2px;
+        }
+        
+        .header-contacts {
+            font-size: 13px;
+            line-height: 1.6;
+        }
+        
+        .header-contacts a {
+            color: #ffd700;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .user-panel {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: rgba(255,255,255,0.1);
+            padding: 8px 16px;
+            border-radius: 8px;
+        }
+        
+        .user-avatar-header {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: #e8653a;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            cursor: pointer;
+            overflow: hidden;
+            border: 2px solid white;
+        }
+        
+        .user-avatar-header img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .user-name {
+            font-size: 14px;
+            font-weight: 600;
         }
         
         .admin-badge {
             background: #ffd700;
-            color: #333;
+            color: #5d2e1f;
             padding: 2px 8px;
             border-radius: 10px;
             font-size: 10px;
             font-weight: 700;
+            margin-left: 5px;
         }
         
-        /* ===== SCREENS ===== */
-        .screen { display: none; flex: 1; overflow-y: auto; }
-        .screen.active { display: flex; flex-direction: column; }
-        
-        /* ===== GUEST SCREEN ===== */
-        #guestScreen {
-            justify-content: center; align-items: center;
-            padding: 30px; text-align: center;
-        }
-        
-        .guest-box {
-            max-width: 500px;
-            background: white;
-            padding: 40px;
-            border-radius: 20px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
-        }
-        
-        .guest-box h2 { font-size: 28px; margin-bottom: 10px; color: #333; }
-        .guest-box p { color: #666; margin-bottom: 30px; }
-        
-        .guest-buttons { display: flex; flex-direction: column; gap: 12px; }
-        
-        .guest-btn {
-            padding: 16px;
+        .btn-header {
+            padding: 8px 16px;
+            background: #e8653a;
+            color: white;
             border: none;
-            border-radius: 12px;
-            font-size: 16px;
-            font-weight: 600;
+            border-radius: 6px;
             cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
             transition: all 0.3s;
         }
         
-        .guest-btn.primary {
-            background: linear-gradient(135deg, #667eea, #764ba2);
+        .btn-header:hover {
+            background: #d4542a;
+            transform: translateY(-2px);
+        }
+        
+        /* ===== НАВИГАЦИЯ ===== */
+        .nav-bar {
+            background: white;
+            padding: 0 30px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            display: flex;
+            gap: 0;
+            overflow-x: auto;
+        }
+        
+        .nav-item {
+            padding: 16px 24px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            color: #5d2e1f;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+            white-space: nowrap;
+        }
+        
+        .nav-item:hover {
+            background: #f9f9f9;
+            border-bottom-color: #e8653a;
+        }
+        
+        .nav-item.active {
+            border-bottom-color: #e8653a;
+            color: #e8653a;
+        }
+        
+        /* ===== КОНТЕНТ ===== */
+        .main-content {
+            padding: 30px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .page { display: none; }
+        .page.active { display: block; }
+        
+        .page-title {
+            font-size: 28px;
+            color: #5d2e1f;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+        
+        .page-subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+        
+        /* ===== ГЛАВНАЯ СТРАНИЦА ===== */
+        .hero-section {
+            background: white;
+            border-radius: 12px;
+            padding: 40px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            display: flex;
+            gap: 40px;
+            align-items: center;
+        }
+        
+        .hero-left {
+            flex: 1;
+        }
+        
+        .hero-logo {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .hero-logo-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #e8653a 0%, #d4542a 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+            font-weight: 700;
             color: white;
         }
         
-        .guest-btn.secondary {
-            background: #f5f7fa;
-            color: #333;
+        .hero-logo-text {
+            font-size: 36px;
+            font-weight: 700;
+            color: #5d2e1f;
+        }
+        
+        .hero-logo-text span {
+            display: block;
+            font-size: 18px;
+            color: #666;
+            font-weight: 400;
+        }
+        
+        .search-box {
+            display: flex;
+            gap: 10px;
+            margin-top: 30px;
+        }
+        
+        .search-input {
+            flex: 1;
+            padding: 14px 20px;
             border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            outline: none;
         }
         
-        .guest-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.15); }
-        
-        /* ===== AUTH ===== */
-        #authScreen { justify-content: center; align-items: center; padding: 30px; }
-        
-        .auth-box { width: 100%; max-width: 420px; }
-        .auth-box h2 { text-align: center; margin-bottom: 20px; color: #333; }
-        
-        .auth-tabs { display: flex; border-bottom: 2px solid #e0e0e0; margin-bottom: 20px; }
-        
-        .auth-tab {
-            flex: 1; padding: 14px; text-align: center; cursor: pointer;
-            font-weight: 600; font-size: 14px; color: #999;
-            background: none; border: none; border-bottom: 3px solid transparent;
+        .search-input:focus {
+            border-color: #e8653a;
         }
         
-        .auth-tab.active { color: #667eea; border-bottom-color: #667eea; }
-        
-        .auth-form { display: none; flex-direction: column; gap: 16px; }
-        .auth-form.active { display: flex; }
-        
-        .auth-form input {
-            padding: 14px 18px; border: 2px solid #e0e0e0;
-            border-radius: 12px; font-size: 14px; outline: none;
+        .search-btn {
+            padding: 14px 30px;
+            background: #e8653a;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
         }
         
-        .auth-form input:focus { border-color: #667eea; }
-        
-        .auth-btn {
-            padding: 14px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white; border: none; border-radius: 12px;
-            font-size: 16px; font-weight: 600; cursor: pointer;
+        .hero-right {
+            flex: 1;
+            text-align: center;
         }
         
-        .auth-error { color: #f44336; font-size: 13px; text-align: center; min-height: 20px; }
-        
-        /* ===== MAIN MENU ===== */
-        #mainMenu { padding: 30px; justify-content: flex-start; align-items: center; }
-        
-        .welcome { text-align: center; margin-bottom: 30px; }
-        .welcome h2 { font-size: 28px; color: #333; margin-bottom: 8px; }
-        .welcome p { color: #666; font-size: 14px; }
-        
-        .menu-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
-            gap: 14px;
+        .map-placeholder {
             width: 100%;
-            max-width: 850px;
+            max-width: 400px;
+            height: 300px;
+            background: linear-gradient(135deg, #f5f5f5 0%, #e0e0e0 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            color: #666;
+            position: relative;
+        }
+        
+        .map-dot {
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            background: #e8653a;
+            border-radius: 50%;
+            top: 40%;
+            left: 45%;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.5); opacity: 0.5; }
+        }
+        
+        /* ===== КАРТОЧКИ МЕНЮ ===== */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
         }
         
         .menu-card {
-            padding: 22px 14px;
-            border-radius: 16px;
+            background: white;
+            border-radius: 12px;
+            padding: 30px 20px;
+            text-align: center;
             cursor: pointer;
             transition: all 0.3s;
-            text-align: center;
-            color: white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            border: 2px solid transparent;
         }
         
-        .menu-card:hover { transform: translateY(-5px); box-shadow: 0 15px 40px rgba(0,0,0,0.2); }
+        .menu-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+            border-color: #e8653a;
+        }
         
-        .menu-card.chat { background: linear-gradient(135deg, #667eea, #764ba2); }
-        .menu-card.games { background: linear-gradient(135deg, #f093fb, #f5576c); }
-        .menu-card.board { background: linear-gradient(135deg, #4facfe, #00f2fe); }
-        .menu-card.tasks { background: linear-gradient(135deg, #43e97b, #38f9d7); }
-        .menu-card.clock { background: linear-gradient(135deg, #fa709a, #fee140); }
-        .menu-card.dashboard { background: linear-gradient(135deg, #30cfd0, #330867); }
-        .menu-card.excel { background: linear-gradient(135deg, #11998e, #38ef7d); }
-        .menu-card.survey { background: linear-gradient(135deg, #ff9966, #ff5e62); }
-        .menu-card.admin { background: linear-gradient(135deg, #232526, #414345); }
+        .menu-card-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+        }
         
-        .menu-card-icon { font-size: 44px; margin-bottom: 8px; }
-        .menu-card-title { font-size: 16px; font-weight: 700; margin-bottom: 4px; }
-        .menu-card-desc { font-size: 11px; opacity: 0.9; }
+        .menu-card-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #5d2e1f;
+            margin-bottom: 8px;
+        }
         
-        /* ===== CHAT ===== */
-        .messages {
-            flex: 1; overflow-y: auto; padding: 20px;
-            display: flex; flex-direction: column; gap: 12px;
-            background: #f8f9fa;
+        .menu-card-desc {
+            font-size: 12px;
+            color: #666;
+        }
+        
+        /* ===== ЧАТ ===== */
+        .chat-container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            overflow: hidden;
+            height: 600px;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            background: #f9f9f9;
         }
         
         .message {
-            max-width: 75%; display: flex; gap: 10px;
-            align-items: flex-start; animation: slideIn 0.3s ease-out;
+            display: flex;
+            gap: 12px;
+            margin-bottom: 16px;
+            animation: slideIn 0.3s ease-out;
         }
         
         @keyframes slideIn {
@@ -225,205 +384,309 @@
             to { opacity: 1; transform: translateY(0); }
         }
         
-        .message.own { align-self: flex-end; flex-direction: row-reverse; }
+        .message.own {
+            flex-direction: row-reverse;
+        }
         
-        .avatar {
-            width: 36px; height: 36px; border-radius: 50%;
-            display: flex; align-items: center; justify-content: center;
-            font-weight: 600; font-size: 14px; color: white; flex-shrink: 0;
+        .message-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #e8653a;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            color: white;
+            flex-shrink: 0;
             overflow: hidden;
         }
         
-        .avatar img { width: 100%; height: 100%; object-fit: cover; }
+        .message-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
         
-        .message.own .avatar { background: linear-gradient(135deg, #667eea, #764ba2); }
-        .message.other .avatar { background: linear-gradient(135deg, #f093fb, #f5576c); }
+        .message-content {
+            max-width: 70%;
+        }
         
-        .message-content { display: flex; flex-direction: column; gap: 4px; }
-        .message.own .message-content { align-items: flex-end; }
+        .message.own .message-content {
+            align-items: flex-end;
+        }
         
-        .message .author { font-size: 11px; color: #888; font-weight: 600; }
-        .message .time { font-size: 10px; color: #aaa; margin-top: 2px; }
+        .message-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 4px;
+        }
+        
+        .message-author {
+            font-size: 12px;
+            font-weight: 600;
+            color: #5d2e1f;
+        }
+        
+        .message-time {
+            font-size: 10px;
+            color: #999;
+        }
         
         .message-bubble {
-            padding: 10px 14px; border-radius: 18px;
-            line-height: 1.4; word-wrap: break-word;
+            padding: 12px 16px;
+            border-radius: 12px;
+            background: white;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            position: relative;
         }
         
         .message.own .message-bubble {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white; border-bottom-right-radius: 4px;
+            background: #e8653a;
+            color: white;
         }
         
-        .message.other .message-bubble {
-            background: white; color: #333;
-            border-bottom-left-radius: 4px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        .message-text {
+            font-size: 14px;
+            line-height: 1.4;
+            word-wrap: break-word;
         }
         
-        .message img {
-            max-width: 100%; max-height: 300px;
-            border-radius: 12px; margin-top: 6px;
-            cursor: pointer; transition: transform 0.2s;
+        .message-image {
+            max-width: 100%;
+            max-height: 300px;
+            border-radius: 8px;
+            margin-top: 8px;
+            cursor: pointer;
         }
         
-        .message img:hover { transform: scale(1.02); }
-        
-        .emoji-panel {
-            display: none; padding: 12px; background: white;
-            border-top: 1px solid #e0e0e0; gap: 6px;
-            flex-wrap: wrap; justify-content: center;
+        .message-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 6px;
         }
         
-        .emoji-panel.show { display: flex; }
-        
-        .emoji-btn {
-            font-size: 22px; background: none; border: none;
-            cursor: pointer; padding: 6px; border-radius: 8px;
+        .message-action-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 12px;
+            color: #999;
+            padding: 2px 6px;
+            border-radius: 4px;
         }
         
-        .emoji-btn:hover { background: #f0f0f0; transform: scale(1.2); }
-        
-        .input-area {
-            padding: 14px 18px; border-top: 1px solid #e0e0e0;
-            background: white; display: flex; gap: 8px; align-items: center;
+        .message-action-btn:hover {
+            background: #f0f0f0;
+            color: #e8653a;
         }
         
-        .input-area input[type="text"] {
-            flex: 1; padding: 10px 16px;
-            border: 2px solid #e0e0e0; border-radius: 24px;
-            outline: none; font-size: 14px;
+        .message.own .message-action-btn:hover {
+            background: rgba(255,255,255,0.2);
         }
         
-        .btn {
-            padding: 10px 16px; border: none; border-radius: 20px;
-            cursor: pointer; font-size: 14px; font-weight: 500;
+        .chat-input-area {
+            padding: 16px;
+            background: white;
+            border-top: 1px solid #e0e0e0;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        
+        .chat-input {
+            flex: 1;
+            padding: 12px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 24px;
+            outline: none;
+            font-size: 14px;
+        }
+        
+        .chat-input:focus {
+            border-color: #e8653a;
+        }
+        
+        .chat-btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 24px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
             transition: all 0.3s;
         }
         
-        .btn:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
-        
-        .btn-send { background: linear-gradient(135deg, #667eea, #764ba2); color: white; }
-        .btn-photo { background: linear-gradient(135deg, #f093fb, #f5576c); color: white; }
-        .btn-emoji { background: linear-gradient(135deg, #ffecd2, #fcb69f); color: #333; font-size: 18px; padding: 8px 12px; }
-        
-        input[type="file"] { display: none; }
-        
-        /* ===== IMAGE MODAL ===== */
-        .image-modal {
-            display: none; position: fixed; top: 0; left: 0;
-            width: 100%; height: 100%; background: rgba(0,0,0,0.9);
-            z-index: 1000; justify-content: center; align-items: center;
-            flex-direction: column;
+        .chat-btn:hover {
+            transform: translateY(-2px);
         }
         
-        .image-modal.show { display: flex; }
-        
-        .image-modal img {
-            max-width: 90%; max-height: 80%;
-            border-radius: 12px;
+        .btn-send {
+            background: #e8653a;
+            color: white;
         }
         
-        .image-modal-actions { margin-top: 20px; display: flex; gap: 10px; }
-        
-        .image-modal-btn {
-            padding: 10px 20px; background: white; color: #333;
-            border: none; border-radius: 20px; cursor: pointer; font-weight: 600;
+        .btn-emoji {
+            background: #f5f5f5;
+            color: #666;
         }
         
-        .image-modal-close {
-            position: absolute; top: 20px; right: 20px;
-            background: white; border: none; width: 40px; height: 40px;
-            border-radius: 50%; cursor: pointer; font-size: 20px;
+        .btn-photo {
+            background: #5d2e1f;
+            color: white;
         }
         
-        /* ===== AVATAR MODAL ===== */
-        .modal {
-            display: none; position: fixed; top: 0; left: 0;
-            width: 100%; height: 100%; background: rgba(0,0,0,0.6);
-            z-index: 1000; justify-content: center; align-items: center;
+        .emoji-panel {
+            display: none;
+            padding: 12px;
+            background: white;
+            border-top: 1px solid #e0e0e0;
+            gap: 8px;
+            flex-wrap: wrap;
         }
         
-        .modal.show { display: flex; }
-        
-        .modal-content {
-            background: white; padding: 30px; border-radius: 20px;
-            max-width: 400px; width: 90%; text-align: center;
+        .emoji-panel.show {
+            display: flex;
         }
         
-        .modal-content h3 { margin-bottom: 20px; color: #333; }
-        
-        .avatar-preview {
-            width: 120px; height: 120px; border-radius: 50%;
-            margin: 0 auto 20px; background: #f5f7fa;
-            display: flex; align-items: center; justify-content: center;
-            overflow: hidden; border: 3px solid #667eea;
+        .emoji-btn {
+            font-size: 24px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 8px;
         }
         
-        .avatar-preview img { width: 100%; height: 100%; object-fit: cover; }
+        .emoji-btn:hover {
+            background: #f5f5f5;
+        }
         
-        .modal-buttons { display: flex; gap: 10px; justify-content: center; margin-top: 20px; }
-        
-        /* ===== GAMES ===== */
-        #gamesMenu { padding: 30px; }
-        
-        .section-title { font-size: 22px; margin-bottom: 8px; color: #333; }
-        .section-subtitle { color: #666; margin-bottom: 20px; font-size: 14px; }
-        
+        /* ===== ИГРЫ ===== */
         .games-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 16px;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
         }
         
         .game-card {
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-            border-radius: 16px; padding: 20px; cursor: pointer;
-            transition: all 0.3s; border: 2px solid transparent;
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            border: 2px solid transparent;
         }
         
-        .game-card:hover { transform: translateY(-5px); box-shadow: 0 10px 30px rgba(0,0,0,0.2); border-color: #667eea; }
+        .game-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+            border-color: #e8653a;
+        }
         
-        .game-icon { font-size: 40px; margin-bottom: 10px; }
-        .game-title { font-size: 16px; font-weight: 600; margin-bottom: 6px; color: #333; }
-        .game-desc { font-size: 12px; color: #666; line-height: 1.4; }
+        .game-icon {
+            font-size: 56px;
+            margin-bottom: 15px;
+        }
         
-        /* ===== LOBBY ===== */
-        #lobbyScreen { padding: 30px; justify-content: center; align-items: center; }
+        .game-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #5d2e1f;
+            margin-bottom: 8px;
+        }
         
-        .lobby-content { text-align: center; max-width: 500px; }
+        .game-desc {
+            font-size: 13px;
+            color: #666;
+        }
+        
+        /* ===== ЛОББИ ===== */
+        .lobby-container {
+            background: white;
+            border-radius: 12px;
+            padding: 40px;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
         
         .room-code {
-            font-size: 32px; font-weight: 700; color: #667eea;
-            letter-spacing: 4px; margin: 20px 0; padding: 20px;
-            background: #f5f7fa; border-radius: 12px;
+            font-size: 48px;
+            font-weight: 700;
+            color: #e8653a;
+            letter-spacing: 8px;
+            margin: 30px 0;
+            padding: 30px;
+            background: #f9f9f9;
+            border-radius: 12px;
+            border: 3px dashed #e8653a;
         }
         
         .lobby-input {
-            padding: 14px 18px; border: 2px solid #e0e0e0;
-            border-radius: 12px; font-size: 16px; text-align: center;
-            width: 200px; margin: 10px;
+            padding: 14px 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 18px;
+            text-align: center;
+            width: 200px;
+            margin: 20px 10px;
+        }
+        
+        .lobby-input:focus {
+            border-color: #e8653a;
+            outline: none;
         }
         
         .btn-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white; padding: 12px 24px; border: none;
-            border-radius: 12px; cursor: pointer; font-size: 14px;
-            font-weight: 600; margin: 5px;
+            padding: 14px 30px;
+            background: #e8653a;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            margin: 10px;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary:hover {
+            background: #d4542a;
+            transform: translateY(-2px);
         }
         
         .btn-secondary {
-            background: #e0e0e0; color: #333; padding: 12px 24px;
-            border: none; border-radius: 12px; cursor: pointer;
-            font-size: 14px; font-weight: 600; margin: 5px;
+            padding: 14px 30px;
+            background: #f5f5f5;
+            color: #5d2e1f;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            margin: 10px;
+            transition: all 0.3s;
         }
         
-        .waiting { text-align: center; padding: 30px; color: #666; }
+        .btn-secondary:hover {
+            background: #e0e0e0;
+        }
         
-        .waiting-spinner {
-            border: 4px solid #f3f3f3; border-top: 4px solid #667eea;
-            border-radius: 50%; width: 40px; height: 40px;
-            animation: spin 1s linear infinite; margin: 20px auto;
+        .waiting {
+            margin: 30px 0;
+            color: #666;
+        }
+        
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #e8653a;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
         }
         
         @keyframes spin {
@@ -431,266 +694,223 @@
             100% { transform: rotate(360deg); }
         }
         
-        /* ===== GAME SCREEN ===== */
-        #gameScreen { padding: 20px; }
-        
+        /* ===== ИГРОВОЕ ПОЛЕ ===== */
         .game-header {
-            display: flex; justify-content: space-between;
-            align-items: center; margin-bottom: 20px;
-            padding: 14px; background: #f5f7fa; border-radius: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            background: white;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
         }
         
-        .game-status { font-size: 15px; font-weight: 600; color: #333; }
+        .game-status {
+            font-size: 18px;
+            font-weight: 700;
+            color: #5d2e1f;
+        }
         
-        .ttt-board { display: grid; grid-template-columns: repeat(3, 90px); gap: 8px; margin: 20px auto; }
+        .game-board {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        
+        .ttt-board {
+            display: grid;
+            grid-template-columns: repeat(3, 100px);
+            gap: 10px;
+            margin: 20px auto;
+            width: fit-content;
+        }
         
         .ttt-cell {
-            width: 90px; height: 90px; background: white;
-            border: 2px solid #667eea; border-radius: 12px;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 44px; font-weight: 700; cursor: pointer;
+            width: 100px;
+            height: 100px;
+            background: #f9f9f9;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
         }
         
-        .ttt-cell.x { color: #667eea; }
-        .ttt-cell.o { color: #f5576c; }
-        
-        .battleship-container { display: flex; gap: 20px; flex-wrap: wrap; justify-content: center; }
-        .battleship-board-wrapper { text-align: center; }
-        .battleship-board-wrapper h3 { margin-bottom: 10px; color: #333; font-size: 14px; }
-        
-        .bs-board { display: grid; grid-template-columns: repeat(11, 28px); gap: 1px; }
-        
-        .bs-cell {
-            width: 28px; height: 28px; background: white;
-            border: 1px solid #ccc; display: flex;
-            align-items: center; justify-content: center;
-            font-size: 10px; font-weight: 600;
+        .ttt-cell:hover {
+            background: #f0f0f0;
+            border-color: #e8653a;
         }
         
-        .bs-cell.header { background: #667eea; color: white; }
-        .bs-cell.ship { background: #667eea; }
-        .bs-cell.hit { background: #f44336; }
-        .bs-cell.miss { background: #e0e0e0; }
-        .bs-cell.clickable { cursor: pointer; }
-        .bs-cell.clickable:hover { background: #f5f7fa; }
-        
-        .snake-board { display: grid; gap: 2px; background: #333; padding: 2px; border-radius: 8px; margin: 20px auto; }
-        
-        .snake-cell { width: 36px; height: 36px; background: white; border-radius: 4px; }
-        .snake-cell.p1 { background: #667eea; }
-        .snake-cell.p2 { background: #f5576c; }
-        .snake-cell.p1-head { background: #4c5fd5; }
-        .snake-cell.p2-head { background: #d94a5e; }
-        .snake-cell.clickable { cursor: pointer; border: 2px solid #ffd700; }
-        
-        .rps-container { text-align: center; padding: 20px; }
-        .rps-choices { display: flex; gap: 20px; justify-content: center; margin: 30px 0; }
-        
-        .rps-choice {
-            width: 100px; height: 100px; border-radius: 50%;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            display: flex; align-items: center; justify-content: center;
-            font-size: 50px; cursor: pointer; transition: all 0.3s;
-            border: 3px solid transparent;
-        }
-        
-        .rps-choice:hover { transform: scale(1.1); border-color: #ffd700; }
-        
-        .rps-result {
-            font-size: 20px; font-weight: 700; margin: 20px 0;
-            padding: 20px; background: #f5f7fa; border-radius: 12px;
-        }
-        
-        .rps-score { display: flex; gap: 40px; justify-content: center; margin: 20px 0; font-size: 18px; }
-        
-        .dice-container { text-align: center; padding: 20px; }
-        .dice-display { display: flex; gap: 30px; justify-content: center; margin: 30px 0; }
-        
-        .dice {
-            width: 100px; height: 100px; background: white;
-            border: 3px solid #667eea; border-radius: 16px;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 60px; font-weight: 700; color: #667eea;
-        }
+        .ttt-cell.x { color: #e8653a; }
+        .ttt-cell.o { color: #5d2e1f; }
         
         .winner-message {
-            text-align: center; padding: 24px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white; border-radius: 16px; margin: 20px 0;
-        }
-        
-        .winner-message h2 { font-size: 24px; margin-bottom: 10px; }
-        
-        /* ===== DRAWING BOARD ===== */
-        #boardScreen { padding: 20px; }
-        
-        .board-tools {
-            display: flex; gap: 10px; padding: 12px;
-            background: #f5f7fa; border-radius: 12px;
-            margin-bottom: 16px; flex-wrap: wrap; align-items: center;
-        }
-        
-        .color-picker { width: 40px; height: 40px; border: none; border-radius: 8px; cursor: pointer; }
-        .size-slider { width: 120px; cursor: pointer; }
-        
-        .tool-btn {
-            padding: 8px 14px; background: white;
-            border: 2px solid #667eea; border-radius: 8px;
-            cursor: pointer; font-size: 13px; font-weight: 600; color: #667eea;
-        }
-        
-        .tool-btn.active { background: #667eea; color: white; }
-        
-        .canvas-container {
-            border: 2px solid #e0e0e0; border-radius: 12px;
-            overflow: hidden; background: white;
-            display: flex; justify-content: center;
-        }
-        
-        #drawingCanvas { cursor: crosshair; display: block; max-width: 100%; }
-        
-        /* ===== TASKS ===== */
-        #tasksScreen { padding: 20px; }
-        
-        .task-input-container { display: flex; gap: 10px; margin-bottom: 20px; }
-        
-        .task-input-container input {
-            flex: 1; padding: 12px 16px;
-            border: 2px solid #e0e0e0; border-radius: 12px;
-            outline: none; font-size: 14px;
-        }
-        
-        .tasks-list { display: flex; flex-direction: column; gap: 10px; }
-        
-        .task-item {
-            display: flex; align-items: center; gap: 12px;
-            padding: 14px; background: #f5f7fa;
+            text-align: center;
+            padding: 30px;
+            background: linear-gradient(135deg, #e8653a 0%, #d4542a 100%);
+            color: white;
             border-radius: 12px;
-        }
-        
-        .task-item.done { opacity: 0.6; }
-        .task-item.done .task-text { text-decoration: line-through; }
-        
-        .task-checkbox { width: 24px; height: 24px; cursor: pointer; accent-color: #667eea; }
-        .task-text { flex: 1; font-size: 14px; color: #333; }
-        .task-author { font-size: 11px; color: #888; }
-        
-        .task-delete {
-            background: none; border: none; cursor: pointer;
-            font-size: 18px; color: #f44336; padding: 4px 8px;
-        }
-        
-        /* ===== CLOCK ===== */
-        #clockScreen { padding: 30px; justify-content: center; align-items: center; }
-        
-        .clock-container { text-align: center; width: 100%; max-width: 600px; }
-        
-        .big-clock {
-            font-size: 72px; font-weight: 700;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
             margin: 20px 0;
-            font-variant-numeric: tabular-nums;
         }
         
-        .big-date { font-size: 20px; color: #666; margin-bottom: 30px; }
-        
-        .timer-section { background: #f5f7fa; border-radius: 16px; padding: 24px; margin-top: 20px; }
-        
-        .timer-display {
-            font-size: 48px; font-weight: 700;
-            color: #333; margin: 20px 0;
-            font-variant-numeric: tabular-nums;
-        }
-        
-        .timer-input {
-            padding: 10px 14px; border: 2px solid #e0e0e0;
-            border-radius: 8px; font-size: 16px; width: 80px;
-            text-align: center; margin: 0 4px;
+        .winner-message h2 {
+            font-size: 28px;
+            margin-bottom: 10px;
         }
         
         /* ===== EXCEL ===== */
-        #excelScreen { padding: 20px; }
-        
-        .excel-tools {
-            display: flex; gap: 10px; padding: 12px;
-            background: #f5f7fa; border-radius: 12px;
-            margin-bottom: 16px; flex-wrap: wrap; align-items: center;
+        .excel-container {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
         }
         
-        .excel-container {
-            border: 2px solid #e0e0e0; border-radius: 12px;
-            overflow: auto; background: white; max-height: 60vh;
+        .excel-toolbar {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            padding: 15px;
+            background: #f9f9f9;
+            border-radius: 8px;
+        }
+        
+        .excel-table-wrapper {
+            overflow: auto;
+            max-height: 600px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
         }
         
         .excel-table {
-            border-collapse: collapse; width: 100%;
+            border-collapse: collapse;
+            width: 100%;
             font-size: 13px;
         }
         
         .excel-table th, .excel-table td {
             border: 1px solid #ddd;
-            padding: 6px 10px;
-            min-width: 80px;
-            text-align: left;
+            padding: 8px;
+            min-width: 100px;
         }
         
         .excel-table th {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white; font-weight: 600;
-            position: sticky; top: 0;
+            background: #5d2e1f;
+            color: white;
+            font-weight: 600;
+            position: sticky;
+            top: 0;
         }
         
         .excel-table td {
-            background: white; cursor: cell;
+            background: white;
         }
         
         .excel-table td:focus {
-            outline: 2px solid #667eea;
-            background: #f0f4ff;
+            outline: 2px solid #e8653a;
+            background: #fff5f0;
         }
         
         .excel-table .row-header {
-            background: #f5f7fa;
+            background: #f5f5f5;
             font-weight: 600;
             text-align: center;
-            color: #667eea;
-            min-width: 40px;
-            cursor: default;
+            color: #5d2e1f;
+            min-width: 50px;
         }
         
-        .excel-info {
-            font-size: 12px; color: #666;
-            padding: 8px; background: #fff9e6;
-            border-radius: 8px; margin-bottom: 10px;
+        /* ===== ОФИСЫ МФЦ ===== */
+        .offices-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
         }
         
-        /* ===== SURVEYS ===== */
-        #surveysScreen { padding: 20px; }
-        
-        .survey-card {
-            background: #f5f7fa;
+        .office-card {
+            background: white;
             border-radius: 12px;
-            padding: 20px;
-            margin-bottom: 16px;
-            border-left: 4px solid #667eea;
+            padding: 24px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            border-left: 4px solid #e8653a;
+        }
+        
+        .office-name {
+            font-size: 18px;
+            font-weight: 700;
+            color: #5d2e1f;
+            margin-bottom: 12px;
+        }
+        
+        .office-info {
+            font-size: 13px;
+            color: #666;
+            line-height: 1.8;
+        }
+        
+        .office-info strong {
+            color: #5d2e1f;
+        }
+        
+        .office-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .btn-small {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .btn-edit {
+            background: #e8653a;
+            color: white;
+        }
+        
+        .btn-delete {
+            background: #f44336;
+            color: white;
+        }
+        
+        /* ===== ОПРОСЫ ===== */
+        .survey-card {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            border-left: 4px solid #e8653a;
         }
         
         .survey-question {
-            font-size: 16px;
-            font-weight: 600;
-            color: #333;
-            margin-bottom: 14px;
+            font-size: 18px;
+            font-weight: 700;
+            color: #5d2e1f;
+            margin-bottom: 16px;
         }
         
-        .survey-options { display: flex; flex-direction: column; gap: 8px; }
+        .survey-options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
         
         .survey-option {
-            padding: 12px 16px;
-            background: white;
+            padding: 14px 18px;
+            background: #f9f9f9;
             border: 2px solid #e0e0e0;
-            border-radius: 10px;
+            border-radius: 8px;
             cursor: pointer;
             transition: all 0.2s;
             display: flex;
@@ -698,286 +918,333 @@
             align-items: center;
         }
         
-        .survey-option:hover { border-color: #667eea; background: #f0f4ff; }
-        .survey-option.voted { border-color: #43e97b; background: #e8faf0; }
-        
-        .survey-votes-count { font-size: 12px; color: #888; }
-        
-        .survey-meta {
-            font-size: 11px;
-            color: #888;
-            margin-top: 10px;
-            display: flex;
-            justify-content: space-between;
+        .survey-option:hover {
+            border-color: #e8653a;
+            background: #fff5f0;
         }
         
-        .survey-form {
-            background: #f5f7fa;
-            padding: 20px;
+        .survey-option.voted {
+            border-color: #4caf50;
+            background: #e8f5e9;
+        }
+        
+        /* ===== АДМИН-ПАНЕЛЬ ===== */
+        .admin-section {
+            background: white;
             border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        
+        .admin-section h3 {
+            font-size: 20px;
+            color: #5d2e1f;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+        
+        .admin-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background: linear-gradient(135deg, #e8653a 0%, #d4542a 100%);
+            color: white;
+            padding: 24px;
+            border-radius: 12px;
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 36px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+        
+        .stat-label {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+        
+        /* ===== МОДАЛЬНЫЕ ОКНА ===== */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.6);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal.show {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        
+        .modal-content h3 {
+            font-size: 22px;
+            color: #5d2e1f;
             margin-bottom: 20px;
         }
         
-        .survey-form input, .survey-form textarea {
-            width: 100%;
-            padding: 10px 14px;
+        .modal-form {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .modal-form input, .modal-form textarea, .modal-form select {
+            padding: 12px 16px;
             border: 2px solid #e0e0e0;
             border-radius: 8px;
-            margin-bottom: 10px;
             font-size: 14px;
             outline: none;
             font-family: inherit;
         }
         
-        .survey-form input:focus, .survey-form textarea:focus { border-color: #667eea; }
-        
-        .survey-options-input { display: flex; flex-direction: column; gap: 8px; margin-bottom: 10px; }
-        
-        .survey-option-input-row { display: flex; gap: 8px; }
-        .survey-option-input-row input { flex: 1; margin-bottom: 0; }
-        
-        .remove-option-btn {
-            background: #f44336; color: white;
-            border: none; border-radius: 8px;
-            padding: 0 12px; cursor: pointer;
+        .modal-form input:focus, .modal-form textarea:focus {
+            border-color: #e8653a;
         }
         
-        /* ===== ADMIN ===== */
-        #adminScreen { padding: 20px; }
-        
-        .admin-section {
-            background: #f5f7fa;
-            border-radius: 12px;
-            padding: 20px;
-            margin-bottom: 16px;
-        }
-        
-        .admin-section h3 { margin-bottom: 14px; color: #333; }
-        
-        .admin-survey-result {
-            background: white;
-            padding: 14px;
-            border-radius: 10px;
-            margin-bottom: 10px;
-        }
-        
-        .admin-survey-result h4 { margin-bottom: 10px; color: #333; }
-        
-        .result-bar {
+        .modal-buttons {
             display: flex;
-            align-items: center;
-            margin-bottom: 6px;
             gap: 10px;
+            justify-content: flex-end;
+            margin-top: 20px;
         }
         
-        .result-bar-label { flex: 1; font-size: 13px; color: #333; }
-        
-        .result-bar-track {
-            flex: 2;
-            height: 20px;
-            background: #e0e0e0;
-            border-radius: 10px;
-            overflow: hidden;
+        /* ===== АВТОРИЗАЦИЯ ===== */
+        .auth-container {
+            max-width: 450px;
+            margin: 50px auto;
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
         }
         
-        .result-bar-fill {
-            height: 100%;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            transition: width 0.5s;
+        .auth-container h2 {
+            font-size: 28px;
+            color: #5d2e1f;
+            text-align: center;
+            margin-bottom: 30px;
         }
         
-        .result-bar-count { font-size: 12px; color: #666; min-width: 50px; text-align: right; }
-        
-        /* ===== DASHBOARD ===== */
-        #dashboardScreen { padding: 20px; }
-        
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-            gap: 14px; margin-bottom: 24px;
+        .auth-tabs {
+            display: flex;
+            border-bottom: 2px solid #e0e0e0;
+            margin-bottom: 30px;
         }
         
-        .stat-card {
-            padding: 20px; border-radius: 16px;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white; text-align: center;
+        .auth-tab {
+            flex: 1;
+            padding: 14px;
+            text-align: center;
+            cursor: pointer;
+            font-weight: 600;
+            color: #999;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
         }
         
-        .stat-value { font-size: 32px; font-weight: 700; margin-bottom: 4px; }
-        .stat-label { font-size: 12px; opacity: 0.9; }
-        
-        .activity-list { background: #f5f7fa; border-radius: 12px; padding: 16px; }
-        
-        .activity-item {
-            padding: 10px; border-bottom: 1px solid #e0e0e0;
-            font-size: 13px; color: #333;
+        .auth-tab.active {
+            color: #e8653a;
+            border-bottom-color: #e8653a;
         }
         
-        .activity-item:last-child { border-bottom: none; }
-        .activity-time { color: #888; font-size: 11px; }
+        .auth-form {
+            display: none;
+            flex-direction: column;
+            gap: 16px;
+        }
         
-        .game-board { display: flex; justify-content: center; margin: 20px 0; }
+        .auth-form.active {
+            display: flex;
+        }
+        
+        .auth-form input {
+            padding: 14px 18px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            outline: none;
+        }
+        
+        .auth-form input:focus {
+            border-color: #e8653a;
+        }
+        
+        .auth-error {
+            color: #f44336;
+            font-size: 13px;
+            text-align: center;
+        }
+        
+        .auth-btn {
+            padding: 14px;
+            background: #e8653a;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .auth-btn:hover {
+            background: #d4542a;
+        }
+        
+        /* ===== СКРОЛЛБАР ===== */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: #e8653a;
+            border-radius: 4px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: #d4542a;
+        }
+        
+        input[type="file"] { display: none; }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <div class="header-left">
-                <button class="back-btn" id="backBtn" onclick="goBack()">← Назад</button>
-                <h1 id="headerTitle">🎉 Портал коллег</h1>
-            </div>
-            <div class="user-info" id="userInfo" style="display:none;">
-                <span id="adminBadge" class="admin-badge" style="display:none;">ADMIN</span>
-                <div class="user-avatar-small" id="userAvatarHeader" onclick="openAvatarModal()" title="Изменить аватар"></div>
-                <span id="currentUserName"></span>
-                <button class="logout-btn" onclick="logout()">Выйти</button>
-            </div>
-        </div>
-
-        <!-- ЭКРАН ГОСТЯ -->
-        <div class="screen active" id="guestScreen">
-            <div class="guest-box">
-                <h2>👋 Добро пожаловать!</h2>
-                <p>Войдите, чтобы получить полный доступ, или играйте как гость</p>
-                <div class="guest-buttons">
-                    <button class="guest-btn primary" onclick="showScreen('authScreen')">🔐 Войти / Регистрация</button>
-                    <button class="guest-btn secondary" onclick="enterAsGuest()">🎮 Играть как гость</button>
+    <!-- ШАПКА -->
+    <div class="top-header">
+        <div class="header-left">
+            <div class="logo">
+                <div class="logo-icon">МД</div>
+                <div class="logo-text">
+                    Мои Документы
+                    <span>Республики Башкортостан</span>
                 </div>
-                <p style="margin-top: 20px; font-size: 12px; color: #999;">Гости могут только играть в игры</p>
+            </div>
+            <div class="header-contacts">
+                Многофункциональный центр<br>
+                Республики Башкортостан<br>
+                <a href="tel:+73472465533">+7 347 246 55 33</a><br>
+                <a href="tel:+79273333100">+7 927 3333 100</a>
             </div>
         </div>
-
-        <!-- АВТОРИЗАЦИЯ -->
-        <div class="screen" id="authScreen">
-            <div class="auth-box">
-                <h2>👋 Вход в портал</h2>
-                <div class="auth-tabs">
-                    <button class="auth-tab active" onclick="showTab('login')">Вход</button>
-                    <button class="auth-tab" onclick="showTab('register')">Регистрация</button>
-                </div>
-                <form class="auth-form active" id="loginForm" onsubmit="login(event)">
-                    <input type="email" id="loginEmail" placeholder="Email" required>
-                    <input type="password" id="loginPassword" placeholder="Пароль" required>
-                    <div class="auth-error" id="loginError"></div>
-                    <button type="submit" class="auth-btn">Войти</button>
-                    <button type="button" class="auth-btn" style="background:#e0e0e0; color:#333;" onclick="showScreen('guestScreen', false)">← Назад</button>
-                </form>
-                <form class="auth-form" id="registerForm" onsubmit="register(event)">
-                    <input type="text" id="regName" placeholder="Ваше имя" required>
-                    <input type="email" id="regEmail" placeholder="Email" required>
-                    <input type="password" id="regPassword" placeholder="Пароль (мин. 6 символов)" required minlength="6">
-                    <input type="password" id="regPassword2" placeholder="Повторите пароль" required>
-                    <div class="auth-error" id="regError"></div>
-                    <button type="submit" class="auth-btn">Зарегистрироваться</button>
-                    <button type="button" class="auth-btn" style="background:#e0e0e0; color:#333;" onclick="showScreen('guestScreen', false)">← Назад</button>
-                </form>
-            </div>
+        <div class="header-right" id="headerRight">
+            <!-- Заполняется через JS -->
         </div>
+    </div>
 
-        <!-- ГЛАВНОЕ МЕНЮ -->
-        <div class="screen" id="mainMenu">
-            <div class="welcome">
-                <h2 id="welcomeText">Привет!</h2>
-                <p>Выберите раздел для работы и отдыха</p>
+    <!-- НАВИГАЦИЯ -->
+    <div class="nav-bar" id="navBar">
+        <!-- Заполняется через JS -->
+    </div>
+
+    <!-- КОНТЕНТ -->
+    <div class="main-content">
+        <!-- ГЛАВНАЯ -->
+        <div class="page active" id="page-home">
+            <div class="hero-section">
+                <div class="hero-left">
+                    <div class="hero-logo">
+                        <div class="hero-logo-icon">МД</div>
+                        <div class="hero-logo-text">
+                            Мои Документы
+                            <span>Республики Башкортостан</span>
+                        </div>
+                    </div>
+                    <div class="search-box">
+                        <input type="text" class="search-input" placeholder="Введите что хотите найти">
+                        <button class="search-btn">Начать поиск</button>
+                    </div>
+                </div>
+                <div class="hero-right">
+                    <div class="map-placeholder">
+                        <div class="map-dot"></div>
+                        <span>Карта Башкортостана</span>
+                    </div>
+                </div>
             </div>
-            <div class="menu-grid" id="menuGrid">
-                <div class="menu-card chat" onclick="openChat()">
-                    <div class="menu-card-icon">💬</div>
-                    <div class="menu-card-title">Чат</div>
-                    <div class="menu-card-desc">Общение и фото</div>
-                </div>
-                <div class="menu-card games" onclick="openGames()">
-                    <div class="menu-card-icon">🎮</div>
-                    <div class="menu-card-title">Игры</div>
-                    <div class="menu-card-desc">5 онлайн-игр</div>
-                </div>
-                <div class="menu-card excel" onclick="openExcel()">
-                    <div class="menu-card-icon">📊</div>
-                    <div class="menu-card-title">Таблицы</div>
-                    <div class="menu-card-desc">Общий Excel</div>
-                </div>
-                <div class="menu-card survey" onclick="openSurveys()">
-                    <div class="menu-card-icon">📋</div>
-                    <div class="menu-card-title">Опросы</div>
-                    <div class="menu-card-desc">Голосования</div>
-                </div>
-                <div class="menu-card board" onclick="openBoard()">
-                    <div class="menu-card-icon">🎨</div>
-                    <div class="menu-card-title">Доска</div>
-                    <div class="menu-card-desc">Рисование</div>
-                </div>
-                <div class="menu-card tasks" onclick="openTasks()">
-                    <div class="menu-card-icon">✅</div>
-                    <div class="menu-card-title">Задачи</div>
-                    <div class="menu-card-desc">Общий список</div>
-                </div>
-                <div class="menu-card clock" onclick="openClock()">
-                    <div class="menu-card-icon">🕐</div>
-                    <div class="menu-card-title">Часы</div>
-                    <div class="menu-card-desc">Таймер</div>
-                </div>
-                <div class="menu-card dashboard" onclick="openDashboard()">
-                    <div class="menu-card-icon">📈</div>
-                    <div class="menu-card-title">Статистика</div>
-                    <div class="menu-card-desc">Активность</div>
-                </div>
-                <div class="menu-card admin" id="adminCard" onclick="openAdmin()" style="display:none;">
-                    <div class="menu-card-icon">⚙️</div>
-                    <div class="menu-card-title">Админ</div>
-                    <div class="menu-card-desc">Управление</div>
-                </div>
+
+            <h2 class="page-title">Сервисы портала</h2>
+            <p class="page-subtitle">Выберите нужный раздел для работы</p>
+
+            <div class="cards-grid" id="menuCards">
+                <!-- Заполняется через JS -->
             </div>
         </div>
 
         <!-- ЧАТ -->
-        <div class="screen" id="chatScreen">
-            <div class="messages" id="messages"></div>
-            <div class="emoji-panel" id="emojiPanel">
-                <button class="emoji-btn" onclick="addEmoji('😊')">😊</button>
-                <button class="emoji-btn" onclick="addEmoji('😂')">😂</button>
-                <button class="emoji-btn" onclick="addEmoji('❤️')">❤️</button>
-                <button class="emoji-btn" onclick="addEmoji('👍')">👍</button>
-                <button class="emoji-btn" onclick="addEmoji('🎉')">🎉</button>
-                <button class="emoji-btn" onclick="addEmoji('🔥')">🔥</button>
-                <button class="emoji-btn" onclick="addEmoji('😍')">😍</button>
-                <button class="emoji-btn" onclick="addEmoji('🤔')">🤔</button>
-                <button class="emoji-btn" onclick="addEmoji('😎')">😎</button>
-                <button class="emoji-btn" onclick="addEmoji('👋')">👋</button>
-                <button class="emoji-btn" onclick="addEmoji('✨')">✨</button>
-                <button class="emoji-btn" onclick="addEmoji('🙏')">🙏</button>
-                <button class="emoji-btn" onclick="addEmoji('💪')">💪</button>
-                <button class="emoji-btn" onclick="addEmoji('🚀')">🚀</button>
-                <button class="emoji-btn" onclick="addEmoji('💯')">💯</button>
-                <button class="emoji-btn" onclick="addEmoji('🥳')">🥳</button>
-            </div>
-            <div class="input-area">
-                <input type="text" id="messageInput" placeholder="Напишите сообщение...">
-                <button class="btn btn-emoji" onclick="toggleEmojiPanel()">😊</button>
-                <label for="photoInput" class="btn btn-photo">📷</label>
-                <input type="file" id="photoInput" accept="image/*">
-                <button class="btn btn-send" onclick="sendMessage()">➤</button>
+        <div class="page" id="page-chat">
+            <h2 class="page-title">💬 Чат коллег</h2>
+            <p class="page-subtitle">Общайтесь с коллегами в реальном времени</p>
+            <div class="chat-container">
+                <div class="chat-messages" id="chatMessages"></div>
+                <div class="emoji-panel" id="emojiPanel">
+                    <button class="emoji-btn" onclick="addEmoji('😊')">😊</button>
+                    <button class="emoji-btn" onclick="addEmoji('😂')">😂</button>
+                    <button class="emoji-btn" onclick="addEmoji('❤️')">❤️</button>
+                    <button class="emoji-btn" onclick="addEmoji('')">👍</button>
+                    <button class="emoji-btn" onclick="addEmoji('')">🎉</button>
+                    <button class="emoji-btn" onclick="addEmoji('')">🔥</button>
+                    <button class="emoji-btn" onclick="addEmoji('😍')">😍</button>
+                    <button class="emoji-btn" onclick="addEmoji('🤔')">🤔</button>
+                    <button class="emoji-btn" onclick="addEmoji('😎')"></button>
+                    <button class="emoji-btn" onclick="addEmoji('👋')"></button>
+                </div>
+                <div class="chat-input-area">
+                    <input type="text" class="chat-input" id="chatInput" placeholder="Напишите сообщение...">
+                    <button class="chat-btn btn-emoji" onclick="toggleEmoji()">😊</button>
+                    <label for="chatPhoto" class="chat-btn btn-photo">📷</label>
+                    <input type="file" id="chatPhoto" accept="image/*">
+                    <button class="chat-btn btn-send" onclick="sendMessage()">➤</button>
+                </div>
             </div>
         </div>
 
-        <!-- МЕНЮ ИГР -->
-        <div class="screen" id="gamesMenu">
-            <h2 class="section-title">🎮 Выберите игру</h2>
-            <p class="section-subtitle">Создайте комнату и отправьте код коллеге</p>
+        <!-- ИГРЫ -->
+        <div class="page" id="page-games">
+            <h2 class="page-title">🎮 Игры</h2>
+            <p class="page-subtitle">Выберите игру и пригласите коллегу</p>
             <div class="games-grid">
                 <div class="game-card" onclick="selectGame('ttt')">
                     <div class="game-icon">❌⭕</div>
                     <div class="game-title">Крестики-нолики</div>
-                    <div class="game-desc">Классика 3×3</div>
+                    <div class="game-desc">Классическая игра 3×3</div>
                 </div>
                 <div class="game-card" onclick="selectGame('battleship')">
-                    <div class="game-icon">🚢💥</div>
+                    <div class="game-icon">🚢</div>
                     <div class="game-title">Морской бой</div>
-                    <div class="game-desc">Потопи флот</div>
+                    <div class="game-desc">Потопите флот противника</div>
                 </div>
                 <div class="game-card" onclick="selectGame('snake')">
-                    <div class="game-icon">🐍</div>
+                    <div class="game-icon"></div>
                     <div class="game-title">Змейка</div>
-                    <div class="game-desc">Заблокируй соперника</div>
+                    <div class="game-desc">Заблокируйте соперника</div>
                 </div>
                 <div class="game-card" onclick="selectGame('rps')">
                     <div class="game-icon">✊✋✌️</div>
@@ -987,27 +1254,27 @@
                 <div class="game-card" onclick="selectGame('dice')">
                     <div class="game-icon">🎲</div>
                     <div class="game-title">Кости</div>
-                    <div class="game-desc">Кто больше выбросит</div>
+                    <div class="game-desc">Кто выбросит больше</div>
                 </div>
             </div>
         </div>
 
         <!-- ЛОББИ -->
-        <div class="screen" id="lobbyScreen">
-            <div class="lobby-content">
-                <h2 id="lobbyTitle">Создание комнаты</h2>
+        <div class="page" id="page-lobby">
+            <div class="lobby-container">
+                <h2 class="page-title" id="lobbyTitle">Создание комнаты</h2>
                 <div id="createRoomSection">
-                    <p style="margin: 20px 0;">Код вашей комнаты:</p>
+                    <p style="margin: 20px 0; color: #666;">Код вашей комнаты:</p>
                     <div class="room-code" id="roomCode">----</div>
                     <p style="color: #666; margin: 20px 0;">Отправьте этот код коллеге</p>
                     <div class="waiting">
-                        <div class="waiting-spinner"></div>
+                        <div class="spinner"></div>
                         <p>Ожидание второго игрока...</p>
                     </div>
                     <button class="btn-secondary" onclick="showJoinRoom()">Присоединиться по коду</button>
                 </div>
                 <div id="joinRoomSection" style="display:none;">
-                    <p style="margin: 20px 0;">Введите код комнаты:</p>
+                    <p style="margin: 20px 0; color: #666;">Введите код комнаты:</p>
                     <input type="text" class="lobby-input" id="joinCode" placeholder="Код" maxlength="6">
                     <br>
                     <button class="btn-primary" onclick="joinRoom()">Присоединиться</button>
@@ -1017,7 +1284,7 @@
         </div>
 
         <!-- ИГРА -->
-        <div class="screen" id="gameScreen">
+        <div class="page" id="page-game">
             <div class="game-header">
                 <div class="game-status" id="gameStatus">Ваш ход</div>
                 <div>
@@ -1025,155 +1292,224 @@
                     <button class="btn-secondary" onclick="leaveGame()">Выйти</button>
                 </div>
             </div>
-            <div id="gameContent"></div>
+            <div class="game-board" id="gameContent"></div>
         </div>
 
-        <!-- ДОСКА -->
-        <div class="screen" id="boardScreen">
-            <div class="board-tools">
-                <input type="color" class="color-picker" id="colorPicker" value="#667eea">
-                <input type="range" class="size-slider" id="sizeSlider" min="1" max="30" value="5">
-                <span id="sizeLabel">5px</span>
-                <button class="tool-btn active" id="penTool" onclick="setTool('pen')">✏️ Кисть</button>
-                <button class="tool-btn" id="eraserTool" onclick="setTool('eraser')">🧽 Ластик</button>
-                <button class="tool-btn" onclick="clearCanvas()">🗑️ Очистить</button>
-                <button class="tool-btn" onclick="saveCanvas()">💾 Сохранить</button>
-                <button class="tool-btn" onclick="sendCanvasToChat()">📤 В чат</button>
+        <!-- EXCEL -->
+        <div class="page" id="page-excel">
+            <h2 class="page-title"> Excel Таблицы</h2>
+            <p class="page-subtitle">Работайте с таблицами как в Microsoft Excel</p>
+            <div class="excel-container">
+                <div class="excel-toolbar">
+                    <button class="btn-primary" onclick="document.getElementById('excelFileInput').click()">📂 Открыть Excel файл</button>
+                    <input type="file" id="excelFileInput" accept=".xlsx,.xls,.csv" onchange="importExcelFile(event)">
+                    <button class="btn-primary" onclick="exportExcelFile()">💾 Сохранить как Excel</button>
+                    <button class="btn-secondary" onclick="addExcelRow()">➕ Строка</button>
+                    <button class="btn-secondary" onclick="addExcelColumn()">➕ Столбец</button>
+                    <button class="btn-secondary" onclick="clearExcelData()">🗑️ Очистить</button>
+                </div>
+                <div class="excel-table-wrapper">
+                    <table class="excel-table" id="excelTable"></table>
+                </div>
             </div>
-            <div class="canvas-container">
-                <canvas id="drawingCanvas" width="800" height="500"></canvas>
+        </div>
+
+        <!-- ОФИСЫ МФЦ -->
+        <div class="page" id="page-offices">
+            <h2 class="page-title"> Офисы МФЦ Башкортостана</h2>
+            <p class="page-subtitle">База данных всех офисов</p>
+            <div style="margin-bottom: 20px;">
+                <input type="text" class="search-input" id="officeSearch" placeholder="Поиск офиса..." style="max-width: 400px;" oninput="filterOffices()">
+                <button class="btn-primary" onclick="openOfficeModal()" id="addOfficeBtn" style="display:none;">➕ Добавить офис</button>
             </div>
+            <div class="offices-grid" id="officesGrid"></div>
+        </div>
+
+        <!-- ОПРОСЫ -->
+        <div class="page" id="page-surveys">
+            <h2 class="page-title"> Опросы</h2>
+            <p class="page-subtitle">Анонимное голосование</p>
+            <button class="btn-primary" onclick="openSurveyModal()" id="createSurveyBtn" style="margin-bottom: 20px;">➕ Создать опрос</button>
+            <div id="surveysList"></div>
         </div>
 
         <!-- ЗАДАЧИ -->
-        <div class="screen" id="tasksScreen">
-            <h2 class="section-title">✅ Общие задачи</h2>
-            <p class="section-subtitle">Список виден всем коллегам</p>
-            <div class="task-input-container">
-                <input type="text" id="taskInput" placeholder="Новая задача..." onkeypress="if(event.key==='Enter')addTask()">
+        <div class="page" id="page-tasks">
+            <h2 class="page-title">✅ Задачи</h2>
+            <p class="page-subtitle">Общий список задач</p>
+            <div style="display: flex; gap: 10px; margin-bottom: 20px;">
+                <input type="text" class="search-input" id="taskInput" placeholder="Новая задача..." style="flex: 1;">
                 <button class="btn-primary" onclick="addTask()">Добавить</button>
             </div>
-            <div class="tasks-list" id="tasksList"></div>
+            <div id="tasksList"></div>
+        </div>
+
+        <!-- ДОСКА -->
+        <div class="page" id="page-board">
+            <h2 class="page-title">🎨 Доска для рисования</h2>
+            <p class="page-subtitle">Рисуйте и делитесь с коллегами</p>
+            <div class="excel-toolbar">
+                <input type="color" id="colorPicker" value="#e8653a" style="width: 50px; height: 40px; border: none; border-radius: 8px; cursor: pointer;">
+                <input type="range" id="sizeSlider" min="1" max="30" value="5" style="width: 150px;">
+                <span id="sizeLabel">5px</span>
+                <button class="btn-secondary" onclick="setTool('pen')">✏️ Кисть</button>
+                <button class="btn-secondary" onclick="setTool('eraser')"> Ластик</button>
+                <button class="btn-secondary" onclick="clearCanvas()">🗑️ Очистить</button>
+                <button class="btn-primary" onclick="saveCanvas()">💾 Сохранить</button>
+                <button class="btn-primary" onclick="sendCanvasToChat()"> В чат</button>
+            </div>
+            <canvas id="drawingCanvas" width="1000" height="600" style="border: 2px solid #e0e0e0; border-radius: 12px; background: white; cursor: crosshair; max-width: 100%;"></canvas>
         </div>
 
         <!-- ЧАСЫ -->
-        <div class="screen" id="clockScreen">
-            <div class="clock-container">
-                <div class="big-clock" id="bigClock">00:00:00</div>
-                <div class="big-date" id="bigDate"></div>
-                <div class="timer-section">
-                    <h3 style="margin-bottom: 16px;">⏱️ Таймер</h3>
-                    <div>
-                        <input type="number" class="timer-input" id="timerHours" placeholder="Ч" min="0" max="23" value="0">
-                        <input type="number" class="timer-input" id="timerMinutes" placeholder="М" min="0" max="59" value="5">
-                        <input type="number" class="timer-input" id="timerSeconds" placeholder="С" min="0" max="59" value="0">
+        <div class="page" id="page-clock">
+            <h2 class="page-title">🕐 Часы и таймер</h2>
+            <p class="page-subtitle">Время и таймеры</p>
+            <div style="background: white; padding: 40px; border-radius: 12px; text-align: center; box-shadow: 0 2px 10px rgba(0,0,0,0.05);">
+                <div id="bigClock" style="font-size: 72px; font-weight: 700; color: #5d2e1f; margin-bottom: 10px;">00:00:00</div>
+                <div id="bigDate" style="font-size: 20px; color: #666; margin-bottom: 40px;"></div>
+                
+                <div style="background: #f9f9f9; padding: 30px; border-radius: 12px; margin-bottom: 20px;">
+                    <h3 style="margin-bottom: 20px; color: #5d2e1f;">⏱️ Таймер</h3>
+                    <div style="display: flex; gap: 10px; justify-content: center; margin-bottom: 20px;">
+                        <input type="number" class="lobby-input" id="timerHours" placeholder="Ч" min="0" max="23" value="0" style="width: 80px;">
+                        <input type="number" class="lobby-input" id="timerMinutes" placeholder="М" min="0" max="59" value="5" style="width: 80px;">
+                        <input type="number" class="lobby-input" id="timerSeconds" placeholder="С" min="0" max="59" value="0" style="width: 80px;">
                     </div>
-                    <div class="timer-display" id="timerDisplay">00:05:00</div>
+                    <div id="timerDisplay" style="font-size: 48px; font-weight: 700; color: #e8653a; margin-bottom: 20px;">00:05:00</div>
                     <button class="btn-primary" onclick="startTimer()" id="startTimerBtn">▶️ Старт</button>
                     <button class="btn-secondary" onclick="resetTimer()">🔄 Сброс</button>
                 </div>
-                <div class="timer-section" style="margin-top: 16px;">
-                    <h3 style="margin-bottom: 16px;">⏲️ Секундомер</h3>
-                    <div class="timer-display" id="stopwatchDisplay">00:00:00</div>
+                
+                <div style="background: #f9f9f9; padding: 30px; border-radius: 12px;">
+                    <h3 style="margin-bottom: 20px; color: #5d2e1f;">⏲️ Секундомер</h3>
+                    <div id="stopwatchDisplay" style="font-size: 48px; font-weight: 700; color: #e8653a; margin-bottom: 20px;">00:00:00</div>
                     <button class="btn-primary" onclick="toggleStopwatch()" id="stopwatchBtn">▶️ Старт</button>
                     <button class="btn-secondary" onclick="resetStopwatch()">🔄 Сброс</button>
                 </div>
             </div>
         </div>
 
-        <!-- EXCEL -->
-        <div class="screen" id="excelScreen">
-            <h2 class="section-title">📊 Общая таблица</h2>
-            <p class="section-subtitle">Все изменения сохраняются автоматически и видны всем</p>
-            <div class="excel-info">💡 Кликните по ячейке, чтобы редактировать. Изменения сохраняются автоматически.</div>
-            <div class="excel-tools">
-                <button class="btn-primary" onclick="addExcelRow()">➕ Строка</button>
-                <button class="btn-primary" onclick="addExcelColumn()">➕ Столбец</button>
-                <button class="btn-secondary" onclick="removeExcelRow()">➖ Строка</button>
-                <button class="btn-secondary" onclick="removeExcelColumn()">➖ Столбец</button>
-                <button class="btn-primary" onclick="exportExcelCSV()">📥 Экспорт CSV</button>
-                <label for="importExcelCSV" class="btn-secondary" style="display:inline-block;">📤 Импорт CSV</label>
-                <input type="file" id="importExcelCSV" accept=".csv" onchange="importExcelCSV(event)">
-                <button class="btn-secondary" onclick="clearExcel()">🗑️ Очистить</button>
-            </div>
-            <div class="excel-container">
-                <table class="excel-table" id="excelTable"></table>
+        <!-- СТАТИСТИКА -->
+        <div class="page" id="page-dashboard">
+            <h2 class="page-title">📊 Статистика</h2>
+            <p class="page-subtitle">Активность портала</p>
+            <div class="admin-stats" id="statsGrid"></div>
+            <div class="admin-section">
+                <h3>📝 Последние действия</h3>
+                <div id="activityList"></div>
             </div>
         </div>
 
-        <!-- ОПРОСЫ -->
-        <div class="screen" id="surveysScreen">
-            <h2 class="section-title">📋 Опросы</h2>
-            <p class="section-subtitle">Голосование анонимное. Результаты видны только администраторам.</p>
+        <!-- АДМИН -->
+        <div class="page" id="page-admin">
+            <h2 class="page-title">⚙️ Панель администратора</h2>
+            <p class="page-subtitle">Управление порталом</p>
             
-            <div id="surveyCreateForm" style="display:none;">
-                <div class="survey-form">
-                    <h3 style="margin-bottom: 14px;">Новый опрос</h3>
-                    <textarea id="surveyQuestion" placeholder="Вопрос..." rows="2"></textarea>
-                    <div class="survey-options-input" id="surveyOptionsInput">
-                        <div class="survey-option-input-row">
-                            <input type="text" placeholder="Вариант 1">
-                            <button class="remove-option-btn" onclick="removeSurveyOption(this)">✕</button>
-                        </div>
-                        <div class="survey-option-input-row">
-                            <input type="text" placeholder="Вариант 2">
-                            <button class="remove-option-btn" onclick="removeSurveyOption(this)">✕</button>
-                        </div>
-                    </div>
-                    <button class="btn-secondary" onclick="addSurveyOption()" style="margin-bottom: 14px;">➕ Добавить вариант</button>
-                    <div>
-                        <button class="btn-primary" onclick="createSurvey()">✅ Создать</button>
-                        <button class="btn-secondary" onclick="toggleSurveyForm()">Отмена</button>
-                    </div>
-                </div>
-            </div>
-            
-            <button class="btn-primary" id="createSurveyBtn" onclick="toggleSurveyForm()" style="margin-bottom: 20px;">➕ Создать опрос</button>
-            <div id="surveysList"></div>
-        </div>
-
-        <!-- АДМИН-ПАНЕЛЬ -->
-        <div class="screen" id="adminScreen">
-            <h2 class="section-title">⚙️ Панель администратора</h2>
-            <p class="section-subtitle">Управление опросами и просмотр результатов</p>
+            <div class="admin-stats" id="adminStats"></div>
             
             <div class="admin-section">
-                <h3>📊 Результаты опросов</h3>
+                <h3>👥 Управление пользователями</h3>
+                <div id="usersList"></div>
+            </div>
+            
+            <div class="admin-section">
+                <h3> Управление чатом</h3>
+                <p style="color: #666; margin-bottom: 15px;">Администратор может удалять любые сообщения</p>
+                <button class="btn-primary" onclick="clearAllMessages()">🗑️ Очистить весь чат</button>
+            </div>
+            
+            <div class="admin-section">
+                <h3>📋 Результаты опросов</h3>
                 <div id="adminSurveysList"></div>
             </div>
         </div>
 
-        <!-- СТАТИСТИКА -->
-        <div class="screen" id="dashboardScreen">
-            <h2 class="section-title">📈 Статистика команды</h2>
-            <p class="section-subtitle">Активность портала в реальном времени</p>
-            <div class="stats-grid" id="statsGrid"></div>
-            <h3 style="margin: 20px 0 10px;">📝 Последние действия</h3>
-            <div class="activity-list" id="activityList"></div>
+        <!-- АВТОРИЗАЦИЯ -->
+        <div class="page" id="page-auth">
+            <div class="auth-container">
+                <h2>Вход в портал</h2>
+                <div class="auth-tabs">
+                    <div class="auth-tab active" onclick="showAuthTab('login')">Вход</div>
+                    <div class="auth-tab" onclick="showAuthTab('register')">Регистрация</div>
+                </div>
+                <form class="auth-form active" id="loginForm" onsubmit="login(event)">
+                    <input type="email" id="loginEmail" placeholder="Email" required>
+                    <input type="password" id="loginPassword" placeholder="Пароль" required>
+                    <div class="auth-error" id="loginError"></div>
+                    <button type="submit" class="auth-btn">Войти</button>
+                </form>
+                <form class="auth-form" id="registerForm" onsubmit="register(event)">
+                    <input type="text" id="regName" placeholder="Ваше имя" required>
+                    <input type="email" id="regEmail" placeholder="Email" required>
+                    <input type="password" id="regPassword" placeholder="Пароль (мин. 6 символов)" required minlength="6">
+                    <input type="password" id="regPassword2" placeholder="Повторите пароль" required>
+                    <div class="auth-error" id="regError"></div>
+                    <button type="submit" class="auth-btn">Зарегистрироваться</button>
+                </form>
+            </div>
         </div>
     </div>
 
-    <!-- МОДАЛЬНОЕ ОКНО КАРТИНОК -->
-    <div class="image-modal" id="imageModal">
-        <button class="image-modal-close" onclick="closeImageModal()">✕</button>
-        <img id="modalImage" src="">
-        <div class="image-modal-actions">
-            <button class="image-modal-btn" onclick="downloadImage()">💾 Скачать</button>
-            <button class="image-modal-btn" onclick="closeImageModal()">Закрыть</button>
-        </div>
-    </div>
-
-    <!-- МОДАЛЬНОЕ ОКНО АВАТАРА -->
+    <!-- МОДАЛЬНЫЕ ОКНА -->
     <div class="modal" id="avatarModal">
         <div class="modal-content">
-            <h3>🖼️ Изменить аватар</h3>
-            <div class="avatar-preview" id="avatarPreview"></div>
-            <input type="file" id="avatarInput" accept="image/*" onchange="previewAvatar(event)">
-            <label for="avatarInput" class="btn-primary" style="display:inline-block; margin-top:10px;">Выбрать фото</label>
+            <h3>Изменить аватар</h3>
+            <div style="text-align: center; margin: 20px 0;">
+                <div id="avatarPreview" style="width: 120px; height: 120px; border-radius: 50%; margin: 0 auto; background: #f5f5f5; display: flex; align-items: center; justify-content: center; overflow: hidden; border: 3px solid #e8653a;"></div>
+                <input type="file" id="avatarInput" accept="image/*" onchange="previewAvatar(event)" style="margin-top: 20px;">
+                <label for="avatarInput" class="btn-primary" style="display: inline-block; margin-top: 10px;">Выбрать фото</label>
+            </div>
             <div class="modal-buttons">
-                <button class="btn-primary" onclick="saveAvatar()">💾 Сохранить</button>
-                <button class="btn-secondary" onclick="removeAvatar()">🗑️ Удалить</button>
                 <button class="btn-secondary" onclick="closeAvatarModal()">Отмена</button>
+                <button class="btn-primary" onclick="saveAvatar()">Сохранить</button>
+                <button class="btn-delete" onclick="removeAvatar()">Удалить</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="officeModal">
+        <div class="modal-content">
+            <h3 id="officeModalTitle">Добавить офис</h3>
+            <div class="modal-form">
+                <input type="text" id="officeName" placeholder="Название офиса">
+                <input type="text" id="officeAddress" placeholder="Адрес">
+                <input type="text" id="officePhone" placeholder="Телефон">
+                <input type="text" id="officeHours" placeholder="Часы работы">
+                <input type="text" id="officeServices" placeholder="Услуги (через запятую)">
+                <textarea id="officeDescription" placeholder="Описание" rows="3"></textarea>
+            </div>
+            <div class="modal-buttons">
+                <button class="btn-secondary" onclick="closeOfficeModal()">Отмена</button>
+                <button class="btn-primary" onclick="saveOffice()">Сохранить</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="surveyModal">
+        <div class="modal-content">
+            <h3>Создать опрос</h3>
+            <div class="modal-form">
+                <textarea id="surveyQuestion" placeholder="Вопрос" rows="2"></textarea>
+                <div id="surveyOptionsContainer">
+                    <input type="text" placeholder="Вариант 1" class="survey-option-input">
+                    <input type="text" placeholder="Вариант 2" class="survey-option-input">
+                </div>
+                <button class="btn-secondary" onclick="addSurveyOption()">➕ Добавить вариант</button>
+            </div>
+            <div class="modal-buttons">
+                <button class="btn-secondary" onclick="closeSurveyModal()">Отмена</button>
+                <button class="btn-primary" onclick="createSurvey()">Создать</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="imageModal">
+        <div class="modal-content" style="max-width: 800px;">
+            <img id="modalImage" src="" style="max-width: 100%; border-radius: 8px;">
+            <div class="modal-buttons">
+                <button class="btn-primary" onclick="downloadImage()">💾 Скачать</button>
+                <button class="btn-secondary" onclick="closeImageModal()">Закрыть</button>
             </div>
         </div>
     </div>
@@ -1183,7 +1519,7 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
 
     <script>
-        // ===== ЗАМЕНИ НА СВОЮ КОНФИГУРАЦИЮ FIREBASE =====
+        // ===== FIREBASE КОНФИГУРАЦИЯ =====
         const firebaseConfig = {
   apiKey: "AIzaSyD8vC-aybeoSegmGPFDl-Fp1PzIuF_k4LM",
   authDomain: "colleagues-chat.firebaseapp.com",
@@ -1198,119 +1534,123 @@
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const db = firebase.database();
-        const chatMessagesRef = db.ref('chat/messages');
-        const gamesRef = db.ref('games');
-        const tasksRef = db.ref('tasks');
-        const statsRef = db.ref('stats');
-        const surveysRef = db.ref('surveys');
-        const excelRef = db.ref('excel/data');
-        const usersRef = db.ref('users');
-        const adminsRef = db.ref('admins');
 
+        // ===== ПЕРЕМЕННЫЕ =====
         let currentUser = null;
-        let isGuest = false;
         let isAdmin = false;
+        let currentPage = 'home';
         let currentGame = null;
         let currentRoom = null;
         let playerNumber = 0;
-        let currentScreen = 'guestScreen';
-        let screenHistory = [];
-        let currentImageSrc = null;
+        let excelData = [];
+        let excelRows = 20;
+        let excelCols = 10;
+        let editingOfficeId = null;
         let newAvatarData = null;
+        let currentImageSrc = null;
 
         // ===== НАВИГАЦИЯ =====
-        function showScreen(screenId, addToHistory = true) {
-            if (addToHistory && currentScreen && currentScreen !== screenId) {
-                screenHistory.push(currentScreen);
+        const menuItems = [
+            { id: 'home', title: 'Главная', icon: '🏠' },
+            { id: 'chat', title: 'Чат', icon: '' },
+            { id: 'games', title: 'Игры', icon: '🎮' },
+            { id: 'excel', title: 'Excel', icon: '📊' },
+            { id: 'offices', title: 'Офисы МФЦ', icon: '🏢' },
+            { id: 'surveys', title: 'Опросы', icon: '📋' },
+            { id: 'tasks', title: 'Задачи', icon: '✅' },
+            { id: 'board', title: 'Доска', icon: '🎨' },
+            { id: 'clock', title: 'Часы', icon: '🕐' },
+            { id: 'dashboard', title: 'Статистика', icon: '📈' },
+            { id: 'admin', title: 'Админ', icon: '⚙️', adminOnly: true }
+        ];
+
+        function updateNavigation() {
+            const navBar = document.getElementById('navBar');
+            navBar.innerHTML = '';
+            
+            menuItems.forEach(item => {
+                if (item.adminOnly && !isAdmin) return;
+                
+                const navItem = document.createElement('div');
+                navItem.className = 'nav-item' + (currentPage === item.id ? ' active' : '');
+                navItem.textContent = item.icon + ' ' + item.title;
+                navItem.onclick = () => navigateTo(item.id);
+                navBar.appendChild(navItem);
+            });
+        }
+
+        function navigateTo(pageId) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById('page-' + pageId).classList.add('active');
+            currentPage = pageId;
+            updateNavigation();
+            
+            if (pageId === 'chat') loadChat();
+            if (pageId === 'offices') loadOffices();
+            if (pageId === 'surveys') loadSurveys();
+            if (pageId === 'tasks') loadTasks();
+            if (pageId === 'dashboard') loadDashboard();
+            if (pageId === 'admin') loadAdminPanel();
+            if (pageId === 'excel') loadExcel();
+        }
+
+        function updateHeader() {
+            const headerRight = document.getElementById('headerRight');
+            
+            if (currentUser) {
+                const avatarHtml = currentUser.avatar ? 
+                    `<img src="${currentUser.avatar}">` : 
+                    getInitials(currentUser.name);
+                
+                headerRight.innerHTML = `
+                    <div class="user-panel">
+                        <div class="user-avatar-header" onclick="openAvatarModal()">${avatarHtml}</div>
+                        <div>
+                            <div class="user-name">${currentUser.name}${isAdmin ? '<span class="admin-badge">ADMIN</span>' : ''}</div>
+                        </div>
+                    </div>
+                    <button class="btn-header" onclick="logout()">Выйти</button>
+                `;
+            } else {
+                headerRight.innerHTML = `
+                    <button class="btn-header" onclick="navigateTo('auth')">Войти</button>
+                `;
             }
-            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-            document.getElementById(screenId).classList.add('active');
-            currentScreen = screenId;
-            updateBackButton();
-            updateHeaderTitle();
         }
 
-        function goBack() {
-            if (currentRoom) { leaveGame(); return; }
-            if (screenHistory.length > 0) {
-                const prev = screenHistory.pop();
-                document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-                document.getElementById(prev).classList.add('active');
-                currentScreen = prev;
-                updateBackButton();
-                updateHeaderTitle();
-            }
-        }
-
-        function updateBackButton() {
-            const btn = document.getElementById('backBtn');
-            btn.style.display = (currentScreen === 'guestScreen' || currentScreen === 'mainMenu' || currentScreen === 'authScreen') ? 'none' : 'inline-block';
-        }
-
-        function updateHeaderTitle() {
-            const titles = {
-                'guestScreen': '🎉 Портал коллег',
-                'mainMenu': '🎉 Портал коллег',
-                'chatScreen': '💬 Чат',
-                'gamesMenu': '🎮 Игры',
-                'lobbyScreen': '🎯 Лобби',
-                'gameScreen': '🎮 Игра',
-                'boardScreen': '🎨 Доска',
-                'tasksScreen': '✅ Задачи',
-                'clockScreen': '🕐 Часы',
-                'dashboardScreen': '📈 Статистика',
-                'excelScreen': '📊 Таблицы',
-                'surveysScreen': '📋 Опросы',
-                'adminScreen': '⚙️ Админ-панель'
-            };
-            document.getElementById('headerTitle').textContent = titles[currentScreen] || '🎉 Портал коллег';
-        }
-
-        function enterAsGuest() {
-            isGuest = true;
-            currentUser = null;
-            document.getElementById('userInfo').style.display = 'none';
-            openGames();
-        }
-
-        function openChat() {
-            if (isGuest) { alert('Гости не могут пользоваться чатом. Войдите в аккаунт.'); return; }
-            showScreen('chatScreen'); loadChatMessages();
-        }
-        function openGames() { showScreen('gamesMenu'); }
-        function openBoard() {
-            if (isGuest) { alert('Гости не могут пользоваться доской. Войдите в аккаунт.'); return; }
-            showScreen('boardScreen'); initCanvas();
-        }
-        function openTasks() {
-            if (isGuest) { alert('Гости не могут пользоваться задачами. Войдите в аккаунт.'); return; }
-            showScreen('tasksScreen'); loadTasks();
-        }
-        function openClock() {
-            if (isGuest) { alert('Гости не могут пользоваться часами. Войдите в аккаунт.'); return; }
-            showScreen('clockScreen');
-        }
-        function openDashboard() {
-            if (isGuest) { alert('Гости не могут просматривать статистику. Войдите в аккаунт.'); return; }
-            showScreen('dashboardScreen'); loadDashboard();
-        }
-        function openExcel() {
-            if (isGuest) { alert('Гости не могут пользоваться таблицами. Войдите в аккаунт.'); return; }
-            showScreen('excelScreen'); loadExcel();
-        }
-        function openSurveys() {
-            if (isGuest) { alert('Гости не могут участвовать в опросах. Войдите в аккаунт.'); return; }
-            showScreen('surveysScreen'); loadSurveys();
-        }
-        function openAdmin() {
-            if (!isAdmin) { alert('Доступ только для администраторов!'); return; }
-            showScreen('adminScreen'); loadAdminPanel();
+        function updateMenuCards() {
+            const cards = [
+                { id: 'chat', icon: '', title: 'Чат', desc: 'Общение с коллегами' },
+                { id: 'games', icon: '🎮', title: 'Игры', desc: '5 онлайн-игр' },
+                { id: 'excel', icon: '📊', title: 'Excel', desc: 'Таблицы' },
+                { id: 'offices', icon: '🏢', title: 'Офисы МФЦ', desc: 'База данных офисов' },
+                { id: 'surveys', icon: '📋', title: 'Опросы', desc: 'Голосования' },
+                { id: 'tasks', icon: '✅', title: 'Задачи', desc: 'Список задач' },
+                { id: 'board', icon: '🎨', title: 'Доска', desc: 'Рисование' },
+                { id: 'clock', icon: '🕐', title: 'Часы', desc: 'Таймер' }
+            ];
+            
+            const container = document.getElementById('menuCards');
+            container.innerHTML = '';
+            
+            cards.forEach(card => {
+                const div = document.createElement('div');
+                div.className = 'menu-card';
+                div.onclick = () => navigateTo(card.id);
+                div.innerHTML = `
+                    <div class="menu-card-icon">${card.icon}</div>
+                    <div class="menu-card-title">${card.title}</div>
+                    <div class="menu-card-desc">${card.desc}</div>
+                `;
+                container.appendChild(div);
+            });
         }
 
         // ===== АВТОРИЗАЦИЯ =====
-        function showTab(tab) {
+        function showAuthTab(tab) {
             document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
             document.querySelectorAll('.auth-form').forEach(f => f.classList.remove('active'));
+            
             if (tab === 'login') {
                 document.querySelectorAll('.auth-tab')[0].classList.add('active');
                 document.getElementById('loginForm').classList.add('active');
@@ -1328,28 +1668,31 @@
             const password2 = document.getElementById('regPassword2').value;
             const errorEl = document.getElementById('regError');
 
-            if (password !== password2) { errorEl.textContent = 'Пароли не совпадают!'; return; }
+            if (password !== password2) {
+                errorEl.textContent = 'Пароли не совпадают!';
+                return;
+            }
 
             try {
                 const userCredential = await auth.createUserWithEmailAndPassword(email, password);
                 await userCredential.user.updateProfile({ displayName: name });
                 
-                // Сохраняем пользователя
-                await usersRef.child(userCredential.user.uid).set({
+                await db.ref('users/' + userCredential.user.uid).set({
                     name: name,
                     email: email,
                     createdAt: Date.now()
                 });
                 
-                // Первый пользователь становится админом
-                const adminsSnapshot = await adminsRef.once('value');
-                if (!adminsSnapshot.exists()) {
-                    await adminsRef.child(userCredential.user.uid).set(true);
-                    alert('🎉 Вы первый пользователь и стали администратором!');
+                const adminsSnap = await db.ref('admins').once('value');
+                if (!adminsSnap.exists()) {
+                    await db.ref('admins/' + userCredential.user.uid).set(true);
+                    alert('Вы первый пользователь и стали администратором!');
                 }
                 
                 logActivity(name + ' зарегистрировался');
-            } catch (error) { errorEl.textContent = error.message; }
+            } catch (error) {
+                errorEl.textContent = error.message;
+            }
         }
 
         async function login(e) {
@@ -1360,73 +1703,64 @@
 
             try {
                 await auth.signInWithEmailAndPassword(email, password);
-            } catch (error) { errorEl.textContent = 'Неверный email или пароль!'; }
+            } catch (error) {
+                errorEl.textContent = 'Неверный email или пароль!';
+            }
         }
 
         function logout() {
             auth.signOut();
             cleanupGame();
-            chatMessagesRef.off();
-            tasksRef.off();
-            surveysRef.off();
-            excelRef.off();
-            document.getElementById('messages').innerHTML = '';
-            screenHistory = [];
-            isGuest = false;
         }
 
         auth.onAuthStateChanged(async function(user) {
             if (user) {
-                currentUser = user;
-                isGuest = false;
+                currentUser = {
+                    uid: user.uid,
+                    name: user.displayName || user.email,
+                    email: user.email
+                };
                 
-                // Проверяем админа
-                const adminSnap = await adminsRef.child(user.uid).once('value');
+                const adminSnap = await db.ref('admins/' + user.uid).once('value');
                 isAdmin = adminSnap.exists();
                 
-                // Загружаем аватар
-                const userSnap = await usersRef.child(user.uid).once('value');
-                const userData = userSnap.val() || {};
+                const userSnap = await db.ref('users/' + user.uid).once('value');
+                const userData = userSnap.val();
+                if (userData && userData.avatar) {
+                    currentUser.avatar = userData.avatar;
+                }
                 
-                document.getElementById('userInfo').style.display = 'flex';
-                document.getElementById('currentUserName').textContent = user.displayName || user.email;
-                document.getElementById('welcomeText').textContent = 'Привет, ' + (user.displayName || 'друг') + '!';
-                document.getElementById('adminBadge').style.display = isAdmin ? 'inline-block' : 'none';
-                document.getElementById('adminCard').style.display = isAdmin ? 'block' : 'none';
-                
-                updateAvatarInHeader(userData.avatar);
-                
-                showScreen('mainMenu', false);
-                logActivity((user.displayName || 'Пользователь') + ' вошёл в систему');
-            } else if (!isGuest) {
+                updateHeader();
+                updateNavigation();
+                navigateTo('home');
+                logActivity(currentUser.name + ' вошёл в систему');
+            } else {
                 currentUser = null;
                 isAdmin = false;
-                document.getElementById('userInfo').style.display = 'none';
-                showScreen('guestScreen', false);
+                updateHeader();
+                updateNavigation();
+                navigateTo('auth');
             }
         });
 
-        function updateAvatarInHeader(avatarData) {
-            const el = document.getElementById('userAvatarHeader');
-            if (avatarData) {
-                el.innerHTML = `<img src="${avatarData}">`;
-            } else {
-                const name = currentUser?.displayName || '?';
-                el.innerHTML = getInitials(name);
-            }
-        }
-
         function logActivity(text) {
             if (!currentUser) return;
-            statsRef.child('activity').push({ text: text, time: Date.now() });
+            db.ref('stats/activity').push({ text, time: Date.now() });
+        }
+
+        function getInitials(name) {
+            return name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
         }
 
         // ===== АВАТАР =====
         function openAvatarModal() {
             newAvatarData = null;
             const preview = document.getElementById('avatarPreview');
-            const name = currentUser?.displayName || '?';
-            preview.innerHTML = `<div style="font-size:40px; color:#667eea;">${getInitials(name)}</div>`;
+            if (currentUser.avatar) {
+                preview.innerHTML = `<img src="${currentUser.avatar}" style="width:100%;height:100%;object-fit:cover;">`;
+            } else {
+                preview.innerHTML = `<div style="font-size:40px;color:#e8653a;">${getInitials(currentUser.name)}</div>`;
+            }
             document.getElementById('avatarModal').classList.add('show');
         }
 
@@ -1442,113 +1776,124 @@
             const reader = new FileReader();
             reader.onload = function(ev) {
                 newAvatarData = ev.target.result;
-                document.getElementById('avatarPreview').innerHTML = `<img src="${newAvatarData}">`;
+                document.getElementById('avatarPreview').innerHTML = `<img src="${newAvatarData}" style="width:100%;height:100%;object-fit:cover;">`;
             };
             reader.readAsDataURL(file);
         }
 
         async function saveAvatar() {
             if (!newAvatarData) { alert('Выберите фото!'); return; }
-            await usersRef.child(currentUser.uid).child('avatar').set(newAvatarData);
-            updateAvatarInHeader(newAvatarData);
+            await db.ref('users/' + currentUser.uid + '/avatar').set(newAvatarData);
+            currentUser.avatar = newAvatarData;
+            updateHeader();
             closeAvatarModal();
-            alert('✅ Аватар сохранён!');
+            alert('Аватар сохранён!');
         }
 
         async function removeAvatar() {
-            await usersRef.child(currentUser.uid).child('avatar').remove();
-            const name = currentUser?.displayName || '?';
-            document.getElementById('userAvatarHeader').innerHTML = getInitials(name);
+            await db.ref('users/' + currentUser.uid + '/avatar').remove();
+            delete currentUser.avatar;
+            updateHeader();
             closeAvatarModal();
         }
 
-        async function getUserAvatar(uid) {
-            const snap = await usersRef.child(uid).child('avatar').once('value');
-            return snap.val();
-        }
-
         // ===== ЧАТ =====
-        function loadChatMessages() {
-            chatMessagesRef.off();
-            document.getElementById('messages').innerHTML = '';
-            chatMessagesRef.on('child_added', async function(snapshot) {
-                const message = snapshot.val();
-                const messagesDiv = document.getElementById('messages');
-                const myName = currentUser.displayName || currentUser.email;
-
-                const messageDiv = document.createElement('div');
-                messageDiv.className = 'message ' + (message.author === myName ? 'own' : 'other');
-
-                const avatar = document.createElement('div');
-                avatar.className = 'avatar';
+        function loadChat() {
+            db.ref('chat/messages').off();
+            document.getElementById('chatMessages').innerHTML = '';
+            
+            db.ref('chat/messages').on('child_added', async function(snapshot) {
+                const msg = snapshot.val();
+                const msgId = snapshot.key;
+                const messagesDiv = document.getElementById('chatMessages');
                 
-                // Загружаем аватар автора
-                if (message.authorUid) {
-                    const userSnap = await usersRef.child(message.authorUid).once('value');
-                    const userData = userSnap.val();
-                    if (userData && userData.avatar) {
-                        avatar.innerHTML = `<img src="${userData.avatar}">`;
-                    } else {
-                        avatar.textContent = getInitials(message.author);
-                    }
+                const messageDiv = document.createElement('div');
+                messageDiv.className = 'message' + (msg.authorUid === currentUser.uid ? ' own' : '');
+                messageDiv.id = 'msg-' + msgId;
+                
+                const avatar = document.createElement('div');
+                avatar.className = 'message-avatar';
+                
+                if (msg.authorAvatar) {
+                    avatar.innerHTML = `<img src="${msg.authorAvatar}">`;
                 } else {
-                    avatar.textContent = getInitials(message.author);
+                    avatar.textContent = getInitials(msg.author);
                 }
+                
+                const content = document.createElement('div');
+                content.className = 'message-content';
+                
+                const header = document.createElement('div');
+                header.className = 'message-header';
+                header.innerHTML = `
+                    <span class="message-author">${msg.author}</span>
+                    <span class="message-time">${formatTime(msg.timestamp)}</span>
+                `;
+                
+                const bubble = document.createElement('div');
+                bubble.className = 'message-bubble';
+                
+                if (msg.text) {
+                    const text = document.createElement('div');
+                    text.className = 'message-text';
+                    text.textContent = msg.text;
+                    bubble.appendChild(text);
+                }
+                
+                if (msg.image) {
+                    const img = document.createElement('img');
+                    img.className = 'message-image';
+                    img.src = msg.image;
+                    img.onclick = () => openImageModal(msg.image);
+                    bubble.appendChild(img);
+                }
+                
+                const actions = document.createElement('div');
+                actions.className = 'message-actions';
+                
+                if (msg.authorUid === currentUser.uid || isAdmin) {
+                    const deleteBtn = document.createElement('button');
+                    deleteBtn.className = 'message-action-btn';
+                    deleteBtn.textContent = '🗑️ Удалить';
+                    deleteBtn.onclick = () => deleteMessage(msgId);
+                    actions.appendChild(deleteBtn);
+                }
+                
+                content.appendChild(header);
+                content.appendChild(bubble);
+                content.appendChild(actions);
                 
                 messageDiv.appendChild(avatar);
-
-                const contentDiv = document.createElement('div');
-                contentDiv.className = 'message-content';
-
-                const authorDiv = document.createElement('div');
-                authorDiv.className = 'author';
-                authorDiv.textContent = message.author;
-                contentDiv.appendChild(authorDiv);
-
-                const bubbleDiv = document.createElement('div');
-                bubbleDiv.className = 'message-bubble';
-
-                if (message.text) bubbleDiv.textContent = message.text;
-
-                if (message.image) {
-                    const img = document.createElement('img');
-                    img.src = message.image;
-                    img.onclick = function() { openImageModal(message.image); };
-                    bubbleDiv.appendChild(img);
-                }
-
-                contentDiv.appendChild(bubbleDiv);
-
-                const timeDiv = document.createElement('div');
-                timeDiv.className = 'time';
-                timeDiv.textContent = formatTime(message.timestamp);
-                contentDiv.appendChild(timeDiv);
-
-                messageDiv.appendChild(contentDiv);
+                messageDiv.appendChild(content);
+                
                 messagesDiv.appendChild(messageDiv);
                 messagesDiv.scrollTop = messagesDiv.scrollHeight;
             });
         }
 
-        function formatTime(timestamp) {
-            if (!timestamp) return '';
-            const d = new Date(timestamp);
-            return d.getHours().toString().padStart(2, '0') + ':' + d.getMinutes().toString().padStart(2, '0');
+        async function deleteMessage(msgId) {
+            if (confirm('Удалить сообщение?')) {
+                await db.ref('chat/messages/' + msgId).remove();
+            }
         }
 
-        function getInitials(name) {
-            return name.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2);
+        async function clearAllMessages() {
+            if (!isAdmin) return;
+            if (confirm('Удалить ВСЕ сообщения в чате?')) {
+                await db.ref('chat/messages').remove();
+                alert('Чат очищен!');
+            }
         }
 
         function sendMessage() {
-            const input = document.getElementById('messageInput');
+            const input = document.getElementById('chatInput');
             const text = input.value.trim();
-            const myName = currentUser.displayName || currentUser.email;
-
+            
             if (text) {
-                chatMessagesRef.push({
-                    author: myName,
+                db.ref('chat/messages').push({
+                    author: currentUser.name,
                     authorUid: currentUser.uid,
+                    authorAvatar: currentUser.avatar || null,
                     text: text,
                     timestamp: Date.now()
                 });
@@ -1558,19 +1903,19 @@
             }
         }
 
-        document.getElementById('messageInput').addEventListener('keypress', function(e) {
+        document.getElementById('chatInput').addEventListener('keypress', function(e) {
             if (e.key === 'Enter') sendMessage();
         });
 
-        document.getElementById('photoInput').addEventListener('change', function(e) {
+        document.getElementById('chatPhoto').addEventListener('change', function(e) {
             const file = e.target.files[0];
             if (!file) return;
-            const myName = currentUser.displayName || currentUser.email;
             const reader = new FileReader();
             reader.onload = function(ev) {
-                chatMessagesRef.push({
-                    author: myName,
+                db.ref('chat/messages').push({
+                    author: currentUser.name,
                     authorUid: currentUser.uid,
+                    authorAvatar: currentUser.avatar || null,
                     image: ev.target.result,
                     timestamp: Date.now()
                 });
@@ -1579,17 +1924,22 @@
             reader.readAsDataURL(file);
         });
 
-        function toggleEmojiPanel() {
+        function toggleEmoji() {
             document.getElementById('emojiPanel').classList.toggle('show');
         }
 
         function addEmoji(emoji) {
-            const input = document.getElementById('messageInput');
+            const input = document.getElementById('chatInput');
             input.value += emoji;
             input.focus();
         }
 
-        // ===== МОДАЛЬНОЕ ОКНО КАРТИНОК =====
+        function formatTime(timestamp) {
+            if (!timestamp) return '';
+            const d = new Date(timestamp);
+            return d.getHours().toString().padStart(2, '0') + ':' + d.getMinutes().toString().padStart(2, '0');
+        }
+
         function openImageModal(src) {
             currentImageSrc = src;
             document.getElementById('modalImage').src = src;
@@ -1598,7 +1948,6 @@
 
         function closeImageModal() {
             document.getElementById('imageModal').classList.remove('show');
-            currentImageSrc = null;
         }
 
         function downloadImage() {
@@ -1621,17 +1970,15 @@
             document.getElementById('roomCode').textContent = code;
             currentRoom = code;
             
-            const playerName = isGuest ? 'Гость_' + Math.floor(Math.random() * 1000) : (currentUser.displayName || currentUser.email);
-            
-            gamesRef.child(code).set({
+            db.ref('games/' + code).set({
                 game: game,
-                player1: playerName,
-                player1Id: currentUser ? currentUser.uid : 'guest_' + Date.now(),
+                player1: currentUser.name,
+                player1Id: currentUser.uid,
                 status: 'waiting',
                 createdAt: Date.now()
             });
             
-            gamesRef.child(code).on('value', (snapshot) => {
+            db.ref('games/' + code).on('value', (snapshot) => {
                 const data = snapshot.val();
                 if (data && data.status === 'ready') {
                     playerNumber = 1;
@@ -1639,7 +1986,7 @@
                 }
             });
             
-            showScreen('lobbyScreen');
+            navigateTo('lobby');
         }
 
         function showJoinRoom() {
@@ -1656,7 +2003,7 @@
 
         async function joinRoom() {
             const code = document.getElementById('joinCode').value.trim().toUpperCase();
-            const snapshot = await gamesRef.child(code).once('value');
+            const snapshot = await db.ref('games/' + code).once('value');
             const data = snapshot.val();
             
             if (!data) { alert('Комната не найдена!'); return; }
@@ -1666,11 +2013,9 @@
             currentGame = data.game;
             playerNumber = 2;
             
-            const playerName = isGuest ? 'Гость_' + Math.floor(Math.random() * 1000) : (currentUser.displayName || currentUser.email);
-            
-            await gamesRef.child(code).update({
-                player2: playerName,
-                player2Id: currentUser ? currentUser.uid : 'guest_' + Date.now(),
+            await db.ref('games/' + code).update({
+                player2: currentUser.name,
+                player2Id: currentUser.uid,
                 status: 'ready'
             });
             
@@ -1678,7 +2023,7 @@
         }
 
         function startGame(gameData) {
-            showScreen('gameScreen');
+            navigateTo('game');
             document.getElementById('restartBtn').style.display = 'none';
             
             if (currentGame === 'ttt') initTTT(gameData);
@@ -1690,8 +2035,8 @@
 
         function cleanupGame() {
             if (currentRoom) {
-                gamesRef.child(currentRoom).off();
-                gamesRef.child(currentRoom).remove();
+                db.ref('games/' + currentRoom).off();
+                db.ref('games/' + currentRoom).remove();
             }
             currentRoom = null;
             currentGame = null;
@@ -1699,13 +2044,12 @@
 
         function leaveGame() {
             cleanupGame();
-            screenHistory = screenHistory.filter(s => s !== 'gameScreen' && s !== 'lobbyScreen');
-            showScreen('gamesMenu', false);
+            navigateTo('games');
         }
 
         function restartGame() {
             if (!currentRoom) return;
-            gamesRef.child(currentRoom).update({
+            db.ref('games/' + currentRoom).update({
                 board: ['','','','','','','','',''],
                 currentPlayer: 1,
                 winner: null,
@@ -1724,30 +2068,29 @@
                 p1Dice: null,
                 p2Dice: null,
                 diceRound: 1,
-                matchOver: null,
-                roundScored: false
+                matchOver: null
             });
             document.getElementById('restartBtn').style.display = 'none';
         }
 
-        // ===== КРЕСТИКИ-НОЛИКИ =====
+        // Крестики-нолики
         function initTTT(gameData) {
             const board = ['','','','','','','','',''];
             
-            gamesRef.child(currentRoom).once('value', (s) => {
+            db.ref('games/' + currentRoom).once('value', (s) => {
                 if (!s.val().board) {
-                    gamesRef.child(currentRoom).update({ board: board, currentPlayer: 1 });
+                    db.ref('games/' + currentRoom).update({ board: board, currentPlayer: 1 });
                 }
             });
             
-            gamesRef.child(currentRoom).on('value', (snapshot) => {
+            db.ref('games/' + currentRoom).on('value', (snapshot) => {
                 const data = snapshot.val();
                 if (!data) return;
                 renderTTT(data.board || board, data.currentPlayer || 1, data.winner);
             });
             
             window.makeTTTMove = function(index) {
-                gamesRef.child(currentRoom).once('value', (snapshot) => {
+                db.ref('games/' + currentRoom).once('value', (snapshot) => {
                     const data = snapshot.val();
                     if (!data) return;
                     const gameBoard = data.board || board;
@@ -1761,7 +2104,7 @@
                         update.winner = winner;
                         db.ref('stats/gamesPlayed').transaction(c => (c || 0) + 1);
                     }
-                    gamesRef.child(currentRoom).update(update);
+                    db.ref('games/' + currentRoom).update(update);
                 });
             };
         }
@@ -1771,16 +2114,16 @@
             const myTurn = currentPlayer === playerNumber && !winner;
             
             document.getElementById('gameStatus').textContent = winner ? 
-                (winner === 'draw' ? '🤝 Ничья!' : (winner === (playerNumber === 1 ? 'X' : 'O') ? '🏆 Вы победили!' : '😔 Вы проиграли!')) :
-                (myTurn ? '🎯 Ваш ход (' + (playerNumber === 1 ? 'X' : 'O') + ')' : '⏳ Ход соперника');
+                (winner === 'draw' ? '🤝 Ничья!' : (winner === (playerNumber === 1 ? 'X' : 'O') ? ' Вы победили!' : '😔 Вы проиграли!')) :
+                (myTurn ? ' Ваш ход' : '⏳ Ход соперника');
             
-            let html = '<div class="game-board"><div class="ttt-board">';
+            let html = '<div class="ttt-board">';
             for (let i = 0; i < 9; i++) {
                 const cell = board[i];
                 const clickable = myTurn && cell === '' ? 'onclick="makeTTTMove(' + i + ')"' : '';
                 html += `<div class="ttt-cell ${cell.toLowerCase()}" ${clickable}>${cell}</div>`;
             }
-            html += '</div></div>';
+            html += '</div>';
             
             if (winner) {
                 html += `<div class="winner-message"><h2>${winner === 'draw' ? 'Ничья!' : 'Игра окончена!'}</h2></div>`;
@@ -1799,17 +2142,13 @@
             return null;
         }
 
-        // ===== МОРСКОЙ БОЙ =====
+        // Морской бой
         let myShips = [];
-        let enemyShots = [];
-        let myShots = [];
         
         function initBattleship(gameData) {
             myShips = [];
-            enemyShots = [];
-            myShots = [];
             
-            gamesRef.child(currentRoom).on('value', (snapshot) => {
+            db.ref('games/' + currentRoom).on('value', (snapshot) => {
                 const data = snapshot.val();
                 if (!data) return;
                 
@@ -1817,28 +2156,28 @@
                 const enemyKey = playerNumber === 1 ? 'player2' : 'player1';
                 
                 myShips = data[playerKey + 'Ships'] || [];
-                enemyShots = data[playerKey + 'Shots'] || [];
-                myShots = data[enemyKey + 'Shots'] || [];
+                const enemyShots = data[playerKey + 'Shots'] || [];
+                const myShots = data[enemyKey + 'Shots'] || [];
                 
-                renderBattleship(data.phase || 'placement', data.currentTurn || 1, data.winner);
+                renderBattleship(data.phase || 'placement', data.currentTurn || 1, data.winner, myShips, enemyShots, myShots);
             });
             
             window.placeShips = function() {
                 if (myShips.length !== 10) { alert('Расставьте все 10 кораблей!'); return; }
                 const playerKey = playerNumber === 1 ? 'player1Ships' : 'player2Ships';
                 const update = { [playerKey]: myShips };
-                gamesRef.child(currentRoom).once('value', (snapshot) => {
+                db.ref('games/' + currentRoom).once('value', (snapshot) => {
                     const data = snapshot.val();
                     if (data.player1Ships && data.player2Ships) {
                         update.phase = 'battle';
                         update.currentTurn = 1;
                     }
-                    gamesRef.child(currentRoom).update(update);
+                    db.ref('games/' + currentRoom).update(update);
                 });
             };
             
             window.makeBattleshipShot = function(row, col) {
-                gamesRef.child(currentRoom).once('value', (snapshot) => {
+                db.ref('games/' + currentRoom).once('value', (snapshot) => {
                     const data = snapshot.val();
                     if (!data || data.phase !== 'battle') return;
                     const currentTurn = data.currentTurn || 1;
@@ -1863,7 +2202,7 @@
                         update.winner = playerNumber;
                         db.ref('stats/gamesPlayed').transaction(c => (c || 0) + 1);
                     }
-                    gamesRef.child(currentRoom).update(update);
+                    db.ref('games/' + currentRoom).update(update);
                 });
             };
             
@@ -1872,7 +2211,7 @@
                 const exists = myShips.some(s => s.some(cell => cell.row === row && cell.col === col));
                 if (exists) myShips = myShips.filter(s => !s.some(cell => cell.row === row && cell.col === col));
                 else myShips.push(ship);
-                renderBattleship('placement', 0, null);
+                renderBattleship('placement', 0, null, myShips, [], []);
             };
             
             window.autoPlaceShips = function() {
@@ -1901,31 +2240,31 @@
                         attempts++;
                     }
                 }
-                renderBattleship('placement', 0, null);
+                renderBattleship('placement', 0, null, myShips, [], []);
             };
         }
 
-        function renderBattleship(phase, currentTurn, winner) {
+        function renderBattleship(phase, currentTurn, winner, ships, enemyShots, myShots) {
             const content = document.getElementById('gameContent');
             const myTurn = currentTurn === playerNumber && phase === 'battle';
             
             document.getElementById('gameStatus').textContent = winner ? 
                 (winner === playerNumber ? '🏆 Вы победили!' : '😔 Вы проиграли!') :
-                (phase === 'placement' ? '🚢 Расставьте корабли (' + myShips.length + '/10)' : (myTurn ? '🎯 Ваш ход' : '⏳ Ход соперника'));
+                (phase === 'placement' ? '🚢 Расставьте корабли (' + ships.length + '/10)' : (myTurn ? '🎯 Ваш ход' : '⏳ Ход соперника'));
             
-            let html = '<div class="battleship-container">';
+            let html = '<div style="display:flex;gap:30px;flex-wrap:wrap;justify-content:center;">';
             if (phase === 'placement') {
-                html += '<div class="battleship-board-wrapper"><h3>Ваше поле</h3>';
-                html += renderBSBoard(myShips, [], true, false);
+                html += '<div><h3 style="margin-bottom:10px;">Ваше поле</h3>';
+                html += renderBSBoard(ships, [], true, false);
                 html += '<div style="margin-top:10px;">';
-                html += '<button class="btn-primary" onclick="autoPlaceShips()">🎲 Авторасстановка</button>';
+                html += '<button class="btn-primary" onclick="autoPlaceShips()"> Авторасстановка</button>';
                 html += '<button class="btn-primary" onclick="placeShips()">✅ Готово</button>';
                 html += '</div></div>';
             } else {
-                html += '<div class="battleship-board-wrapper"><h3>Ваше поле</h3>';
-                html += renderBSBoard(myShips, enemyShots, false, false);
+                html += '<div><h3 style="margin-bottom:10px;">Ваше поле</h3>';
+                html += renderBSBoard(ships, enemyShots, false, false);
                 html += '</div>';
-                html += '<div class="battleship-board-wrapper"><h3>Поле противника</h3>';
+                html += '<div><h3 style="margin-bottom:10px;">Поле противника</h3>';
                 html += renderBSBoard([], myShots, false, true);
                 html += '</div>';
             }
@@ -1940,40 +2279,38 @@
 
         function renderBSBoard(ships, shots, clickable, isEnemy) {
             const letters = 'АБВГДЕЖЗИК';
-            let html = '<div class="bs-board">';
-            html += '<div class="bs-cell header"></div>';
-            for (let c = 0; c < 10; c++) html += `<div class="bs-cell header">${letters[c]}</div>`;
+            let html = '<div style="display:grid;grid-template-columns:repeat(11,30px);gap:1px;">';
+            html += '<div style="width:30px;height:30px;background:#5d2e1f;"></div>';
+            for (let c = 0; c < 10; c++) html += `<div style="width:30px;height:30px;background:#5d2e1f;color:white;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;">${letters[c]}</div>`;
             for (let r = 0; r < 10; r++) {
-                html += `<div class="bs-cell header">${r + 1}</div>`;
+                html += `<div style="width:30px;height:30px;background:#5d2e1f;color:white;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;">${r + 1}</div>`;
                 for (let c = 0; c < 10; c++) {
-                    let cellClass = 'bs-cell';
+                    let bg = 'white';
                     let onclick = '';
                     const hasShip = ships.some(ship => ship.some(cell => cell.row === r && cell.col === c));
                     const shot = shots.find(s => s.row === r && s.col === c);
-                    if (hasShip && !isEnemy) cellClass += ' ship';
-                    if (shot) cellClass += shot.hit ? ' hit' : ' miss';
+                    if (hasShip && !isEnemy) bg = '#e8653a';
+                    if (shot) bg = shot.hit ? '#f44336' : '#ccc';
                     if (clickable && !shot && !hasShip) {
-                        cellClass += ' clickable';
-                        onclick = `onclick="toggleShipPlacement(${r},${c})"`;
+                        onclick = `onclick="toggleShipPlacement(${r},${c})" style="cursor:pointer;"`;
                     }
                     if (isEnemy && !shot) {
-                        cellClass += ' clickable';
-                        onclick = `onclick="makeBattleshipShot(${r},${c})"`;
+                        onclick = `onclick="makeBattleshipShot(${r},${c})" style="cursor:pointer;"`;
                     }
-                    html += `<div class="${cellClass}" ${onclick}></div>`;
+                    html += `<div style="width:30px;height:30px;background:${bg};border:1px solid #ddd;" ${onclick}></div>`;
                 }
             }
             html += '</div>';
             return html;
         }
 
-        // ===== ЗМЕЙКА =====
+        // Змейка
         function initSnake(gameData) {
             const size = 10;
-            gamesRef.child(currentRoom).once('value', (snapshot) => {
+            db.ref('games/' + currentRoom).once('value', (snapshot) => {
                 const data = snapshot.val();
                 if (!data.p1Path) {
-                    gamesRef.child(currentRoom).update({
+                    db.ref('games/' + currentRoom).update({
                         p1Path: [{ row: 0, col: 0 }],
                         p2Path: [{ row: size - 1, col: size - 1 }],
                         currentTurn: 1
@@ -1981,14 +2318,14 @@
                 }
             });
             
-            gamesRef.child(currentRoom).on('value', (snapshot) => {
+            db.ref('games/' + currentRoom).on('value', (snapshot) => {
                 const data = snapshot.val();
                 if (!data) return;
                 renderSnake(data.currentTurn || 1, data.winner, size, data.p1Path || [{row:0,col:0}], data.p2Path || [{row:9,col:9}]);
             });
             
             window.makeSnakeMove = function(row, col) {
-                gamesRef.child(currentRoom).once('value', (snapshot) => {
+                db.ref('games/' + currentRoom).once('value', (snapshot) => {
                     const data = snapshot.val();
                     if (!data) return;
                     const currentTurn = data.currentTurn || 1;
@@ -2019,7 +2356,7 @@
                                 update.winner = currentTurn;
                                 db.ref('stats/gamesPlayed').transaction(c => (c || 0) + 1);
                             } else update.currentTurn = nextPlayer;
-                            gamesRef.child(currentRoom).update(update);
+                            db.ref('games/' + currentRoom).update(update);
                         }
                     }
                 });
@@ -2044,31 +2381,29 @@
             
             document.getElementById('gameStatus').textContent = winner ? 
                 (winner === playerNumber ? '🏆 Вы победили!' : '😔 Вы проиграли!') :
-                (myTurn ? '🎯 Ваш ход' : '⏳ Ход соперника');
+                (myTurn ? '🎯 Ваш ход' : ' Ход соперника');
             
-            let html = '<div class="game-board">';
-            html += `<div class="snake-board" style="grid-template-columns: repeat(${size}, 36px);">`;
+            let html = `<div style="display:grid;grid-template-columns:repeat(${size},40px);gap:2px;background:#333;padding:2px;border-radius:8px;margin:20px auto;width:fit-content;">`;
             for (let r = 0; r < size; r++) {
                 for (let c = 0; c < size; c++) {
-                    let cellClass = 'snake-cell';
+                    let bg = 'white';
                     let onclick = '';
                     const p1Index = p1Path.findIndex(cell => cell.row === r && cell.col === c);
                     const p2Index = p2Path.findIndex(cell => cell.row === r && cell.col === c);
-                    if (p1Index >= 0) cellClass += p1Index === p1Path.length - 1 ? ' p1-head' : ' p1';
-                    else if (p2Index >= 0) cellClass += p2Index === p2Path.length - 1 ? ' p2-head' : ' p2';
+                    if (p1Index >= 0) bg = p1Index === p1Path.length - 1 ? '#4c5fd5' : '#e8653a';
+                    else if (p2Index >= 0) bg = p2Index === p2Path.length - 1 ? '#d94a5e' : '#5d2e1f';
                     else if (myTurn) {
                         const myHead = playerNumber === 1 ? p1Path[p1Path.length - 1] : p2Path[p2Path.length - 1];
                         const dr = Math.abs(r - myHead.row);
                         const dc = Math.abs(c - myHead.col);
                         if ((dr === 1 && dc === 0) || (dr === 0 && dc === 1)) {
-                            onclick = `onclick="makeSnakeMove(${r},${c})"`;
-                            cellClass += ' clickable';
+                            onclick = `onclick="makeSnakeMove(${r},${c})" style="cursor:pointer;border:2px solid #ffd700;"`;
                         }
                     }
-                    html += `<div class="${cellClass}" ${onclick}></div>`;
+                    html += `<div style="width:40px;height:40px;background:${bg};border-radius:4px;" ${onclick}></div>`;
                 }
             }
-            html += '</div></div>';
+            html += '</div>';
             if (winner) {
                 html += `<div class="winner-message"><h2>Игра окончена!</h2></div>`;
                 document.getElementById('restartBtn').style.display = 'inline-block';
@@ -2076,19 +2411,19 @@
             content.innerHTML = html;
         }
 
-        // ===== КАМЕНЬ-НОЖНИЦЫ-БУМАГА =====
+        // Камень-ножницы-бумага
         let rpsMyChoice = null;
         
         function initRPS(gameData) {
             rpsMyChoice = null;
-            gamesRef.child(currentRoom).once('value', (s) => {
+            db.ref('games/' + currentRoom).once('value', (s) => {
                 const data = s.val();
                 if (!data.p1Score && data.p1Score !== 0) {
-                    gamesRef.child(currentRoom).update({ p1Score: 0, p2Score: 0, round: 1 });
+                    db.ref('games/' + currentRoom).update({ p1Score: 0, p2Score: 0, round: 1 });
                 }
             });
             
-            gamesRef.child(currentRoom).on('value', (snapshot) => {
+            db.ref('games/' + currentRoom).on('value', (snapshot) => {
                 const data = snapshot.val();
                 if (!data) return;
                 renderRPS(data);
@@ -2098,7 +2433,7 @@
                 if (rpsMyChoice) return;
                 rpsMyChoice = choice;
                 const choiceKey = playerNumber === 1 ? 'p1Choice' : 'p2Choice';
-                gamesRef.child(currentRoom).update({ [choiceKey]: choice });
+                db.ref('games/' + currentRoom).update({ [choiceKey]: choice });
             };
         }
 
@@ -2119,22 +2454,22 @@
                     status = '🏆 Вы выиграли раунд!';
                     if (!data.roundScored) {
                         const scoreKey = playerNumber === 1 ? 'p1Score' : 'p2Score';
-                        gamesRef.child(currentRoom).update({ [scoreKey]: (playerNumber === 1 ? p1Score : p2Score) + 1, roundScored: true });
+                        db.ref('games/' + currentRoom).update({ [scoreKey]: (playerNumber === 1 ? p1Score : p2Score) + 1, roundScored: true });
                     }
                 } else {
                     status = '😔 Соперник выиграл раунд';
                     if (!data.roundScored) {
                         const scoreKey = playerNumber === 1 ? 'p2Score' : 'p1Score';
-                        gamesRef.child(currentRoom).update({ [scoreKey]: (playerNumber === 1 ? p2Score : p1Score) + 1, roundScored: true });
+                        db.ref('games/' + currentRoom).update({ [scoreKey]: (playerNumber === 1 ? p2Score : p1Score) + 1, roundScored: true });
                     }
                 }
                 
                 const myChoiceEmoji = playerNumber === 1 ? getRPSEmoji(p1Choice) : getRPSEmoji(p2Choice);
                 const enemyChoiceEmoji = playerNumber === 1 ? getRPSEmoji(p2Choice) : getRPSEmoji(p1Choice);
-                resultHtml = `<div class="rps-result"><div>Вы: ${myChoiceEmoji} vs Соперник: ${enemyChoiceEmoji}</div></div>`;
+                resultHtml = `<div style="font-size:24px;font-weight:700;margin:20px 0;padding:20px;background:#f9f9f9;border-radius:12px;">Вы: ${myChoiceEmoji} vs Соперник: ${enemyChoiceEmoji}</div>`;
                 
                 setTimeout(() => {
-                    gamesRef.child(currentRoom).update({
+                    db.ref('games/' + currentRoom).update({
                         p1Choice: null, p2Choice: null,
                         round: (data.round || 1) + 1,
                         roundScored: false
@@ -2143,7 +2478,7 @@
                 }, 2500);
                 
                 if ((playerNumber === 1 ? p1Score : p2Score) >= 3) {
-                    status = '🏆 Вы победили в матче!';
+                    status = ' Вы победили в матче!';
                     resultHtml = `<div class="winner-message"><h2>Победа в матче!</h2></div>`;
                     document.getElementById('restartBtn').style.display = 'inline-block';
                     db.ref('stats/gamesPlayed').transaction(c => (c || 0) + 1);
@@ -2158,16 +2493,16 @@
             
             document.getElementById('gameStatus').textContent = status + ` | Счёт: ${playerNumber === 1 ? p1Score : p2Score} - ${playerNumber === 1 ? p2Score : p1Score}`;
             
-            let html = '<div class="rps-container">';
-            html += '<div class="rps-score"><div>Вы: <strong>' + (playerNumber === 1 ? p1Score : p2Score) + '</strong></div><div>Соперник: <strong>' + (playerNumber === 1 ? p2Score : p1Score) + '</strong></div></div>';
-            html += '<p style="color:#666; margin-bottom:10px;">Первый до 3 побед</p>';
+            let html = `<div style="text-align:center;padding:20px;">`;
+            html += `<div style="display:flex;gap:40px;justify-content:center;margin:20px 0;font-size:18px;"><div>Вы: <strong>${playerNumber === 1 ? p1Score : p2Score}</strong></div><div>Соперник: <strong>${playerNumber === 1 ? p2Score : p1Score}</strong></div></div>`;
+            html += '<p style="color:#666;margin-bottom:10px;">Первый до 3 побед</p>';
             html += resultHtml;
             
             if (!p1Choice && !p2Choice) {
-                html += '<div class="rps-choices">';
-                html += `<div class="rps-choice" onclick="makeRPSChoice('rock')">🪨</div>`;
-                html += `<div class="rps-choice" onclick="makeRPSChoice('paper')">📄</div>`;
-                html += `<div class="rps-choice" onclick="makeRPSChoice('scissors')">✂️</div>`;
+                html += '<div style="display:flex;gap:20px;justify-content:center;margin:30px 0;">';
+                html += `<div onclick="makeRPSChoice('rock')" style="width:100px;height:100px;border-radius:50%;background:linear-gradient(135deg,#e8653a,#d4542a);display:flex;align-items:center;justify-content:center;font-size:50px;cursor:pointer;">🪨</div>`;
+                html += `<div onclick="makeRPSChoice('paper')" style="width:100px;height:100px;border-radius:50%;background:linear-gradient(135deg,#e8653a,#d4542a);display:flex;align-items:center;justify-content:center;font-size:50px;cursor:pointer;">📄</div>`;
+                html += `<div onclick="makeRPSChoice('scissors')" style="width:100px;height:100px;border-radius:50%;background:linear-gradient(135deg,#e8653a,#d4542a);display:flex;align-items:center;justify-content:center;font-size:50px;cursor:pointer;">✂️</div>`;
                 html += '</div>';
             }
             html += '</div>';
@@ -2175,7 +2510,7 @@
         }
 
         function getRPSEmoji(choice) {
-            return { rock: '🪨', paper: '📄', scissors: '✂️' }[choice] || '?';
+            return { rock: '', paper: '📄', scissors: '✂️' }[choice] || '?';
         }
 
         function getRPSWinner(p1, p2) {
@@ -2184,47 +2519,47 @@
             return 'p2';
         }
 
-        // ===== КОСТИ =====
+        // Кости
         function initDice(gameData) {
-            gamesRef.child(currentRoom).once('value', (s) => {
+            db.ref('games/' + currentRoom).once('value', (s) => {
                 const data = s.val();
                 if (!data.p1Score && data.p1Score !== 0) {
-                    gamesRef.child(currentRoom).update({ p1Score: 0, p2Score: 0, diceRound: 1 });
+                    db.ref('games/' + currentRoom).update({ p1Score: 0, p2Score: 0, diceRound: 1 });
                 }
             });
             
-            gamesRef.child(currentRoom).on('value', (snapshot) => {
+            db.ref('games/' + currentRoom).on('value', (snapshot) => {
                 const data = snapshot.val();
                 if (!data) return;
                 renderDice(data);
             });
             
             window.rollDice = function() {
-                gamesRef.child(currentRoom).once('value', (snapshot) => {
+                db.ref('games/' + currentRoom).once('value', (snapshot) => {
                     const data = snapshot.val();
                     const myDiceKey = playerNumber === 1 ? 'p1Dice' : 'p2Dice';
                     if (data[myDiceKey]) return;
                     const value = Math.floor(Math.random() * 6) + 1;
-                    gamesRef.child(currentRoom).update({ [myDiceKey]: value });
+                    db.ref('games/' + currentRoom).update({ [myDiceKey]: value });
                 });
             };
             
             window.nextDiceRound = function() {
-                gamesRef.child(currentRoom).once('value', (snapshot) => {
+                db.ref('games/' + currentRoom).once('value', (snapshot) => {
                     const data = snapshot.val();
                     let newP1 = data.p1Score || 0, newP2 = data.p2Score || 0;
                     if (data.p1Dice > data.p2Dice) newP1++;
                     else if (data.p2Dice > data.p1Dice) newP2++;
                     
                     if (newP1 >= 3 || newP2 >= 3) {
-                        gamesRef.child(currentRoom).update({
+                        db.ref('games/' + currentRoom).update({
                             p1Dice: null, p2Dice: null,
                             p1Score: newP1, p2Score: newP2,
                             matchOver: true
                         });
                         db.ref('stats/gamesPlayed').transaction(c => (c || 0) + 1);
                     } else {
-                        gamesRef.child(currentRoom).update({
+                        db.ref('games/' + currentRoom).update({
                             p1Dice: null, p2Dice: null,
                             p1Score: newP1, p2Score: newP2,
                             diceRound: (data.diceRound || 1) + 1
@@ -2254,7 +2589,7 @@
                 else if (myDice < enemyDiceVal) status = '😔 Соперник выиграл раунд';
                 else status = '🤝 Ничья в раунде';
             } else if (p1Dice || p2Dice) {
-                status = '⏳ Ожидание соперника...';
+                status = ' Ожидание соперника...';
             }
             
             if (matchOver) {
@@ -2264,19 +2599,19 @@
             
             document.getElementById('gameStatus').textContent = status + ` | Счёт: ${myScore} - ${enemyScore}`;
             
-            let html = '<div class="dice-container">';
-            html += '<div class="rps-score"><div>Вы: <strong>' + myScore + '</strong></div><div>Соперник: <strong>' + enemyScore + '</strong></div></div>';
-            html += '<p style="color:#666; margin-bottom:10px;">Первый до 3 побед</p>';
+            let html = `<div style="text-align:center;padding:20px;">`;
+            html += `<div style="display:flex;gap:40px;justify-content:center;margin:20px 0;font-size:18px;"><div>Вы: <strong>${myScore}</strong></div><div>Соперник: <strong>${enemyScore}</strong></div></div>`;
+            html += '<p style="color:#666;margin-bottom:10px;">Первый до 3 побед</p>';
             
-            html += '<div class="dice-display">';
+            html += '<div style="display:flex;gap:30px;justify-content:center;margin:30px 0;">';
             const myDiceVal = playerNumber === 1 ? p1Dice : p2Dice;
             const enemyDiceVal = playerNumber === 1 ? p2Dice : p1Dice;
-            html += `<div class="dice">${myDiceVal || '?'}</div>`;
-            html += `<div class="dice">${p1Dice && p2Dice ? enemyDiceVal : '?'}</div>`;
+            html += `<div style="width:100px;height:100px;background:white;border:3px solid #e8653a;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:60px;font-weight:700;color:#e8653a;">${myDiceVal || '?'}</div>`;
+            html += `<div style="width:100px;height:100px;background:white;border:3px solid #e8653a;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:60px;font-weight:700;color:#e8653a;">${p1Dice && p2Dice ? enemyDiceVal : '?'}</div>`;
             html += '</div>';
             
             if (!p1Dice && !p2Dice && !matchOver) {
-                html += '<button class="btn-primary" onclick="rollDice()" style="font-size:18px; padding:16px 32px;">🎲 Бросить кости</button>';
+                html += '<button class="btn-primary" onclick="rollDice()" style="font-size:18px;padding:16px 32px;">🎲 Бросить кости</button>';
             } else if (p1Dice && p2Dice && !matchOver) {
                 html += '<button class="btn-primary" onclick="nextDiceRound()">Следующий раунд →</button>';
             }
@@ -2285,6 +2620,431 @@
             
             html += '</div>';
             content.innerHTML = html;
+        }
+
+        // ===== EXCEL =====
+        function loadExcel() {
+            db.ref('excel/data').on('value', (snapshot) => {
+                const data = snapshot.val();
+                if (data) {
+                    excelData = data.rows || [];
+                    excelRows = data.rowsCount || 20;
+                    excelCols = data.colsCount || 10;
+                } else {
+                    excelData = [];
+                    excelRows = 20;
+                    excelCols = 10;
+                    for (let i = 0; i < excelRows; i++) {
+                        excelData[i] = [];
+                        for (let j = 0; j < excelCols; j++) excelData[i][j] = '';
+                    }
+                }
+                renderExcel();
+            });
+        }
+
+        function renderExcel() {
+            const table = document.getElementById('excelTable');
+            let html = '<thead><tr><th class="row-header"></th>';
+            for (let c = 0; c < excelCols; c++) {
+                html += `<th>${getColumnLetter(c)}</th>`;
+            }
+            html += '</tr></thead><tbody>';
+            
+            for (let r = 0; r < excelRows; r++) {
+                html += `<tr><td class="row-header">${r + 1}</td>`;
+                for (let c = 0; c < excelCols; c++) {
+                    const value = (excelData[r] && excelData[r][c]) || '';
+                    html += `<td contenteditable="true" data-row="${r}" data-col="${c}" onblur="updateExcelCell(this)">${escapeHtml(value)}</td>`;
+                }
+                html += '</tr>';
+            }
+            html += '</tbody>';
+            table.innerHTML = html;
+        }
+
+        function getColumnLetter(index) {
+            let letter = '';
+            while (index >= 0) {
+                letter = String.fromCharCode(65 + (index % 26)) + letter;
+                index = Math.floor(index / 26) - 1;
+            }
+            return letter;
+        }
+
+        function updateExcelCell(cell) {
+            const row = parseInt(cell.dataset.row);
+            const col = parseInt(cell.dataset.col);
+            const value = cell.textContent;
+            
+            if (!excelData[row]) excelData[row] = [];
+            excelData[row][col] = value;
+            
+            db.ref('excel/data').set({
+                rows: excelData,
+                rowsCount: excelRows,
+                colsCount: excelCols,
+                updatedAt: Date.now(),
+                updatedBy: currentUser.name
+            });
+        }
+
+        function importExcelFile(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const data = new Uint8Array(e.target.result);
+                const workbook = XLSX.read(data, { type: 'array' });
+                const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+                const jsonData = XLSX.utils.sheet_to_json(firstSheet, { header: 1 });
+                
+                excelData = jsonData;
+                excelRows = excelData.length;
+                excelCols = Math.max(...excelData.map(r => r.length));
+                
+                for (let r = 0; r < excelRows; r++) {
+                    if (!excelData[r]) excelData[r] = [];
+                    while (excelData[r].length < excelCols) excelData[r].push('');
+                }
+                
+                db.ref('excel/data').set({
+                    rows: excelData,
+                    rowsCount: excelRows,
+                    colsCount: excelCols,
+                    updatedAt: Date.now(),
+                    updatedBy: currentUser.name
+                });
+                
+                alert('Файл импортирован!');
+            };
+            reader.readAsArrayBuffer(file);
+            e.target.value = '';
+        }
+
+        function exportExcelFile() {
+            const ws = XLSX.utils.aoa_to_sheet(excelData);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, 'Лист1');
+            XLSX.writeFile(wb, 'table_' + Date.now() + '.xlsx');
+        }
+
+        function addExcelRow() {
+            excelRows++;
+            excelData[excelRows - 1] = [];
+            for (let c = 0; c < excelCols; c++) excelData[excelRows - 1][c] = '';
+            saveExcel();
+        }
+
+        function addExcelColumn() {
+            excelCols++;
+            for (let r = 0; r < excelRows; r++) {
+                if (!excelData[r]) excelData[r] = [];
+                excelData[r][excelCols - 1] = '';
+            }
+            saveExcel();
+        }
+
+        function clearExcelData() {
+            if (!confirm('Очистить таблицу?')) return;
+            excelData = [];
+            for (let i = 0; i < excelRows; i++) {
+                excelData[i] = [];
+                for (let j = 0; j < excelCols; j++) excelData[i][j] = '';
+            }
+            saveExcel();
+        }
+
+        function saveExcel() {
+            db.ref('excel/data').set({
+                rows: excelData,
+                rowsCount: excelRows,
+                colsCount: excelCols,
+                updatedAt: Date.now(),
+                updatedBy: currentUser.name
+            });
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // ===== ОФИСЫ МФЦ =====
+        function loadOffices() {
+            db.ref('offices').on('value', (snapshot) => {
+                const data = snapshot.val() || {};
+                const grid = document.getElementById('officesGrid');
+                grid.innerHTML = '';
+                
+                const offices = Object.entries(data).map(([id, o]) => ({ id, ...o }));
+                const search = document.getElementById('officeSearch').value.toLowerCase();
+                
+                offices.filter(o => 
+                    o.name.toLowerCase().includes(search) || 
+                    o.address.toLowerCase().includes(search)
+                ).forEach(office => {
+                    const card = document.createElement('div');
+                    card.className = 'office-card';
+                    card.innerHTML = `
+                        <div class="office-name">${escapeHtml(office.name)}</div>
+                        <div class="office-info">
+                            <strong>Адрес:</strong> ${escapeHtml(office.address)}<br>
+                            <strong>Телефон:</strong> ${escapeHtml(office.phone)}<br>
+                            <strong>Часы работы:</strong> ${escapeHtml(office.hours)}<br>
+                            <strong>Услуги:</strong> ${escapeHtml(office.services)}<br>
+                            ${office.description ? `<strong>Описание:</strong> ${escapeHtml(office.description)}` : ''}
+                        </div>
+                        ${isAdmin ? `
+                            <div class="office-actions">
+                                <button class="btn-small btn-edit" onclick="editOffice('${office.id}')">✏️ Редактировать</button>
+                                <button class="btn-small btn-delete" onclick="deleteOffice('${office.id}')">🗑️ Удалить</button>
+                            </div>
+                        ` : ''}
+                    `;
+                    grid.appendChild(card);
+                });
+                
+                document.getElementById('addOfficeBtn').style.display = isAdmin ? 'inline-block' : 'none';
+            });
+        }
+
+        function filterOffices() {
+            loadOffices();
+        }
+
+        function openOfficeModal(office = null) {
+            editingOfficeId = office ? office.id : null;
+            document.getElementById('officeModalTitle').textContent = office ? 'Редактировать офис' : 'Добавить офис';
+            document.getElementById('officeName').value = office ? office.name : '';
+            document.getElementById('officeAddress').value = office ? office.address : '';
+            document.getElementById('officePhone').value = office ? office.phone : '';
+            document.getElementById('officeHours').value = office ? office.hours : '';
+            document.getElementById('officeServices').value = office ? office.services : '';
+            document.getElementById('officeDescription').value = office ? office.description : '';
+            document.getElementById('officeModal').classList.add('show');
+        }
+
+        function closeOfficeModal() {
+            document.getElementById('officeModal').classList.remove('show');
+            editingOfficeId = null;
+        }
+
+        async function saveOffice() {
+            const office = {
+                name: document.getElementById('officeName').value.trim(),
+                address: document.getElementById('officeAddress').value.trim(),
+                phone: document.getElementById('officePhone').value.trim(),
+                hours: document.getElementById('officeHours').value.trim(),
+                services: document.getElementById('officeServices').value.trim(),
+                description: document.getElementById('officeDescription').value.trim(),
+                updatedAt: Date.now()
+            };
+            
+            if (!office.name || !office.address) {
+                alert('Заполните название и адрес!');
+                return;
+            }
+            
+            if (editingOfficeId) {
+                await db.ref('offices/' + editingOfficeId).update(office);
+            } else {
+                office.createdAt = Date.now();
+                office.createdBy = currentUser.name;
+                await db.ref('offices').push(office);
+            }
+            
+            closeOfficeModal();
+            alert('Офис сохранён!');
+        }
+
+        function editOffice(id) {
+            db.ref('offices/' + id).once('value', (snapshot) => {
+                const office = { id, ...snapshot.val() };
+                openOfficeModal(office);
+            });
+        }
+
+        async function deleteOffice(id) {
+            if (confirm('Удалить офис?')) {
+                await db.ref('offices/' + id).remove();
+            }
+        }
+
+        // ===== ОПРОСЫ =====
+        let userVotes = {};
+        
+        function loadSurveys() {
+            db.ref('votes/' + currentUser.uid).on('value', (snapshot) => {
+                userVotes = snapshot.val() || {};
+            });
+            
+            db.ref('surveys').on('value', (snapshot) => {
+                const data = snapshot.val() || {};
+                const list = document.getElementById('surveysList');
+                list.innerHTML = '';
+                
+                const surveys = Object.entries(data).map(([id, s]) => ({ id, ...s }));
+                surveys.sort((a, b) => b.createdAt - a.createdAt);
+                
+                if (surveys.length === 0) {
+                    list.innerHTML = '<p style="color:#888;text-align:center;padding:40px;">Пока нет опросов</p>';
+                    return;
+                }
+                
+                surveys.forEach(survey => {
+                    const totalVotes = Object.values(survey.votes || {}).reduce((a, b) => a + b, 0);
+                    const userVote = userVotes[survey.id];
+                    
+                    let optionsHtml = '';
+                    (survey.options || []).forEach((opt, idx) => {
+                        const count = (survey.votes && survey.votes[idx]) || 0;
+                        const isVoted = userVote === idx;
+                        optionsHtml += `
+                            <div class="survey-option ${isVoted ? 'voted' : ''}" onclick="voteSurvey('${survey.id}', ${idx})">
+                                <span>${escapeHtml(opt)} ${isVoted ? '✓' : ''}</span>
+                                <span style="font-size:12px;color:#888;">${isAdmin ? count + ' голосов' : ''}</span>
+                            </div>
+                        `;
+                    });
+                    
+                    const canDelete = isAdmin || survey.authorId === currentUser.uid;
+                    
+                    const card = document.createElement('div');
+                    card.className = 'survey-card';
+                    card.innerHTML = `
+                        <div class="survey-question">${escapeHtml(survey.question)}</div>
+                        <div class="survey-options">${optionsHtml}</div>
+                        <div style="font-size:11px;color:#888;margin-top:10px;display:flex;justify-content:space-between;">
+                            <span>👤 ${escapeHtml(survey.author)} • 🗳️ Всего: ${totalVotes}</span>
+                            ${canDelete ? `<button class="btn-small btn-delete" onclick="deleteSurvey('${survey.id}')">🗑️ Удалить</button>` : ''}
+                        </div>
+                    `;
+                    list.appendChild(card);
+                });
+            });
+        }
+
+        function openSurveyModal() {
+            document.getElementById('surveyQuestion').value = '';
+            document.getElementById('surveyOptionsContainer').innerHTML = `
+                <input type="text" placeholder="Вариант 1" class="survey-option-input">
+                <input type="text" placeholder="Вариант 2" class="survey-option-input">
+            `;
+            document.getElementById('surveyModal').classList.add('show');
+        }
+
+        function closeSurveyModal() {
+            document.getElementById('surveyModal').classList.remove('show');
+        }
+
+        function addSurveyOption() {
+            const container = document.getElementById('surveyOptionsContainer');
+            const count = container.children.length + 1;
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.placeholder = 'Вариант ' + count;
+            input.className = 'survey-option-input';
+            container.appendChild(input);
+        }
+
+        async function createSurvey() {
+            const question = document.getElementById('surveyQuestion').value.trim();
+            if (!question) { alert('Введите вопрос!'); return; }
+            
+            const optionInputs = document.querySelectorAll('.survey-option-input');
+            const options = [];
+            optionInputs.forEach(inp => {
+                const val = inp.value.trim();
+                if (val) options.push(val);
+            });
+            
+            if (options.length < 2) { alert('Минимум 2 варианта!'); return; }
+            
+            await db.ref('surveys').push({
+                question,
+                options,
+                votes: {},
+                author: currentUser.name,
+                authorId: currentUser.uid,
+                createdAt: Date.now()
+            });
+            
+            closeSurveyModal();
+            alert('Опрос создан!');
+        }
+
+        async function voteSurvey(surveyId, optionIndex) {
+            if (userVotes[surveyId] !== undefined) {
+                alert('Вы уже проголосовали!');
+                return;
+            }
+            
+            await db.ref('surveys/' + surveyId + '/votes/' + optionIndex).transaction(c => (c || 0) + 1);
+            await db.ref('votes/' + currentUser.uid + '/' + surveyId).set(optionIndex);
+            userVotes[surveyId] = optionIndex;
+        }
+
+        async function deleteSurvey(id) {
+            if (confirm('Удалить опрос?')) {
+                await db.ref('surveys/' + id).remove();
+            }
+        }
+
+        // ===== ЗАДАЧИ =====
+        function loadTasks() {
+            db.ref('tasks').on('child_added', (snapshot) => renderTask(snapshot.key, snapshot.val()));
+            db.ref('tasks').on('child_changed', (snapshot) => {
+                const el = document.getElementById('task-' + snapshot.key);
+                if (el) el.remove();
+                renderTask(snapshot.key, snapshot.val());
+            });
+            db.ref('tasks').on('child_removed', (snapshot) => {
+                const el = document.getElementById('task-' + snapshot.key);
+                if (el) el.remove();
+            });
+        }
+        
+        function renderTask(id, task) {
+            const list = document.getElementById('tasksList');
+            const item = document.createElement('div');
+            item.className = 'office-card';
+            item.id = 'task-' + id;
+            item.style.opacity = task.done ? '0.6' : '1';
+            item.innerHTML = `
+                <div style="display:flex;align-items:center;gap:12px;">
+                    <input type="checkbox" ${task.done ? 'checked' : ''} onchange="toggleTask('${id}', ${!task.done})" style="width:20px;height:20px;cursor:pointer;">
+                    <div style="flex:1;">
+                        <div style="font-size:16px;font-weight:600;color:#5d2e1f;${task.done ? 'text-decoration:line-through;' : ''}">${escapeHtml(task.text)}</div>
+                        <div style="font-size:12px;color:#888;margin-top:4px;">👤 ${escapeHtml(task.author)}</div>
+                    </div>
+                    <button class="btn-small btn-delete" onclick="deleteTask('${id}')">🗑️</button>
+                </div>
+            `;
+            list.appendChild(item);
+        }
+        
+        function addTask() {
+            const input = document.getElementById('taskInput');
+            const text = input.value.trim();
+            if (!text) return;
+            db.ref('tasks').push({
+                text,
+                done: false,
+                author: currentUser.name,
+                createdAt: Date.now()
+            });
+            input.value = '';
+        }
+        
+        function toggleTask(id, done) {
+            db.ref('tasks/' + id).update({ done });
+        }
+        
+        function deleteTask(id) {
+            if (confirm('Удалить задачу?')) db.ref('tasks/' + id).remove();
         }
 
         // ===== ДОСКА =====
@@ -2338,8 +3098,6 @@
         
         function setTool(tool) {
             currentTool = tool;
-            document.getElementById('penTool').classList.toggle('active', tool === 'pen');
-            document.getElementById('eraserTool').classList.toggle('active', tool === 'eraser');
         }
         
         function clearCanvas() {
@@ -2357,68 +3115,16 @@
         
         function sendCanvasToChat() {
             const dataUrl = canvas.toDataURL('image/png', 0.7);
-            const myName = currentUser.displayName || currentUser.email;
-            chatMessagesRef.push({
-                author: myName,
+            db.ref('chat/messages').push({
+                author: currentUser.name,
                 authorUid: currentUser.uid,
+                authorAvatar: currentUser.avatar || null,
                 image: dataUrl,
                 text: '🎨 Рисунок с доски',
                 timestamp: Date.now()
             });
             alert('Рисунок отправлен в чат!');
         }
-
-        // ===== ЗАДАЧИ =====
-        function loadTasks() {
-            tasksRef.off();
-            document.getElementById('tasksList').innerHTML = '';
-            tasksRef.on('child_added', (snapshot) => renderTask(snapshot.key, snapshot.val()));
-            tasksRef.on('child_changed', (snapshot) => {
-                const el = document.getElementById('task-' + snapshot.key);
-                if (el) el.remove();
-                renderTask(snapshot.key, snapshot.val());
-            });
-            tasksRef.on('child_removed', (snapshot) => {
-                const el = document.getElementById('task-' + snapshot.key);
-                if (el) el.remove();
-            });
-        }
-        
-        function renderTask(id, task) {
-            const list = document.getElementById('tasksList');
-            const item = document.createElement('div');
-            item.className = 'task-item' + (task.done ? ' done' : '');
-            item.id = 'task-' + id;
-            item.innerHTML = `
-                <input type="checkbox" class="task-checkbox" ${task.done ? 'checked' : ''} onchange="toggleTask('${id}', ${!task.done})">
-                <div class="task-text">${escapeHtml(task.text)}</div>
-                <div class="task-author">👤 ${escapeHtml(task.author)}</div>
-                <button class="task-delete" onclick="deleteTask('${id}')">🗑️</button>
-            `;
-            list.appendChild(item);
-        }
-        
-        function escapeHtml(text) {
-            const div = document.createElement('div');
-            div.textContent = text;
-            return div.innerHTML;
-        }
-        
-        function addTask() {
-            const input = document.getElementById('taskInput');
-            const text = input.value.trim();
-            if (!text) return;
-            tasksRef.push({
-                text: text,
-                done: false,
-                author: currentUser.displayName || currentUser.email,
-                createdAt: Date.now()
-            });
-            input.value = '';
-        }
-        
-        function toggleTask(id, done) { tasksRef.child(id).update({ done: done }); }
-        function deleteTask(id) { if (confirm('Удалить задачу?')) tasksRef.child(id).remove(); }
 
         // ===== ЧАСЫ =====
         let timerInterval = null;
@@ -2457,7 +3163,7 @@
             }
             if (timerRemaining === 0) return;
             
-            document.getElementById('startTimerBtn').textContent = '⏸️ Пауза';
+            document.getElementById('startTimerBtn').textContent = '️ Пауза';
             timerInterval = setInterval(() => {
                 timerRemaining--;
                 updateTimerDisplay();
@@ -2490,10 +3196,6 @@
                 h.toString().padStart(2,'0') + ':' + m.toString().padStart(2,'0') + ':' + s.toString().padStart(2,'0');
         }
         
-        ['timerHours','timerMinutes','timerSeconds'].forEach(id => {
-            document.getElementById(id).addEventListener('input', () => { if (!timerInterval) resetTimer(); });
-        });
-        
         function toggleStopwatch() {
             if (stopwatchRunning) {
                 clearInterval(stopwatchInterval);
@@ -2525,303 +3227,89 @@
                 h.toString().padStart(2,'0') + ':' + m.toString().padStart(2,'0') + ':' + s.toString().padStart(2,'0');
         }
 
-        // ===== EXCEL =====
-        let excelData = [];
-        let excelRows = 20;
-        let excelCols = 10;
-        
-        function loadExcel() {
-            excelRef.on('value', (snapshot) => {
-                const data = snapshot.val();
-                if (data) {
-                    excelData = data.rows || [];
-                    excelRows = data.rowsCount || 20;
-                    excelCols = data.colsCount || 10;
-                } else {
-                    excelData = [];
-                    excelRows = 20;
-                    excelCols = 10;
-                    for (let i = 0; i < excelRows; i++) {
-                        excelData[i] = [];
-                        for (let j = 0; j < excelCols; j++) excelData[i][j] = '';
-                    }
-                }
-                renderExcel();
-            });
-        }
-        
-        function renderExcel() {
-            const table = document.getElementById('excelTable');
-            let html = '<thead><tr><th class="row-header"></th>';
-            for (let c = 0; c < excelCols; c++) {
-                html += `<th>${getColumnLetter(c)}</th>`;
-            }
-            html += '</tr></thead><tbody>';
-            
-            for (let r = 0; r < excelRows; r++) {
-                html += `<tr><td class="row-header">${r + 1}</td>`;
-                for (let c = 0; c < excelCols; c++) {
-                    const value = (excelData[r] && excelData[r][c]) || '';
-                    html += `<td contenteditable="true" data-row="${r}" data-col="${c}" onblur="updateExcelCell(this)">${escapeHtml(value)}</td>`;
-                }
-                html += '</tr>';
-            }
-            html += '</tbody>';
-            table.innerHTML = html;
-        }
-        
-        function getColumnLetter(index) {
-            let letter = '';
-            while (index >= 0) {
-                letter = String.fromCharCode(65 + (index % 26)) + letter;
-                index = Math.floor(index / 26) - 1;
-            }
-            return letter;
-        }
-        
-        function updateExcelCell(cell) {
-            const row = parseInt(cell.dataset.row);
-            const col = parseInt(cell.dataset.col);
-            const value = cell.textContent;
-            
-            if (!excelData[row]) excelData[row] = [];
-            excelData[row][col] = value;
-            
-            excelRef.set({
-                rows: excelData,
-                rowsCount: excelRows,
-                colsCount: excelCols,
-                updatedAt: Date.now(),
-                updatedBy: currentUser ? currentUser.displayName : 'unknown'
-            });
-        }
-        
-        function addExcelRow() {
-            excelRows++;
-            excelData[excelRows - 1] = [];
-            for (let c = 0; c < excelCols; c++) excelData[excelRows - 1][c] = '';
-            saveExcel();
-        }
-        
-        function addExcelColumn() {
-            excelCols++;
-            for (let r = 0; r < excelRows; r++) {
-                if (!excelData[r]) excelData[r] = [];
-                excelData[r][excelCols - 1] = '';
-            }
-            saveExcel();
-        }
-        
-        function removeExcelRow() {
-            if (excelRows <= 1) return;
-            if (!confirm('Удалить последнюю строку?')) return;
-            excelRows--;
-            excelData.pop();
-            saveExcel();
-        }
-        
-        function removeExcelColumn() {
-            if (excelCols <= 1) return;
-            if (!confirm('Удалить последний столбец?')) return;
-            excelCols--;
-            for (let r = 0; r < excelRows; r++) {
-                if (excelData[r]) excelData[r].pop();
-            }
-            saveExcel();
-        }
-        
-        function clearExcel() {
-            if (!confirm('Очистить всю таблицу?')) return;
-            excelData = [];
-            for (let i = 0; i < excelRows; i++) {
-                excelData[i] = [];
-                for (let j = 0; j < excelCols; j++) excelData[i][j] = '';
-            }
-            saveExcel();
-        }
-        
-        function saveExcel() {
-            excelRef.set({
-                rows: excelData,
-                rowsCount: excelRows,
-                colsCount: excelCols,
-                updatedAt: Date.now(),
-                updatedBy: currentUser ? currentUser.displayName : 'unknown'
-            });
-        }
-        
-        function exportExcelCSV() {
-            const csv = Papa.unparse(excelData);
-            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-            const link = document.createElement('a');
-            link.href = URL.createObjectURL(blob);
-            link.download = 'table_' + Date.now() + '.csv';
-            link.click();
-        }
-        
-        function importExcelCSV(e) {
-            const file = e.target.files[0];
-            if (!file) return;
-            Papa.parse(file, {
-                complete: function(results) {
-                    excelData = results.data;
-                    excelRows = excelData.length;
-                    excelCols = Math.max(...excelData.map(r => r.length));
-                    for (let r = 0; r < excelRows; r++) {
-                        if (!excelData[r]) excelData[r] = [];
-                        while (excelData[r].length < excelCols) excelData[r].push('');
-                    }
-                    saveExcel();
-                    alert('✅ Таблица импортирована!');
-                }
-            });
-            e.target.value = '';
-        }
-
-        // ===== ОПРОСЫ =====
-        let userVotes = {}; // {surveyId: optionIndex}
-        
-        function loadSurveys() {
-            surveysRef.off();
-            document.getElementById('surveysList').innerHTML = '';
-            
-            // Загружаем голоса текущего пользователя
-            if (currentUser) {
-                db.ref('votes/' + currentUser.uid).on('value', (snapshot) => {
-                    userVotes = snapshot.val() || {};
-                });
-            }
-            
-            surveysRef.on('value', (snapshot) => {
+        // ===== СТАТИСТИКА =====
+        function loadDashboard() {
+            db.ref('stats').on('value', (snapshot) => {
                 const data = snapshot.val() || {};
-                const list = document.getElementById('surveysList');
-                list.innerHTML = '';
+                document.getElementById('statsGrid').innerHTML = `
+                    <div class="stat-card">
+                        <div class="stat-value">${data.messageCount || 0}</div>
+                        <div class="stat-label">💬 Сообщений</div>
+                    </div>
+                    <div class="stat-card" style="background:linear-gradient(135deg,#f093fb,#f5576c);">
+                        <div class="stat-value">${data.photoCount || 0}</div>
+                        <div class="stat-label">📷 Фото</div>
+                    </div>
+                    <div class="stat-card" style="background:linear-gradient(135deg,#43e97b,#38f9d7);">
+                        <div class="stat-value">${data.gamesPlayed || 0}</div>
+                        <div class="stat-label"> Игр</div>
+                    </div>
+                    <div class="stat-card" style="background:linear-gradient(135deg,#fa709a,#fee140);">
+                        <div class="stat-value">5</div>
+                        <div class="stat-label">👥 Коллег</div>
+                    </div>
+                `;
                 
-                const surveys = Object.entries(data).map(([id, s]) => ({ id, ...s }));
-                surveys.sort((a, b) => b.createdAt - a.createdAt);
+                const activity = data.activity || {};
+                const activityList = Object.entries(activity)
+                    .map(([k, v]) => ({ ...v, id: k }))
+                    .sort((a, b) => b.time - a.time)
+                    .slice(0, 10);
                 
-                if (surveys.length === 0) {
-                    list.innerHTML = '<p style="color:#888; text-align:center; padding:40px;">Пока нет опросов. Создайте первый!</p>';
-                    return;
-                }
-                
-                surveys.forEach(survey => {
-                    const card = document.createElement('div');
-                    card.className = 'survey-card';
-                    
-                    const totalVotes = Object.values(survey.votes || {}).reduce((a, b) => a + b, 0);
-                    const userVote = userVotes[survey.id];
-                    
-                    let optionsHtml = '';
-                    (survey.options || []).forEach((opt, idx) => {
-                        const count = (survey.votes && survey.votes[idx]) || 0;
-                        const isVoted = userVote === idx;
-                        optionsHtml += `
-                            <div class="survey-option ${isVoted ? 'voted' : ''}" onclick="voteSurvey('${survey.id}', ${idx})">
-                                <span>${escapeHtml(opt)} ${isVoted ? '✓' : ''}</span>
-                                <span class="survey-votes-count">${isAdmin ? count + ' голосов' : ''}</span>
-                            </div>
-                        `;
+                let activityHtml = '';
+                if (activityList.length === 0) {
+                    activityHtml = '<div style="padding:10px;color:#888;">Пока нет действий</div>';
+                } else {
+                    activityList.forEach(a => {
+                        activityHtml += `<div style="padding:10px;border-bottom:1px solid #e0e0e0;">
+                            ${escapeHtml(a.text)}
+                            <div style="font-size:11px;color:#888;">${new Date(a.time).toLocaleString('ru-RU')}</div>
+                        </div>`;
                     });
-                    
-                    const canDelete = isAdmin || survey.authorId === currentUser.uid;
-                    
-                    card.innerHTML = `
-                        <div class="survey-question">${escapeHtml(survey.question)}</div>
-                        <div class="survey-options">${optionsHtml}</div>
-                        <div class="survey-meta">
-                            <span>👤 ${escapeHtml(survey.author || 'Аноним')} • 🗳️ Всего: ${totalVotes}</span>
-                            ${canDelete ? `<button class="task-delete" onclick="deleteSurvey('${survey.id}')">🗑️ Удалить</button>` : ''}
-                        </div>
-                    `;
-                    list.appendChild(card);
-                });
+                }
+                document.getElementById('activityList').innerHTML = activityHtml;
             });
-        }
-        
-        function toggleSurveyForm() {
-            const form = document.getElementById('surveyCreateForm');
-            const btn = document.getElementById('createSurveyBtn');
-            if (form.style.display === 'none') {
-                form.style.display = 'block';
-                btn.style.display = 'none';
-            } else {
-                form.style.display = 'none';
-                btn.style.display = 'inline-block';
-            }
-        }
-        
-        function addSurveyOption() {
-            const container = document.getElementById('surveyOptionsInput');
-            const count = container.children.length + 1;
-            const row = document.createElement('div');
-            row.className = 'survey-option-input-row';
-            row.innerHTML = `
-                <input type="text" placeholder="Вариант ${count}">
-                <button class="remove-option-btn" onclick="removeSurveyOption(this)">✕</button>
-            `;
-            container.appendChild(row);
-        }
-        
-        function removeSurveyOption(btn) {
-            const container = document.getElementById('surveyOptionsInput');
-            if (container.children.length <= 2) {
-                alert('Минимум 2 варианта!');
-                return;
-            }
-            btn.parentElement.remove();
-        }
-        
-        function createSurvey() {
-            const question = document.getElementById('surveyQuestion').value.trim();
-            if (!question) { alert('Введите вопрос!'); return; }
-            
-            const optionInputs = document.querySelectorAll('#surveyOptionsInput input');
-            const options = [];
-            optionInputs.forEach(inp => {
-                const val = inp.value.trim();
-                if (val) options.push(val);
-            });
-            
-            if (options.length < 2) { alert('Минимум 2 варианта ответа!'); return; }
-            
-            surveysRef.push({
-                question: question,
-                options: options,
-                votes: {},
-                author: currentUser.displayName || currentUser.email,
-                authorId: currentUser.uid,
-                createdAt: Date.now()
-            });
-            
-            document.getElementById('surveyQuestion').value = '';
-            document.querySelectorAll('#surveyOptionsInput input').forEach(inp => inp.value = '');
-            toggleSurveyForm();
-            alert('✅ Опрос создан!');
-        }
-        
-        async function voteSurvey(surveyId, optionIndex) {
-            // Проверяем, голосовал ли уже
-            if (userVotes[surveyId] !== undefined) {
-                alert('Вы уже проголосовали в этом опросе!');
-                return;
-            }
-            
-            // Анонимное голосование - не сохраняем ID пользователя
-            await surveysRef.child(surveyId + '/votes/' + optionIndex).transaction(c => (c || 0) + 1);
-            await db.ref('votes/' + currentUser.uid + '/' + surveyId).set(optionIndex);
-            
-            userVotes[surveyId] = optionIndex;
-        }
-        
-        function deleteSurvey(id) {
-            if (!confirm('Удалить опрос?')) return;
-            surveysRef.child(id).remove();
         }
 
         // ===== АДМИН-ПАНЕЛЬ =====
         function loadAdminPanel() {
-            surveysRef.on('value', (snapshot) => {
+            if (!isAdmin) return;
+            
+            db.ref('stats').on('value', (snapshot) => {
+                const data = snapshot.val() || {};
+                document.getElementById('adminStats').innerHTML = `
+                    <div class="stat-card">
+                        <div class="stat-value">${data.messageCount || 0}</div>
+                        <div class="stat-label">Сообщений</div>
+                    </div>
+                    <div class="stat-card" style="background:linear-gradient(135deg,#43e97b,#38f9d7);">
+                        <div class="stat-value">${data.gamesPlayed || 0}</div>
+                        <div class="stat-label">Игр сыграно</div>
+                    </div>
+                `;
+            });
+            
+            db.ref('users').on('value', (snapshot) => {
+                const users = snapshot.val() || {};
+                const list = document.getElementById('usersList');
+                list.innerHTML = '';
+                
+                Object.entries(users).forEach(([uid, user]) => {
+                    const isUserAdmin = isAdmin;
+                    const item = document.createElement('div');
+                    item.style.cssText = 'display:flex;justify-content:space-between;align-items:center;padding:12px;background:#f9f9f9;border-radius:8px;margin-bottom:8px;';
+                    item.innerHTML = `
+                        <div>
+                            <strong>${escapeHtml(user.name)}</strong>
+                            <div style="font-size:12px;color:#888;">${escapeHtml(user.email)}</div>
+                        </div>
+                        <div style="font-size:11px;color:#888;">${new Date(user.createdAt).toLocaleDateString('ru-RU')}</div>
+                    `;
+                    list.appendChild(item);
+                });
+            });
+            
+            db.ref('surveys').on('value', (snapshot) => {
                 const data = snapshot.val() || {};
                 const list = document.getElementById('adminSurveysList');
                 list.innerHTML = '';
@@ -2842,74 +3330,35 @@
                         const count = (survey.votes && survey.votes[idx]) || 0;
                         const percent = totalVotes > 0 ? (count / totalVotes * 100) : 0;
                         barsHtml += `
-                            <div class="result-bar">
-                                <div class="result-bar-label">${escapeHtml(opt)}</div>
-                                <div class="result-bar-track">
-                                    <div class="result-bar-fill" style="width: ${percent}%;"></div>
+                            <div style="display:flex;align-items:center;margin-bottom:6px;gap:10px;">
+                                <div style="flex:1;font-size:13px;">${escapeHtml(opt)}</div>
+                                <div style="flex:2;height:20px;background:#e0e0e0;border-radius:10px;overflow:hidden;">
+                                    <div style="height:100%;background:linear-gradient(135deg,#e8653a,#d4542a);width:${percent}%;"></div>
                                 </div>
-                                <div class="result-bar-count">${count} (${percent.toFixed(1)}%)</div>
+                                <div style="font-size:12px;color:#666;min-width:50px;text-align:right;">${count} (${percent.toFixed(1)}%)</div>
                             </div>
                         `;
                     });
                     
                     const item = document.createElement('div');
-                    item.className = 'admin-survey-result';
+                    item.style.cssText = 'background:#f9f9f9;padding:14px;border-radius:10px;margin-bottom:10px;';
                     item.innerHTML = `
-                        <h4>${escapeHtml(survey.question)}</h4>
-                        <p style="font-size:12px; color:#888; margin-bottom:10px;">👤 ${escapeHtml(survey.author || 'Аноним')} • 🗳️ Всего: ${totalVotes} голосов</p>
+                        <h4 style="margin-bottom:10px;color:#5d2e1f;">${escapeHtml(survey.question)}</h4>
+                        <p style="font-size:12px;color:#888;margin-bottom:10px;">👤 ${escapeHtml(survey.author)} • ️ ${totalVotes} голосов</p>
                         ${barsHtml}
-                        <button class="btn-secondary" style="margin-top:10px;" onclick="deleteSurvey('${survey.id}'); loadAdminPanel();">🗑️ Удалить опрос</button>
+                        <button class="btn-small btn-delete" style="margin-top:10px;" onclick="deleteSurvey('${survey.id}');loadAdminPanel();">🗑️ Удалить</button>
                     `;
                     list.appendChild(item);
                 });
             });
         }
 
-        // ===== СТАТИСТИКА =====
-        function loadDashboard() {
-            statsRef.on('value', (snapshot) => {
-                const data = snapshot.val() || {};
-                document.getElementById('statsGrid').innerHTML = `
-                    <div class="stat-card">
-                        <div class="stat-value">${data.messageCount || 0}</div>
-                        <div class="stat-label">💬 Сообщений</div>
-                    </div>
-                    <div class="stat-card" style="background: linear-gradient(135deg, #f093fb, #f5576c);">
-                        <div class="stat-value">${data.photoCount || 0}</div>
-                        <div class="stat-label">📷 Фото</div>
-                    </div>
-                    <div class="stat-card" style="background: linear-gradient(135deg, #43e97b, #38f9d7);">
-                        <div class="stat-value">${data.gamesPlayed || 0}</div>
-                        <div class="stat-label">🎮 Игр сыграно</div>
-                    </div>
-                    <div class="stat-card" style="background: linear-gradient(135deg, #fa709a, #fee140);">
-                        <div class="stat-value">5</div>
-                        <div class="stat-label">👥 Коллег</div>
-                    </div>
-                `;
-                
-                const activity = data.activity || {};
-                const activityList = Object.entries(activity)
-                    .map(([k, v]) => ({ ...v, id: k }))
-                    .sort((a, b) => b.time - a.time)
-                    .slice(0, 10);
-                
-                let activityHtml = '';
-                if (activityList.length === 0) {
-                    activityHtml = '<div class="activity-item">Пока нет действий</div>';
-                } else {
-                    activityList.forEach(a => {
-                        activityHtml += `<div class="activity-item">
-                            ${escapeHtml(a.text)}
-                            <div class="activity-time">${new Date(a.time).toLocaleString('ru-RU')}</div>
-                        </div>`;
-                    });
-                }
-                document.getElementById('activityList').innerHTML = activityHtml;
-            });
-        }
-
+        // ===== ИНИЦИАЛИЗАЦИЯ =====
         window.addEventListener('load', () => {
+            updateHeader();
+            updateNavigation();
+            updateMenuCards();
+            initCanvas();
             resetTimer();
             updateStopwatchDisplay();
         });
