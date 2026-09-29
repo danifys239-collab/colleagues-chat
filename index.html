@@ -14,23 +14,24 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            padding: 20px;
+            padding: 10px;
         }
         
         .container {
             width: 100%;
-            max-width: 900px;
+            max-width: 1100px;
             background: white;
             border-radius: 20px;
             box-shadow: 0 20px 60px rgba(0,0,0,0.3);
             overflow: hidden;
-            min-height: 85vh;
+            min-height: 90vh;
             display: flex;
             flex-direction: column;
         }
         
+        /* ===== HEADER ===== */
         .header {
-            padding: 18px 24px;
+            padding: 14px 20px;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             display: flex;
@@ -52,9 +53,7 @@
             display: none;
         }
         
-        .back-btn:hover { background: rgba(255,255,255,0.3); }
-        
-        .header h1 { font-size: 20px; }
+        .header h1 { font-size: 18px; }
         
         .user-info { display: flex; align-items: center; gap: 10px; font-size: 13px; }
         
@@ -68,40 +67,67 @@
             font-size: 12px;
         }
         
+        /* ===== SCREENS ===== */
         .screen { display: none; flex: 1; overflow-y: auto; }
         .screen.active { display: flex; flex-direction: column; }
         
-        /* ===== АВТОРИЗАЦИЯ ===== */
-        #authScreen {
-            justify-content: center;
-            align-items: center;
-            padding: 30px;
-        }
+        /* ===== MAIN MENU ===== */
+        #mainMenu { padding: 30px; justify-content: flex-start; align-items: center; }
         
-        .auth-box {
-            width: 100%;
-            max-width: 420px;
-        }
-        
-        .auth-box h2 {
+        .welcome {
             text-align: center;
-            margin-bottom: 20px;
-            color: #333;
+            margin-bottom: 30px;
         }
+        
+        .welcome h2 { font-size: 28px; color: #333; margin-bottom: 8px; }
+        .welcome p { color: #666; font-size: 14px; }
+        
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 16px;
+            width: 100%;
+            max-width: 800px;
+        }
+        
+        .menu-card {
+            padding: 24px 16px;
+            border-radius: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+            color: white;
+            border: 3px solid transparent;
+        }
+        
+        .menu-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+        }
+        
+        .menu-card.chat { background: linear-gradient(135deg, #667eea, #764ba2); }
+        .menu-card.games { background: linear-gradient(135deg, #f093fb, #f5576c); }
+        .menu-card.board { background: linear-gradient(135deg, #4facfe, #00f2fe); }
+        .menu-card.tasks { background: linear-gradient(135deg, #43e97b, #38f9d7); }
+        .menu-card.clock { background: linear-gradient(135deg, #fa709a, #fee140); }
+        .menu-card.dashboard { background: linear-gradient(135deg, #30cfd0, #330867); }
+        
+        .menu-card-icon { font-size: 48px; margin-bottom: 10px; }
+        .menu-card-title { font-size: 18px; font-weight: 700; margin-bottom: 4px; }
+        .menu-card-desc { font-size: 12px; opacity: 0.9; }
+        
+        /* ===== AUTH ===== */
+        #authScreen { justify-content: center; align-items: center; padding: 30px; }
+        
+        .auth-box { width: 100%; max-width: 420px; }
+        .auth-box h2 { text-align: center; margin-bottom: 20px; color: #333; }
         
         .auth-tabs { display: flex; border-bottom: 2px solid #e0e0e0; margin-bottom: 20px; }
         
         .auth-tab {
-            flex: 1;
-            padding: 14px;
-            text-align: center;
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 14px;
-            color: #999;
-            background: none;
-            border: none;
-            border-bottom: 3px solid transparent;
+            flex: 1; padding: 14px; text-align: center; cursor: pointer;
+            font-weight: 600; font-size: 14px; color: #999;
+            background: none; border: none; border-bottom: 3px solid transparent;
         }
         
         .auth-tab.active { color: #667eea; border-bottom-color: #667eea; }
@@ -110,11 +136,8 @@
         .auth-form.active { display: flex; }
         
         .auth-form input {
-            padding: 14px 18px;
-            border: 2px solid #e0e0e0;
-            border-radius: 12px;
-            font-size: 14px;
-            outline: none;
+            padding: 14px 18px; border: 2px solid #e0e0e0;
+            border-radius: 12px; font-size: 14px; outline: none;
         }
         
         .auth-form input:focus { border-color: #667eea; }
@@ -122,84 +145,22 @@
         .auth-btn {
             padding: 14px;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            border-radius: 12px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
+            color: white; border: none; border-radius: 12px;
+            font-size: 16px; font-weight: 600; cursor: pointer;
         }
         
         .auth-error { color: #f44336; font-size: 13px; text-align: center; min-height: 20px; }
         
-        /* ===== ГЛАВНОЕ МЕНЮ ===== */
-        #mainMenu {
-            justify-content: center;
-            align-items: center;
-            padding: 40px 30px;
-        }
-        
-        .main-menu-content { text-align: center; width: 100%; max-width: 600px; }
-        
-        .main-menu-content h2 {
-            font-size: 28px;
-            margin-bottom: 10px;
-            color: #333;
-        }
-        
-        .main-menu-content p {
-            color: #666;
-            margin-bottom: 40px;
-        }
-        
-        .main-menu-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-        }
-        
-        .main-card {
-            padding: 40px 20px;
-            border-radius: 20px;
-            cursor: pointer;
-            transition: all 0.3s;
-            border: 3px solid transparent;
-            color: white;
-            text-align: center;
-        }
-        
-        .main-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 40px rgba(0,0,0,0.2);
-        }
-        
-        .main-card.chat { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
-        .main-card.games { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
-        
-        .main-card-icon { font-size: 64px; margin-bottom: 16px; }
-        .main-card-title { font-size: 24px; font-weight: 700; margin-bottom: 8px; }
-        .main-card-desc { font-size: 14px; opacity: 0.9; }
-        
-        /* ===== ЧАТ ===== */
+        /* ===== CHAT ===== */
         .messages {
-            flex: 1;
-            overflow-y: auto;
-            padding: 24px;
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
+            flex: 1; overflow-y: auto; padding: 20px;
+            display: flex; flex-direction: column; gap: 12px;
             background: #f8f9fa;
         }
         
-        .messages::-webkit-scrollbar { width: 8px; }
-        .messages::-webkit-scrollbar-thumb { background: #cbd5e0; border-radius: 4px; }
-        
         .message {
-            max-width: 75%;
-            display: flex;
-            gap: 10px;
-            align-items: flex-start;
-            animation: slideIn 0.3s ease-out;
+            max-width: 75%; display: flex; gap: 10px;
+            align-items: flex-start; animation: slideIn 0.3s ease-out;
         }
         
         @keyframes slideIn {
@@ -210,16 +171,9 @@
         .message.own { align-self: flex-end; flex-direction: row-reverse; }
         
         .avatar {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 600;
-            font-size: 14px;
-            color: white;
-            flex-shrink: 0;
+            width: 36px; height: 36px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 600; font-size: 14px; color: white; flex-shrink: 0;
         }
         
         .message.own .avatar { background: linear-gradient(135deg, #667eea, #764ba2); }
@@ -228,85 +182,64 @@
         .message-content { display: flex; flex-direction: column; gap: 4px; }
         .message.own .message-content { align-items: flex-end; }
         
-        .message .author { font-size: 12px; color: #888; font-weight: 600; }
+        .message .author { font-size: 11px; color: #888; font-weight: 600; }
+        .message .time { font-size: 10px; color: #aaa; margin-top: 2px; }
         
         .message-bubble {
-            padding: 10px 14px;
-            border-radius: 18px;
-            line-height: 1.4;
-            word-wrap: break-word;
+            padding: 10px 14px; border-radius: 18px;
+            line-height: 1.4; word-wrap: break-word;
         }
         
         .message.own .message-bubble {
             background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white;
-            border-bottom-right-radius: 4px;
+            color: white; border-bottom-right-radius: 4px;
         }
         
         .message.other .message-bubble {
-            background: white;
-            color: #333;
+            background: white; color: #333;
             border-bottom-left-radius: 4px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.08);
         }
         
         .message img {
-            max-width: 100%;
-            border-radius: 12px;
-            margin-top: 8px;
-            cursor: pointer;
+            max-width: 100%; max-height: 300px;
+            border-radius: 12px; margin-top: 6px;
+            cursor: pointer; transition: transform 0.2s;
         }
         
+        .message img:hover { transform: scale(1.02); }
+        
         .emoji-panel {
-            display: none;
-            padding: 12px;
-            background: white;
-            border-top: 1px solid #e0e0e0;
-            gap: 8px;
-            flex-wrap: wrap;
-            justify-content: center;
+            display: none; padding: 12px; background: white;
+            border-top: 1px solid #e0e0e0; gap: 6px;
+            flex-wrap: wrap; justify-content: center;
         }
         
         .emoji-panel.show { display: flex; }
         
         .emoji-btn {
-            font-size: 24px;
-            background: none;
-            border: none;
-            cursor: pointer;
-            padding: 8px;
-            border-radius: 8px;
+            font-size: 22px; background: none; border: none;
+            cursor: pointer; padding: 6px; border-radius: 8px;
         }
         
         .emoji-btn:hover { background: #f0f0f0; transform: scale(1.2); }
         
         .input-area {
-            padding: 16px 20px;
-            border-top: 1px solid #e0e0e0;
-            background: white;
-            display: flex;
-            gap: 10px;
-            align-items: center;
+            padding: 14px 18px; border-top: 1px solid #e0e0e0;
+            background: white; display: flex; gap: 8px; align-items: center;
         }
         
         .input-area input[type="text"] {
-            flex: 1;
-            padding: 12px 18px;
-            border: 2px solid #e0e0e0;
-            border-radius: 24px;
-            outline: none;
-            font-size: 14px;
+            flex: 1; padding: 10px 16px;
+            border: 2px solid #e0e0e0; border-radius: 24px;
+            outline: none; font-size: 14px;
         }
         
         .input-area input[type="text"]:focus { border-color: #667eea; }
         
         .btn {
-            padding: 12px 18px;
-            border: none;
-            border-radius: 24px;
-            cursor: pointer;
-            font-size: 14px;
-            font-weight: 500;
+            padding: 10px 16px; border: none; border-radius: 20px;
+            cursor: pointer; font-size: 14px; font-weight: 500;
             transition: all 0.3s;
         }
         
@@ -314,37 +247,57 @@
         
         .btn-send { background: linear-gradient(135deg, #667eea, #764ba2); color: white; }
         .btn-photo { background: linear-gradient(135deg, #f093fb, #f5576c); color: white; }
-        .btn-emoji { background: linear-gradient(135deg, #ffecd2, #fcb69f); color: #333; font-size: 20px; padding: 10px 14px; }
+        .btn-emoji { background: linear-gradient(135deg, #ffecd2, #fcb69f); color: #333; font-size: 18px; padding: 8px 12px; }
         
         input[type="file"] { display: none; }
         
-        /* ===== МЕНЮ ИГР ===== */
+        /* ===== IMAGE MODAL ===== */
+        .image-modal {
+            display: none; position: fixed; top: 0; left: 0;
+            width: 100%; height: 100%; background: rgba(0,0,0,0.9);
+            z-index: 1000; justify-content: center; align-items: center;
+            flex-direction: column;
+        }
+        
+        .image-modal.show { display: flex; }
+        
+        .image-modal img {
+            max-width: 90%; max-height: 80%;
+            border-radius: 12px; box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+        }
+        
+        .image-modal-actions {
+            margin-top: 20px; display: flex; gap: 10px;
+        }
+        
+        .image-modal-btn {
+            padding: 10px 20px; background: white; color: #333;
+            border: none; border-radius: 20px; cursor: pointer;
+            font-weight: 600;
+        }
+        
+        .image-modal-close {
+            position: absolute; top: 20px; right: 20px;
+            background: white; border: none; width: 40px; height: 40px;
+            border-radius: 50%; cursor: pointer; font-size: 20px;
+        }
+        
+        /* ===== GAMES MENU ===== */
         #gamesMenu { padding: 30px; }
         
-        .games-menu-title {
-            font-size: 24px;
-            margin-bottom: 10px;
-            color: #333;
-        }
-        
-        .games-menu-subtitle {
-            color: #666;
-            margin-bottom: 24px;
-        }
+        .section-title { font-size: 22px; margin-bottom: 8px; color: #333; }
+        .section-subtitle { color: #666; margin-bottom: 20px; font-size: 14px; }
         
         .games-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 16px;
         }
         
         .game-card {
             background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-            border-radius: 16px;
-            padding: 24px;
-            cursor: pointer;
-            transition: all 0.3s;
-            border: 2px solid transparent;
+            border-radius: 16px; padding: 20px; cursor: pointer;
+            transition: all 0.3s; border: 2px solid transparent;
         }
         
         .game-card:hover {
@@ -353,70 +306,46 @@
             border-color: #667eea;
         }
         
-        .game-icon { font-size: 48px; margin-bottom: 12px; }
-        .game-title { font-size: 18px; font-weight: 600; margin-bottom: 8px; color: #333; }
-        .game-desc { font-size: 13px; color: #666; line-height: 1.4; }
+        .game-icon { font-size: 40px; margin-bottom: 10px; }
+        .game-title { font-size: 16px; font-weight: 600; margin-bottom: 6px; color: #333; }
+        .game-desc { font-size: 12px; color: #666; line-height: 1.4; }
         
-        /* ===== ЛОББИ ===== */
+        /* ===== LOBBY ===== */
         #lobbyScreen { padding: 30px; justify-content: center; align-items: center; }
         
         .lobby-content { text-align: center; max-width: 500px; }
         
         .room-code {
-            font-size: 32px;
-            font-weight: 700;
-            color: #667eea;
-            letter-spacing: 4px;
-            margin: 20px 0;
-            padding: 20px;
-            background: #f5f7fa;
-            border-radius: 12px;
+            font-size: 32px; font-weight: 700; color: #667eea;
+            letter-spacing: 4px; margin: 20px 0; padding: 20px;
+            background: #f5f7fa; border-radius: 12px;
         }
         
         .lobby-input {
-            padding: 14px 18px;
-            border: 2px solid #e0e0e0;
-            border-radius: 12px;
-            font-size: 16px;
-            text-align: center;
-            width: 200px;
-            margin: 10px;
+            padding: 14px 18px; border: 2px solid #e0e0e0;
+            border-radius: 12px; font-size: 16px; text-align: center;
+            width: 200px; margin: 10px;
         }
         
         .btn-primary {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 12px 24px;
-            border: none;
-            border-radius: 12px;
-            cursor: pointer;
-            font-size: 14px;
-            font-weight: 600;
-            margin: 5px;
+            color: white; padding: 12px 24px; border: none;
+            border-radius: 12px; cursor: pointer; font-size: 14px;
+            font-weight: 600; margin: 5px;
         }
         
         .btn-secondary {
-            background: #e0e0e0;
-            color: #333;
-            padding: 12px 24px;
-            border: none;
-            border-radius: 12px;
-            cursor: pointer;
-            font-size: 14px;
-            font-weight: 600;
-            margin: 5px;
+            background: #e0e0e0; color: #333; padding: 12px 24px;
+            border: none; border-radius: 12px; cursor: pointer;
+            font-size: 14px; font-weight: 600; margin: 5px;
         }
         
         .waiting { text-align: center; padding: 30px; color: #666; }
         
         .waiting-spinner {
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #667eea;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            animation: spin 1s linear infinite;
-            margin: 20px auto;
+            border: 4px solid #f3f3f3; border-top: 4px solid #667eea;
+            border-radius: 50%; width: 40px; height: 40px;
+            animation: spin 1s linear infinite; margin: 20px auto;
         }
         
         @keyframes spin {
@@ -424,38 +353,26 @@
             100% { transform: rotate(360deg); }
         }
         
-        /* ===== ИГРОВОЕ ПОЛЕ ===== */
+        /* ===== GAME SCREEN ===== */
         #gameScreen { padding: 20px; }
         
         .game-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            padding: 16px;
-            background: #f5f7fa;
-            border-radius: 12px;
+            display: flex; justify-content: space-between;
+            align-items: center; margin-bottom: 20px;
+            padding: 14px; background: #f5f7fa; border-radius: 12px;
         }
         
-        .game-status { font-size: 16px; font-weight: 600; color: #333; }
+        .game-status { font-size: 15px; font-weight: 600; color: #333; }
         
         .game-board { display: flex; justify-content: center; margin: 20px 0; }
         
-        /* Крестики-нолики */
-        .ttt-board { display: grid; grid-template-columns: repeat(3, 100px); gap: 8px; }
+        .ttt-board { display: grid; grid-template-columns: repeat(3, 90px); gap: 8px; }
         
         .ttt-cell {
-            width: 100px;
-            height: 100px;
-            background: white;
-            border: 2px solid #667eea;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 48px;
-            font-weight: 700;
-            cursor: pointer;
+            width: 90px; height: 90px; background: white;
+            border: 2px solid #667eea; border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 44px; font-weight: 700; cursor: pointer;
             transition: all 0.2s;
         }
         
@@ -463,23 +380,17 @@
         .ttt-cell.x { color: #667eea; }
         .ttt-cell.o { color: #f5576c; }
         
-        /* Морской бой */
-        .battleship-container { display: flex; gap: 30px; flex-wrap: wrap; justify-content: center; }
+        .battleship-container { display: flex; gap: 20px; flex-wrap: wrap; justify-content: center; }
         .battleship-board-wrapper { text-align: center; }
-        .battleship-board-wrapper h3 { margin-bottom: 10px; color: #333; }
+        .battleship-board-wrapper h3 { margin-bottom: 10px; color: #333; font-size: 14px; }
         
-        .bs-board { display: grid; grid-template-columns: repeat(11, 30px); gap: 2px; }
+        .bs-board { display: grid; grid-template-columns: repeat(11, 28px); gap: 1px; }
         
         .bs-cell {
-            width: 30px;
-            height: 30px;
-            background: white;
-            border: 1px solid #ccc;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 10px;
-            font-weight: 600;
+            width: 28px; height: 28px; background: white;
+            border: 1px solid #ccc; display: flex;
+            align-items: center; justify-content: center;
+            font-size: 10px; font-weight: 600;
         }
         
         .bs-cell.header { background: #667eea; color: white; }
@@ -489,32 +400,224 @@
         .bs-cell.clickable { cursor: pointer; }
         .bs-cell.clickable:hover { background: #f5f7fa; }
         
-        /* Змейка */
         .snake-board {
-            display: grid;
-            gap: 2px;
-            background: #333;
-            padding: 2px;
-            border-radius: 8px;
+            display: grid; gap: 2px; background: #333;
+            padding: 2px; border-radius: 8px;
         }
         
-        .snake-cell { width: 40px; height: 40px; background: white; border-radius: 4px; }
+        .snake-cell { width: 36px; height: 36px; background: white; border-radius: 4px; }
         .snake-cell.p1 { background: #667eea; }
         .snake-cell.p2 { background: #f5576c; }
         .snake-cell.p1-head { background: #4c5fd5; }
         .snake-cell.p2-head { background: #d94a5e; }
         .snake-cell.clickable { cursor: pointer; border: 2px solid #ffd700; }
         
-        .winner-message {
-            text-align: center;
-            padding: 30px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border-radius: 16px;
-            margin: 20px 0;
+        /* Камень-ножницы-бумага */
+        .rps-container { text-align: center; padding: 20px; }
+        .rps-choices { display: flex; gap: 20px; justify-content: center; margin: 30px 0; }
+        
+        .rps-choice {
+            width: 100px; height: 100px; border-radius: 50%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 50px; cursor: pointer; transition: all 0.3s;
+            border: 3px solid transparent;
         }
         
-        .winner-message h2 { font-size: 28px; margin-bottom: 10px; }
+        .rps-choice:hover { transform: scale(1.1); border-color: #ffd700; }
+        .rps-choice.selected { border-color: #ffd700; transform: scale(1.1); }
+        
+        .rps-result {
+            font-size: 24px; font-weight: 700; margin: 20px 0;
+            padding: 20px; background: #f5f7fa; border-radius: 12px;
+        }
+        
+        .rps-score {
+            display: flex; gap: 40px; justify-content: center;
+            margin: 20px 0; font-size: 18px;
+        }
+        
+        /* Кости */
+        .dice-container { text-align: center; padding: 20px; }
+        
+        .dice-display {
+            display: flex; gap: 30px; justify-content: center;
+            margin: 30px 0;
+        }
+        
+        .dice {
+            width: 100px; height: 100px; background: white;
+            border: 3px solid #667eea; border-radius: 16px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 60px; font-weight: 700; color: #667eea;
+            transition: all 0.3s;
+        }
+        
+        .dice.rolling { animation: diceRoll 0.5s ease-in-out; }
+        
+        @keyframes diceRoll {
+            0%, 100% { transform: rotate(0deg); }
+            25% { transform: rotate(90deg); }
+            50% { transform: rotate(180deg); }
+            75% { transform: rotate(270deg); }
+        }
+        
+        .winner-message {
+            text-align: center; padding: 24px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white; border-radius: 16px; margin: 20px 0;
+        }
+        
+        .winner-message h2 { font-size: 24px; margin-bottom: 10px; }
+        
+        /* ===== DRAWING BOARD ===== */
+        #boardScreen { padding: 20px; }
+        
+        .board-tools {
+            display: flex; gap: 10px; padding: 12px;
+            background: #f5f7fa; border-radius: 12px;
+            margin-bottom: 16px; flex-wrap: wrap;
+            align-items: center;
+        }
+        
+        .color-picker {
+            width: 40px; height: 40px; border: none;
+            border-radius: 8px; cursor: pointer;
+        }
+        
+        .size-slider {
+            width: 120px; cursor: pointer;
+        }
+        
+        .tool-btn {
+            padding: 8px 14px; background: white;
+            border: 2px solid #667eea; border-radius: 8px;
+            cursor: pointer; font-size: 13px; font-weight: 600;
+            color: #667eea;
+        }
+        
+        .tool-btn.active { background: #667eea; color: white; }
+        
+        .canvas-container {
+            border: 2px solid #e0e0e0; border-radius: 12px;
+            overflow: hidden; background: white;
+            display: flex; justify-content: center;
+        }
+        
+        #drawingCanvas { cursor: crosshair; display: block; }
+        
+        /* ===== TASKS ===== */
+        #tasksScreen { padding: 20px; }
+        
+        .task-input-container {
+            display: flex; gap: 10px; margin-bottom: 20px;
+        }
+        
+        .task-input-container input {
+            flex: 1; padding: 12px 16px;
+            border: 2px solid #e0e0e0; border-radius: 12px;
+            outline: none; font-size: 14px;
+        }
+        
+        .task-input-container input:focus { border-color: #667eea; }
+        
+        .tasks-list { display: flex; flex-direction: column; gap: 10px; }
+        
+        .task-item {
+            display: flex; align-items: center; gap: 12px;
+            padding: 14px; background: #f5f7fa;
+            border-radius: 12px; transition: all 0.2s;
+        }
+        
+        .task-item:hover { background: #e9ecef; }
+        
+        .task-item.done { opacity: 0.6; }
+        .task-item.done .task-text { text-decoration: line-through; }
+        
+        .task-checkbox {
+            width: 24px; height: 24px; cursor: pointer;
+            accent-color: #667eea;
+        }
+        
+        .task-text { flex: 1; font-size: 14px; color: #333; }
+        
+        .task-author { font-size: 11px; color: #888; }
+        
+        .task-delete {
+            background: none; border: none; cursor: pointer;
+            font-size: 18px; color: #f44336; padding: 4px 8px;
+        }
+        
+        /* ===== CLOCK ===== */
+        #clockScreen { padding: 30px; justify-content: center; align-items: center; }
+        
+        .clock-container { text-align: center; width: 100%; max-width: 600px; }
+        
+        .big-clock {
+            font-size: 72px; font-weight: 700;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin: 20px 0;
+            font-variant-numeric: tabular-nums;
+        }
+        
+        .big-date {
+            font-size: 20px; color: #666; margin-bottom: 30px;
+        }
+        
+        .timer-section {
+            background: #f5f7fa; border-radius: 16px;
+            padding: 24px; margin-top: 20px;
+        }
+        
+        .timer-display {
+            font-size: 48px; font-weight: 700;
+            color: #333; margin: 20px 0;
+            font-variant-numeric: tabular-nums;
+        }
+        
+        .timer-input {
+            padding: 10px 14px; border: 2px solid #e0e0e0;
+            border-radius: 8px; font-size: 16px; width: 80px;
+            text-align: center; margin: 0 4px;
+        }
+        
+        .timer-input:focus { border-color: #667eea; outline: none; }
+        
+        /* ===== DASHBOARD ===== */
+        #dashboardScreen { padding: 20px; }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 16px; margin-bottom: 24px;
+        }
+        
+        .stat-card {
+            padding: 20px; border-radius: 16px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white; text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 36px; font-weight: 700; margin-bottom: 4px;
+        }
+        
+        .stat-label { font-size: 13px; opacity: 0.9; }
+        
+        .activity-list {
+            background: #f5f7fa; border-radius: 12px;
+            padding: 16px;
+        }
+        
+        .activity-item {
+            padding: 10px; border-bottom: 1px solid #e0e0e0;
+            font-size: 13px; color: #333;
+        }
+        
+        .activity-item:last-child { border-bottom: none; }
+        .activity-time { color: #888; font-size: 11px; }
     </style>
 </head>
 <body>
@@ -533,7 +636,7 @@
         <!-- АВТОРИЗАЦИЯ -->
         <div class="screen active" id="authScreen">
             <div class="auth-box">
-                <h2>💬🎮 Добро пожаловать!</h2>
+                <h2>👋 Добро пожаловать!</h2>
                 <div class="auth-tabs">
                     <button class="auth-tab active" onclick="showTab('login')">Вход</button>
                     <button class="auth-tab" onclick="showTab('register')">Регистрация</button>
@@ -557,20 +660,40 @@
 
         <!-- ГЛАВНОЕ МЕНЮ -->
         <div class="screen" id="mainMenu">
-            <div class="main-menu-content">
-                <h2>Что будем делать?</h2>
-                <p>Общайся с коллегами или играй в онлайн-игры</p>
-                <div class="main-menu-grid">
-                    <div class="main-card chat" onclick="openChat()">
-                        <div class="main-card-icon">💬</div>
-                        <div class="main-card-title">Чат</div>
-                        <div class="main-card-desc">Общайся с коллегами, отправляй фото и эмодзи</div>
-                    </div>
-                    <div class="main-card games" onclick="openGames()">
-                        <div class="main-card-icon">🎮</div>
-                        <div class="main-card-title">Игры</div>
-                        <div class="main-card-desc">Играй в крестики-нолики, морской бой и змейку</div>
-                    </div>
+            <div class="welcome">
+                <h2 id="welcomeText">Привет!</h2>
+                <p>Выберите раздел для работы и отдыха</p>
+            </div>
+            <div class="menu-grid">
+                <div class="menu-card chat" onclick="openChat()">
+                    <div class="menu-card-icon">💬</div>
+                    <div class="menu-card-title">Чат</div>
+                    <div class="menu-card-desc">Общение и фото</div>
+                </div>
+                <div class="menu-card games" onclick="openGames()">
+                    <div class="menu-card-icon">🎮</div>
+                    <div class="menu-card-title">Игры</div>
+                    <div class="menu-card-desc">5 онлайн-игр</div>
+                </div>
+                <div class="menu-card board" onclick="openBoard()">
+                    <div class="menu-card-icon">🎨</div>
+                    <div class="menu-card-title">Доска</div>
+                    <div class="menu-card-desc">Рисование</div>
+                </div>
+                <div class="menu-card tasks" onclick="openTasks()">
+                    <div class="menu-card-icon">✅</div>
+                    <div class="menu-card-title">Задачи</div>
+                    <div class="menu-card-desc">Общий список</div>
+                </div>
+                <div class="menu-card clock" onclick="openClock()">
+                    <div class="menu-card-icon">🕐</div>
+                    <div class="menu-card-title">Часы</div>
+                    <div class="menu-card-desc">Таймер и секундомер</div>
+                </div>
+                <div class="menu-card dashboard" onclick="openDashboard()">
+                    <div class="menu-card-icon">📊</div>
+                    <div class="menu-card-title">Статистика</div>
+                    <div class="menu-card-desc">Активность команды</div>
                 </div>
             </div>
         </div>
@@ -594,6 +717,11 @@
                 <button class="emoji-btn" onclick="addEmoji('💪')">💪</button>
                 <button class="emoji-btn" onclick="addEmoji('🚀')">🚀</button>
                 <button class="emoji-btn" onclick="addEmoji('💯')">💯</button>
+                <button class="emoji-btn" onclick="addEmoji('🥳')">🥳</button>
+                <button class="emoji-btn" onclick="addEmoji('😅')">😅</button>
+                <button class="emoji-btn" onclick="addEmoji('🤣')">🤣</button>
+                <button class="emoji-btn" onclick="addEmoji('😘')">😘</button>
+                <button class="emoji-btn" onclick="addEmoji('🤗')">🤗</button>
             </div>
             <div class="input-area">
                 <input type="text" id="messageInput" placeholder="Напишите сообщение...">
@@ -606,23 +734,33 @@
 
         <!-- МЕНЮ ИГР -->
         <div class="screen" id="gamesMenu">
-            <h2 class="games-menu-title">Выберите игру</h2>
-            <p class="games-menu-subtitle">Создайте комнату и пригласите коллегу</p>
+            <h2 class="section-title">🎮 Выберите игру</h2>
+            <p class="section-subtitle">Создайте комнату и отправьте код коллеге в чат</p>
             <div class="games-grid">
                 <div class="game-card" onclick="selectGame('ttt')">
                     <div class="game-icon">❌⭕</div>
                     <div class="game-title">Крестики-нолики</div>
-                    <div class="game-desc">Классическая игра 3×3. Выстройте линию из трёх знаков!</div>
+                    <div class="game-desc">Классика 3×3</div>
                 </div>
                 <div class="game-card" onclick="selectGame('battleship')">
                     <div class="game-icon">🚢💥</div>
                     <div class="game-title">Морской бой</div>
-                    <div class="game-desc">Расставьте корабли и потопите флот противника!</div>
+                    <div class="game-desc">Потопи флот врага</div>
                 </div>
                 <div class="game-card" onclick="selectGame('snake')">
                     <div class="game-icon">🐍</div>
                     <div class="game-title">Змейка</div>
-                    <div class="game-desc">Рисуйте линии и заблокируйте соперника!</div>
+                    <div class="game-desc">Заблокируй соперника</div>
+                </div>
+                <div class="game-card" onclick="selectGame('rps')">
+                    <div class="game-icon">✊✋✌️</div>
+                    <div class="game-title">Камень-ножницы-бумага</div>
+                    <div class="game-desc">Быстрая дуэль</div>
+                </div>
+                <div class="game-card" onclick="selectGame('dice')">
+                    <div class="game-icon">🎲</div>
+                    <div class="game-title">Кости</div>
+                    <div class="game-desc">Кто выбросит больше</div>
                 </div>
             </div>
         </div>
@@ -655,9 +793,86 @@
         <div class="screen" id="gameScreen">
             <div class="game-header">
                 <div class="game-status" id="gameStatus">Ваш ход</div>
-                <button class="btn-secondary" onclick="leaveGame()">Выйти</button>
+                <div>
+                    <button class="btn-secondary" onclick="restartGame()" id="restartBtn" style="display:none;">🔄 Заново</button>
+                    <button class="btn-secondary" onclick="leaveGame()">Выйти</button>
+                </div>
             </div>
             <div id="gameContent"></div>
+        </div>
+
+        <!-- ДОСКА -->
+        <div class="screen" id="boardScreen">
+            <div class="board-tools">
+                <input type="color" class="color-picker" id="colorPicker" value="#667eea">
+                <input type="range" class="size-slider" id="sizeSlider" min="1" max="30" value="5">
+                <span id="sizeLabel">5px</span>
+                <button class="tool-btn active" id="penTool" onclick="setTool('pen')">✏️ Кисть</button>
+                <button class="tool-btn" id="eraserTool" onclick="setTool('eraser')">🧽 Ластик</button>
+                <button class="tool-btn" onclick="clearCanvas()">🗑️ Очистить</button>
+                <button class="tool-btn" onclick="saveCanvas()">💾 Сохранить</button>
+                <button class="tool-btn" onclick="sendCanvasToChat()">📤 В чат</button>
+            </div>
+            <div class="canvas-container">
+                <canvas id="drawingCanvas" width="800" height="500"></canvas>
+            </div>
+        </div>
+
+        <!-- ЗАДАЧИ -->
+        <div class="screen" id="tasksScreen">
+            <h2 class="section-title">✅ Общие задачи</h2>
+            <p class="section-subtitle">Список виден всем коллегам</p>
+            <div class="task-input-container">
+                <input type="text" id="taskInput" placeholder="Новая задача..." onkeypress="if(event.key==='Enter')addTask()">
+                <button class="btn-primary" onclick="addTask()">Добавить</button>
+            </div>
+            <div class="tasks-list" id="tasksList"></div>
+        </div>
+
+        <!-- ЧАСЫ -->
+        <div class="screen" id="clockScreen">
+            <div class="clock-container">
+                <div class="big-clock" id="bigClock">00:00:00</div>
+                <div class="big-date" id="bigDate"></div>
+                
+                <div class="timer-section">
+                    <h3 style="margin-bottom: 16px;">⏱️ Таймер обратного отсчёта</h3>
+                    <div>
+                        <input type="number" class="timer-input" id="timerHours" placeholder="Ч" min="0" max="23" value="0">
+                        <input type="number" class="timer-input" id="timerMinutes" placeholder="М" min="0" max="59" value="5">
+                        <input type="number" class="timer-input" id="timerSeconds" placeholder="С" min="0" max="59" value="0">
+                    </div>
+                    <div class="timer-display" id="timerDisplay">00:05:00</div>
+                    <button class="btn-primary" onclick="startTimer()" id="startTimerBtn">▶️ Старт</button>
+                    <button class="btn-secondary" onclick="resetTimer()">🔄 Сброс</button>
+                </div>
+                
+                <div class="timer-section" style="margin-top: 16px;">
+                    <h3 style="margin-bottom: 16px;">⏲️ Секундомер</h3>
+                    <div class="timer-display" id="stopwatchDisplay">00:00:00</div>
+                    <button class="btn-primary" onclick="toggleStopwatch()" id="stopwatchBtn">▶️ Старт</button>
+                    <button class="btn-secondary" onclick="resetStopwatch()">🔄 Сброс</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- СТАТИСТИКА -->
+        <div class="screen" id="dashboardScreen">
+            <h2 class="section-title">📊 Статистика команды</h2>
+            <p class="section-subtitle">Активность портала в реальном времени</p>
+            <div class="stats-grid" id="statsGrid"></div>
+            <h3 style="margin: 20px 0 10px;">📝 Последние действия</h3>
+            <div class="activity-list" id="activityList"></div>
+        </div>
+    </div>
+
+    <!-- МОДАЛЬНОЕ ОКНО ДЛЯ КАРТИНОК -->
+    <div class="image-modal" id="imageModal">
+        <button class="image-modal-close" onclick="closeImageModal()">✕</button>
+        <img id="modalImage" src="">
+        <div class="image-modal-actions">
+            <button class="image-modal-btn" onclick="downloadImage()">💾 Скачать</button>
+            <button class="image-modal-btn" onclick="closeImageModal()">Закрыть</button>
         </div>
     </div>
 
@@ -666,23 +881,24 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
 
     <script>
-        // ===== ЗАМЕНИ НА СВОЮ КОНФИГУРАЦИЮ FIREBASE (одна для всего сайта) =====
+        // ===== ЗАМЕНИ НА СВОЮ КОНФИГУРАЦИЮ FIREBASE =====
         const firebaseConfig = {
-  apiKey: "AIzaSyD8vC-aybeoSegmGPFDl-Fp1PzIuF_k4LM",
-  authDomain: "colleagues-chat.firebaseapp.com",
-  databaseURL: "https://colleagues-chat-default-rtdb.firebaseio.com",
-  projectId: "colleagues-chat",
-  storageBucket: "colleagues-chat.firebasestorage.app",
-  messagingSenderId: "132389783756",
-  appId: "1:132389783756:web:796795763ec6b4d62e9a69",
-  measurementId: "G-HKX8ST4RCD"
-};
+            apiKey: "ТВОЙ_API_KEY",
+            authDomain: "ТВОЙ_ПРОЕКТ.firebaseapp.com",
+            databaseURL: "https://ТВОЙ_ПРОЕКТ-default-rtdb.firebaseio.com",
+            projectId: "ТВОЙ_ПРОЕКТ",
+            storageBucket: "ТВОЙ_ПРОЕКТ.appspot.com",
+            messagingSenderId: "ТВОЙ_SENDER_ID",
+            appId: "ТВОЙ_APP_ID"
+        };
 
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
         const db = firebase.database();
         const chatMessagesRef = db.ref('chat/messages');
         const gamesRef = db.ref('games');
+        const tasksRef = db.ref('tasks');
+        const statsRef = db.ref('stats');
 
         let currentUser = null;
         let currentGame = null;
@@ -690,6 +906,7 @@
         let playerNumber = 0;
         let currentScreen = 'mainMenu';
         let screenHistory = [];
+        let currentImageSrc = null;
 
         // ===== НАВИГАЦИЯ =====
         function showScreen(screenId, addToHistory = true) {
@@ -704,6 +921,7 @@
         }
 
         function goBack() {
+            if (currentRoom) { leaveGame(); return; }
             if (screenHistory.length > 0) {
                 const prev = screenHistory.pop();
                 document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
@@ -711,20 +929,12 @@
                 currentScreen = prev;
                 updateBackButton();
                 updateHeaderTitle();
-                
-                if (prev === 'mainMenu') {
-                    cleanupGame();
-                }
             }
         }
 
         function updateBackButton() {
             const btn = document.getElementById('backBtn');
-            if (currentScreen === 'mainMenu' || currentScreen === 'authScreen') {
-                btn.style.display = 'none';
-            } else {
-                btn.style.display = 'inline-block';
-            }
+            btn.style.display = (currentScreen === 'mainMenu' || currentScreen === 'authScreen') ? 'none' : 'inline-block';
         }
 
         function updateHeaderTitle() {
@@ -733,19 +943,21 @@
                 'chatScreen': '💬 Чат',
                 'gamesMenu': '🎮 Игры',
                 'lobbyScreen': '🎯 Лобби',
-                'gameScreen': '🎮 Игра'
+                'gameScreen': '🎮 Игра',
+                'boardScreen': '🎨 Доска для рисования',
+                'tasksScreen': '✅ Задачи',
+                'clockScreen': '🕐 Часы и таймер',
+                'dashboardScreen': '📊 Статистика'
             };
             document.getElementById('headerTitle').textContent = titles[currentScreen] || '🎉 Портал коллег';
         }
 
-        function openChat() {
-            showScreen('chatScreen');
-            loadChatMessages();
-        }
-
-        function openGames() {
-            showScreen('gamesMenu');
-        }
+        function openChat() { showScreen('chatScreen'); loadChatMessages(); }
+        function openGames() { showScreen('gamesMenu'); }
+        function openBoard() { showScreen('boardScreen'); initCanvas(); }
+        function openTasks() { showScreen('tasksScreen'); loadTasks(); }
+        function openClock() { showScreen('clockScreen'); }
+        function openDashboard() { showScreen('dashboardScreen'); loadDashboard(); }
 
         // ===== АВТОРИЗАЦИЯ =====
         function showTab(tab) {
@@ -768,17 +980,13 @@
             const password2 = document.getElementById('regPassword2').value;
             const errorEl = document.getElementById('regError');
 
-            if (password !== password2) {
-                errorEl.textContent = 'Пароли не совпадают!';
-                return;
-            }
+            if (password !== password2) { errorEl.textContent = 'Пароли не совпадают!'; return; }
 
             try {
                 const userCredential = await auth.createUserWithEmailAndPassword(email, password);
                 await userCredential.user.updateProfile({ displayName: name });
-            } catch (error) {
-                errorEl.textContent = error.message;
-            }
+                logActivity(name + ' зарегистрировался');
+            } catch (error) { errorEl.textContent = error.message; }
         }
 
         async function login(e) {
@@ -789,15 +997,14 @@
 
             try {
                 await auth.signInWithEmailAndPassword(email, password);
-            } catch (error) {
-                errorEl.textContent = 'Неверный email или пароль!';
-            }
+            } catch (error) { errorEl.textContent = 'Неверный email или пароль!'; }
         }
 
         function logout() {
             auth.signOut();
             cleanupGame();
             chatMessagesRef.off();
+            tasksRef.off();
             document.getElementById('messages').innerHTML = '';
             screenHistory = [];
         }
@@ -807,13 +1014,23 @@
                 currentUser = user;
                 document.getElementById('userInfo').style.display = 'flex';
                 document.getElementById('currentUserName').textContent = '👤 ' + (user.displayName || user.email);
+                document.getElementById('welcomeText').textContent = 'Привет, ' + (user.displayName || 'друг') + '!';
                 showScreen('mainMenu', false);
+                logActivity((user.displayName || 'Пользователь') + ' вошёл в систему');
             } else {
                 currentUser = null;
                 document.getElementById('userInfo').style.display = 'none';
                 showScreen('authScreen', false);
             }
         });
+
+        function logActivity(text) {
+            if (!currentUser) return;
+            statsRef.child('activity').push({
+                text: text,
+                time: Date.now()
+            });
+        }
 
         // ===== ЧАТ =====
         function loadChatMessages() {
@@ -848,15 +1065,27 @@
                 if (message.image) {
                     const img = document.createElement('img');
                     img.src = message.image;
-                    img.onclick = function() { window.open(message.image, '_blank'); };
+                    img.onclick = function() { openImageModal(message.image); };
                     bubbleDiv.appendChild(img);
                 }
 
                 contentDiv.appendChild(bubbleDiv);
+
+                const timeDiv = document.createElement('div');
+                timeDiv.className = 'time';
+                timeDiv.textContent = formatTime(message.timestamp);
+                contentDiv.appendChild(timeDiv);
+
                 messageDiv.appendChild(contentDiv);
                 messagesDiv.appendChild(messageDiv);
                 messagesDiv.scrollTop = messagesDiv.scrollHeight;
             });
+        }
+
+        function formatTime(timestamp) {
+            if (!timestamp) return '';
+            const d = new Date(timestamp);
+            return d.getHours().toString().padStart(2, '0') + ':' + d.getMinutes().toString().padStart(2, '0');
         }
 
         function getInitials(name) {
@@ -876,6 +1105,7 @@
                 });
                 input.value = '';
                 document.getElementById('emojiPanel').classList.remove('show');
+                db.ref('stats/messageCount').transaction(c => (c || 0) + 1);
             }
         }
 
@@ -894,6 +1124,7 @@
                     image: ev.target.result,
                     timestamp: Date.now()
                 });
+                db.ref('stats/photoCount').transaction(c => (c || 0) + 1);
             };
             reader.readAsDataURL(file);
         });
@@ -908,12 +1139,33 @@
             input.focus();
         }
 
+        // ===== МОДАЛЬНОЕ ОКНО КАРТИНОК =====
+        function openImageModal(src) {
+            currentImageSrc = src;
+            document.getElementById('modalImage').src = src;
+            document.getElementById('imageModal').classList.add('show');
+        }
+
+        function closeImageModal() {
+            document.getElementById('imageModal').classList.remove('show');
+            currentImageSrc = null;
+        }
+
+        function downloadImage() {
+            if (!currentImageSrc) return;
+            const link = document.createElement('a');
+            link.href = currentImageSrc;
+            link.download = 'image_' + Date.now() + '.png';
+            link.click();
+        }
+
         // ===== ИГРЫ =====
         function selectGame(game) {
             currentGame = game;
             document.getElementById('lobbyTitle').textContent = 'Создание комнаты';
             document.getElementById('createRoomSection').style.display = 'block';
             document.getElementById('joinRoomSection').style.display = 'none';
+            document.getElementById('restartBtn').style.display = 'none';
             
             const code = Math.random().toString(36).substring(2, 8).toUpperCase();
             document.getElementById('roomCode').textContent = code;
@@ -973,10 +1225,13 @@
 
         function startGame(gameData) {
             showScreen('gameScreen');
+            document.getElementById('restartBtn').style.display = 'none';
             
             if (currentGame === 'ttt') initTTT(gameData);
             else if (currentGame === 'battleship') initBattleship(gameData);
             else if (currentGame === 'snake') initSnake(gameData);
+            else if (currentGame === 'rps') initRPS(gameData);
+            else if (currentGame === 'dice') initDice(gameData);
         }
 
         function cleanupGame() {
@@ -994,14 +1249,44 @@
             showScreen('gamesMenu', false);
         }
 
+        function restartGame() {
+            if (!currentRoom) return;
+            gamesRef.child(currentRoom).update({
+                board: null,
+                currentPlayer: 1,
+                winner: null,
+                p1Path: null,
+                p2Path: null,
+                player1Ships: null,
+                player2Ships: null,
+                player1Shots: null,
+                player2Shots: null,
+                phase: 'placement',
+                currentTurn: 1,
+                p1Choice: null,
+                p2Choice: null,
+                p1Score: 0,
+                p2Score: 0,
+                p1Dice: null,
+                p2Dice: null,
+                diceRound: 1
+            });
+            document.getElementById('restartBtn').style.display = 'none';
+        }
+
         // ===== КРЕСТИКИ-НОЛИКИ =====
         function initTTT(gameData) {
             const board = ['','','','','','','','',''];
             
+            gamesRef.child(currentRoom).once('value', (s) => {
+                if (!s.val().board) {
+                    gamesRef.child(currentRoom).update({ board: board, currentPlayer: 1 });
+                }
+            });
+            
             gamesRef.child(currentRoom).on('value', (snapshot) => {
                 const data = snapshot.val();
                 if (!data) return;
-                
                 const gameBoard = data.board || board;
                 const currentPlayer = data.currentPlayer || 1;
                 renderTTT(gameBoard, currentPlayer, data.winner);
@@ -1011,20 +1296,18 @@
                 gamesRef.child(currentRoom).once('value', (snapshot) => {
                     const data = snapshot.val();
                     if (!data) return;
-                    
                     const gameBoard = data.board || board;
                     const current = data.currentPlayer || 1;
-                    
                     if (current !== playerNumber || gameBoard[index] !== '' || data.winner) return;
                     
                     gameBoard[index] = playerNumber === 1 ? 'X' : 'O';
                     const winner = checkTTTWinner(gameBoard);
-                    
-                    gamesRef.child(currentRoom).update({
-                        board: gameBoard,
-                        currentPlayer: current === 1 ? 2 : 1,
-                        winner: winner
-                    });
+                    const update = { board: gameBoard, currentPlayer: current === 1 ? 2 : 1 };
+                    if (winner) {
+                        update.winner = winner;
+                        db.ref('stats/gamesPlayed').transaction(c => (c || 0) + 1);
+                    }
+                    gamesRef.child(currentRoom).update(update);
                 });
             };
         }
@@ -1034,8 +1317,8 @@
             const myTurn = currentPlayer === playerNumber && !winner;
             
             document.getElementById('gameStatus').textContent = winner ? 
-                (winner === 'draw' ? 'Ничья!' : (winner === (playerNumber === 1 ? 'X' : 'O') ? '🏆 Вы победили!' : '😔 Вы проиграли!')) :
-                (myTurn ? '🎯 Ваш ход' : '⏳ Ход соперника');
+                (winner === 'draw' ? '🤝 Ничья!' : (winner === (playerNumber === 1 ? 'X' : 'O') ? '🏆 Вы победили!' : '😔 Вы проиграли!')) :
+                (myTurn ? '🎯 Ваш ход (' + (playerNumber === 1 ? 'X' : 'O') + ')' : '⏳ Ход соперника');
             
             let html = '<div class="game-board"><div class="ttt-board">';
             for (let i = 0; i < 9; i++) {
@@ -1047,6 +1330,7 @@
             
             if (winner) {
                 html += `<div class="winner-message"><h2>${winner === 'draw' ? 'Ничья!' : 'Игра окончена!'}</h2></div>`;
+                document.getElementById('restartBtn').style.display = 'inline-block';
             }
             
             content.innerHTML = html;
@@ -1091,11 +1375,9 @@
             });
             
             window.placeShips = function() {
-                if (myShips.length !== 10) { alert('Расставьте все корабли!'); return; }
-                
+                if (myShips.length !== 10) { alert('Расставьте все 10 кораблей!'); return; }
                 const playerKey = playerNumber === 1 ? 'player1Ships' : 'player2Ships';
                 const update = { [playerKey]: myShips };
-                
                 gamesRef.child(currentRoom).once('value', (snapshot) => {
                     const data = snapshot.val();
                     if (data.player1Ships && data.player2Ships) {
@@ -1110,63 +1392,52 @@
                 gamesRef.child(currentRoom).once('value', (snapshot) => {
                     const data = snapshot.val();
                     if (!data || data.phase !== 'battle') return;
-                    
                     const currentTurn = data.currentTurn || 1;
                     if (currentTurn !== playerNumber) return;
                     
                     const shotKey = playerNumber === 1 ? 'player1Shots' : 'player2Shots';
                     const shots = data[shotKey] || [];
-                    
                     if (shots.some(s => s.row === row && s.col === col)) return;
                     
                     const enemyKey = playerNumber === 1 ? 'player2Ships' : 'player1Ships';
                     const enemyShips = data[enemyKey] || [];
-                    
                     const hit = enemyShips.some(ship => ship.some(cell => cell.row === row && cell.col === col));
                     
                     shots.push({ row, col, hit: hit });
-                    
                     const update = { [shotKey]: shots };
                     if (!hit) update.currentTurn = currentTurn === 1 ? 2 : 1;
                     
                     const allSunk = enemyShips.length === 10 && enemyShips.every(ship => 
                         ship.every(cell => shots.some(s => s.row === cell.row && s.col === cell.col))
                     );
-                    
-                    if (allSunk) update.winner = playerNumber;
-                    
+                    if (allSunk) {
+                        update.winner = playerNumber;
+                        db.ref('stats/gamesPlayed').transaction(c => (c || 0) + 1);
+                    }
                     gamesRef.child(currentRoom).update(update);
                 });
             };
             
             window.toggleShipPlacement = function(row, col) {
-                const size = 1;
-                const horizontal = Math.random() > 0.5;
                 const ship = [{ row, col }];
-                
                 const exists = myShips.some(s => s.some(cell => cell.row === row && cell.col === col));
-                
                 if (exists) {
                     myShips = myShips.filter(s => !s.some(cell => cell.row === row && cell.col === col));
                 } else {
                     myShips.push(ship);
                 }
-                
                 renderBattleship('placement', 0, null);
             };
             
             window.autoPlaceShips = function() {
                 myShips = [];
                 const sizes = [4, 3, 3, 2, 2, 2, 1, 1, 1, 1];
-                
                 for (let size of sizes) {
-                    let placed = false;
-                    let attempts = 0;
+                    let placed = false, attempts = 0;
                     while (!placed && attempts < 100) {
                         const horizontal = Math.random() > 0.5;
                         const row = Math.floor(Math.random() * 10);
                         const col = Math.floor(Math.random() * 10);
-                        
                         const ship = [];
                         let valid = true;
                         for (let i = 0; i < size; i++) {
@@ -1175,20 +1446,15 @@
                             if (r >= 10 || c >= 10) { valid = false; break; }
                             ship.push({ row: r, col: c });
                         }
-                        
                         if (valid) {
                             const overlap = myShips.some(s => s.some(cell => 
                                 ship.some(sc => sc.row === cell.row && sc.col === cell.col)
                             ));
-                            if (!overlap) {
-                                myShips.push(ship);
-                                placed = true;
-                            }
+                            if (!overlap) { myShips.push(ship); placed = true; }
                         }
                         attempts++;
                     }
                 }
-                
                 renderBattleship('placement', 0, null);
             };
         }
@@ -1199,82 +1465,65 @@
             
             document.getElementById('gameStatus').textContent = winner ? 
                 (winner === playerNumber ? '🏆 Вы победили!' : '😔 Вы проиграли!') :
-                (phase === 'placement' ? '🚢 Расставьте корали' : (myTurn ? '🎯 Ваш ход' : '⏳ Ход соперника'));
+                (phase === 'placement' ? '🚢 Расставьте корабли (' + myShips.length + '/10)' : (myTurn ? '🎯 Ваш ход' : '⏳ Ход соперника'));
             
             let html = '<div class="battleship-container">';
-            
             if (phase === 'placement') {
                 html += '<div class="battleship-board-wrapper"><h3>Ваше поле</h3>';
                 html += renderBSBoard(myShips, [], true, false);
                 html += '<div style="margin-top:10px;">';
                 html += '<button class="btn-primary" onclick="autoPlaceShips()">🎲 Авторасстановка</button>';
                 html += '<button class="btn-primary" onclick="placeShips()">✅ Готово</button>';
-                html += '</div>';
-                html += '<p style="margin-top:10px; font-size:12px; color:#666;">Кликайте по клеткам, чтобы ставить корабли (по 1 клетке)</p>';
-                html += '</div>';
+                html += '</div></div>';
             } else {
                 html += '<div class="battleship-board-wrapper"><h3>Ваше поле</h3>';
                 html += renderBSBoard(myShips, enemyShots, false, false);
                 html += '</div>';
-                
                 html += '<div class="battleship-board-wrapper"><h3>Поле противника</h3>';
                 html += renderBSBoard([], myShots, false, true);
                 html += '</div>';
             }
-            
             html += '</div>';
             
             if (winner) {
                 html += `<div class="winner-message"><h2>Игра окончена!</h2></div>`;
+                document.getElementById('restartBtn').style.display = 'inline-block';
             }
-            
             content.innerHTML = html;
         }
 
         function renderBSBoard(ships, shots, clickable, isEnemy) {
             const letters = 'АБВГДЕЖЗИК';
             let html = '<div class="bs-board">';
-            
             html += '<div class="bs-cell header"></div>';
             for (let c = 0; c < 10; c++) html += `<div class="bs-cell header">${letters[c]}</div>`;
-            
             for (let r = 0; r < 10; r++) {
                 html += `<div class="bs-cell header">${r + 1}</div>`;
                 for (let c = 0; c < 10; c++) {
                     let cellClass = 'bs-cell';
                     let onclick = '';
-                    
                     const hasShip = ships.some(ship => ship.some(cell => cell.row === r && cell.col === c));
                     const shot = shots.find(s => s.row === r && s.col === c);
-                    
                     if (hasShip && !isEnemy) cellClass += ' ship';
                     if (shot) cellClass += shot.hit ? ' hit' : ' miss';
-                    
                     if (clickable && !shot && !hasShip) {
                         cellClass += ' clickable';
                         onclick = `onclick="toggleShipPlacement(${r},${c})"`;
                     }
-                    
                     if (isEnemy && !shot) {
                         cellClass += ' clickable';
                         onclick = `onclick="makeBattleshipShot(${r},${c})"`;
                     }
-                    
                     html += `<div class="${cellClass}" ${onclick}></div>`;
                 }
             }
-            
             html += '</div>';
             return html;
         }
 
         // ===== ЗМЕЙКА =====
-        let p1Path = [];
-        let p2Path = [];
-        
         function initSnake(gameData) {
             const size = 10;
-            
             gamesRef.child(currentRoom).once('value', (snapshot) => {
                 const data = snapshot.val();
                 if (!data.p1Path) {
@@ -1289,27 +1538,21 @@
             gamesRef.child(currentRoom).on('value', (snapshot) => {
                 const data = snapshot.val();
                 if (!data) return;
-                
-                p1Path = data.p1Path || [{ row: 0, col: 0 }];
-                p2Path = data.p2Path || [{ row: size - 1, col: size - 1 }];
-                const currentTurn = data.currentTurn || 1;
-                const winner = data.winner;
-                
-                renderSnake(currentTurn, winner, size);
+                const p1Path = data.p1Path || [{ row: 0, col: 0 }];
+                const p2Path = data.p2Path || [{ row: size - 1, col: size - 1 }];
+                renderSnake(data.currentTurn || 1, data.winner, size, p1Path, p2Path);
             });
             
             window.makeSnakeMove = function(row, col) {
                 gamesRef.child(currentRoom).once('value', (snapshot) => {
                     const data = snapshot.val();
                     if (!data) return;
-                    
                     const currentTurn = data.currentTurn || 1;
                     if (currentTurn !== playerNumber) return;
                     
                     const myPath = playerNumber === 1 ? data.p1Path : data.p2Path;
                     const enemyPath = playerNumber === 1 ? data.p2Path : data.p1Path;
                     const head = myPath[myPath.length - 1];
-                    
                     const dr = Math.abs(row - head.row);
                     const dc = Math.abs(col - head.col);
                     
@@ -1318,7 +1561,6 @@
                         if (!allPaths.some(cell => cell.row === row && cell.col === col)) {
                             const newPath = [...myPath, { row, col }];
                             const update = {};
-                            
                             if (playerNumber === 1) update.p1Path = newPath;
                             else update.p2Path = newPath;
                             
@@ -1329,10 +1571,12 @@
                                 (playerNumber === 1 ? myPath : data.p1Path);
                             
                             const canMove = checkSnakeCanMove(nextPath[nextPath.length - 1], [...nextPath, ...nextEnemyPath], size);
-                            
-                            if (!canMove) update.winner = currentTurn;
-                            else update.currentTurn = nextPlayer;
-                            
+                            if (!canMove) {
+                                update.winner = currentTurn;
+                                db.ref('stats/gamesPlayed').transaction(c => (c || 0) + 1);
+                            } else {
+                                update.currentTurn = nextPlayer;
+                            }
                             gamesRef.child(currentRoom).update(update);
                         }
                     }
@@ -1352,7 +1596,7 @@
             return false;
         }
 
-        function renderSnake(currentTurn, winner, size) {
+        function renderSnake(currentTurn, winner, size, p1Path, p2Path) {
             const content = document.getElementById('gameContent');
             const myTurn = currentTurn === playerNumber && !winner;
             
@@ -1361,16 +1605,13 @@
                 (myTurn ? '🎯 Ваш ход' : '⏳ Ход соперника');
             
             let html = '<div class="game-board">';
-            html += `<div class="snake-board" style="grid-template-columns: repeat(${size}, 40px);">`;
-            
+            html += `<div class="snake-board" style="grid-template-columns: repeat(${size}, 36px);">`;
             for (let r = 0; r < size; r++) {
                 for (let c = 0; c < size; c++) {
                     let cellClass = 'snake-cell';
                     let onclick = '';
-                    
                     const p1Index = p1Path.findIndex(cell => cell.row === r && cell.col === c);
                     const p2Index = p2Path.findIndex(cell => cell.row === r && cell.col === c);
-                    
                     if (p1Index >= 0) cellClass += p1Index === p1Path.length - 1 ? ' p1-head' : ' p1';
                     else if (p2Index >= 0) cellClass += p2Index === p2Path.length - 1 ? ' p2-head' : ' p2';
                     else if (myTurn) {
@@ -1382,19 +1623,552 @@
                             cellClass += ' clickable';
                         }
                     }
-                    
                     html += `<div class="${cellClass}" ${onclick}></div>`;
                 }
             }
-            
             html += '</div></div>';
-            
             if (winner) {
                 html += `<div class="winner-message"><h2>Игра окончена!</h2></div>`;
+                document.getElementById('restartBtn').style.display = 'inline-block';
             }
-            
             content.innerHTML = html;
         }
+
+        // ===== КАМЕНЬ-НОЖНИЦЫ-БУМАГА =====
+        let rpsMyChoice = null;
+        
+        function initRPS(gameData) {
+            rpsMyChoice = null;
+            gamesRef.child(currentRoom).once('value', (s) => {
+                const data = s.val();
+                if (!data.p1Score && data.p1Score !== 0) {
+                    gamesRef.child(currentRoom).update({ p1Score: 0, p2Score: 0, round: 1 });
+                }
+            });
+            
+            gamesRef.child(currentRoom).on('value', (snapshot) => {
+                const data = snapshot.val();
+                if (!data) return;
+                renderRPS(data);
+            });
+            
+            window.makeRPSChoice = function(choice) {
+                if (rpsMyChoice) return;
+                rpsMyChoice = choice;
+                const choiceKey = playerNumber === 1 ? 'p1Choice' : 'p2Choice';
+                gamesRef.child(currentRoom).update({ [choiceKey]: choice });
+            };
+        }
+
+        function renderRPS(data) {
+            const content = document.getElementById('gameContent');
+            const p1Choice = data.p1Choice;
+            const p2Choice = data.p2Choice;
+            const p1Score = data.p1Score || 0;
+            const p2Score = data.p2Score || 0;
+            
+            let status = 'Выберите: камень, ножницы или бумагу';
+            let resultHtml = '';
+            
+            if (p1Choice && p2Choice) {
+                const winner = getRPSWinner(p1Choice, p2Choice);
+                if (winner === 'draw') {
+                    status = '🤝 Ничья!';
+                } else if ((winner === 'p1' && playerNumber === 1) || (winner === 'p2' && playerNumber === 2)) {
+                    status = '🏆 Вы выиграли раунд!';
+                    if (!data.roundScored) {
+                        const scoreKey = playerNumber === 1 ? 'p1Score' : 'p2Score';
+                        gamesRef.child(currentRoom).update({ 
+                            [scoreKey]: (playerNumber === 1 ? p1Score : p2Score) + 1,
+                            roundScored: true
+                        });
+                    }
+                } else {
+                    status = '😔 Соперник выиграл раунд';
+                    if (!data.roundScored) {
+                        const scoreKey = playerNumber === 1 ? 'p2Score' : 'p1Score';
+                        gamesRef.child(currentRoom).update({ 
+                            [scoreKey]: (playerNumber === 1 ? p2Score : p1Score) + 1,
+                            roundScored: true
+                        });
+                    }
+                }
+                
+                const myChoiceEmoji = playerNumber === 1 ? getRPSEmoji(p1Choice) : getRPSEmoji(p2Choice);
+                const enemyChoiceEmoji = playerNumber === 1 ? getRPSEmoji(p2Choice) : getRPSEmoji(p1Choice);
+                
+                resultHtml = `<div class="rps-result">
+                    <div>Вы: ${myChoiceEmoji} vs Соперник: ${enemyChoiceEmoji}</div>
+                </div>`;
+                
+                setTimeout(() => {
+                    gamesRef.child(currentRoom).update({
+                        p1Choice: null, p2Choice: null,
+                        round: (data.round || 1) + 1,
+                        roundScored: false
+                    });
+                    rpsMyChoice = null;
+                }, 2500);
+                
+                if ((playerNumber === 1 ? p1Score : p2Score) >= 3) {
+                    status = '🏆 Вы победили в матче!';
+                    resultHtml = `<div class="winner-message"><h2>Победа в матче!</h2></div>`;
+                    document.getElementById('restartBtn').style.display = 'inline-block';
+                    db.ref('stats/gamesPlayed').transaction(c => (c || 0) + 1);
+                } else if ((playerNumber === 1 ? p2Score : p1Score) >= 3) {
+                    status = '😔 Соперник победил в матче';
+                    resultHtml = `<div class="winner-message"><h2>Поражение в матче</h2></div>`;
+                    document.getElementById('restartBtn').style.display = 'inline-block';
+                }
+            } else if (p1Choice || p2Choice) {
+                status = '⏳ Ожидание выбора соперника...';
+            }
+            
+            document.getElementById('gameStatus').textContent = status + ` | Счёт: ${playerNumber === 1 ? p1Score : p2Score} - ${playerNumber === 1 ? p2Score : p1Score}`;
+            
+            let html = '<div class="rps-container">';
+            html += '<div class="rps-score"><div>Вы: <strong>' + (playerNumber === 1 ? p1Score : p2Score) + '</strong></div><div>Соперник: <strong>' + (playerNumber === 1 ? p2Score : p1Score) + '</strong></div></div>';
+            html += '<p style="color:#666; margin-bottom:10px;">Первый до 3 побед</p>';
+            html += resultHtml;
+            
+            if (!p1Choice && !p2Choice) {
+                html += '<div class="rps-choices">';
+                html += `<div class="rps-choice ${rpsMyChoice === 'rock' ? 'selected' : ''}" onclick="makeRPSChoice('rock')">🪨</div>`;
+                html += `<div class="rps-choice ${rpsMyChoice === 'paper' ? 'selected' : ''}" onclick="makeRPSChoice('paper')">📄</div>`;
+                html += `<div class="rps-choice ${rpsMyChoice === 'scissors' ? 'selected' : ''}" onclick="makeRPSChoice('scissors')">✂️</div>`;
+                html += '</div>';
+            }
+            html += '</div>';
+            content.innerHTML = html;
+        }
+
+        function getRPSEmoji(choice) {
+            return { rock: '🪨', paper: '📄', scissors: '✂️' }[choice] || '?';
+        }
+
+        function getRPSWinner(p1, p2) {
+            if (p1 === p2) return 'draw';
+            if ((p1 === 'rock' && p2 === 'scissors') || (p1 === 'paper' && p2 === 'rock') || (p1 === 'scissors' && p2 === 'paper')) return 'p1';
+            return 'p2';
+        }
+
+        // ===== КОСТИ =====
+        function initDice(gameData) {
+            gamesRef.child(currentRoom).once('value', (s) => {
+                const data = s.val();
+                if (!data.p1Score && data.p1Score !== 0) {
+                    gamesRef.child(currentRoom).update({ p1Score: 0, p2Score: 0, diceRound: 1 });
+                }
+            });
+            
+            gamesRef.child(currentRoom).on('value', (snapshot) => {
+                const data = snapshot.val();
+                if (!data) return;
+                renderDice(data);
+            });
+            
+            window.rollDice = function() {
+                gamesRef.child(currentRoom).once('value', (snapshot) => {
+                    const data = snapshot.val();
+                    const myDiceKey = playerNumber === 1 ? 'p1Dice' : 'p2Dice';
+                    if (data[myDiceKey]) return;
+                    const value = Math.floor(Math.random() * 6) + 1;
+                    gamesRef.child(currentRoom).update({ [myDiceKey]: value });
+                });
+            };
+            
+            window.nextDiceRound = function() {
+                gamesRef.child(currentRoom).once('value', (snapshot) => {
+                    const data = snapshot.val();
+                    const p1Score = data.p1Score || 0;
+                    const p2Score = data.p2Score || 0;
+                    
+                    let newP1 = p1Score, newP2 = p2Score;
+                    if (data.p1Dice > data.p2Dice) newP1++;
+                    else if (data.p2Dice > data.p1Dice) newP2++;
+                    
+                    if (newP1 >= 3 || newP2 >= 3) {
+                        gamesRef.child(currentRoom).update({
+                            p1Dice: null, p2Dice: null,
+                            p1Score: newP1, p2Score: newP2,
+                            matchOver: true
+                        });
+                        db.ref('stats/gamesPlayed').transaction(c => (c || 0) + 1);
+                    } else {
+                        gamesRef.child(currentRoom).update({
+                            p1Dice: null, p2Dice: null,
+                            p1Score: newP1, p2Score: newP2,
+                            diceRound: (data.diceRound || 1) + 1
+                        });
+                    }
+                });
+            };
+        }
+
+        function renderDice(data) {
+            const content = document.getElementById('gameContent');
+            const p1Dice = data.p1Dice;
+            const p2Dice = data.p2Dice;
+            const p1Score = data.p1Score || 0;
+            const p2Score = data.p2Score || 0;
+            const matchOver = data.matchOver;
+            
+            const myScore = playerNumber === 1 ? p1Score : p2Score;
+            const enemyScore = playerNumber === 1 ? p2Score : p1Score;
+            
+            let status = `Раунд ${data.diceRound || 1}. Бросайте кости!`;
+            
+            if (p1Dice && p2Dice) {
+                const myDice = playerNumber === 1 ? p1Dice : p2Dice;
+                const enemyDiceVal = playerNumber === 1 ? p2Dice : p1Dice;
+                if (myDice > enemyDiceVal) status = '🏆 Вы выиграли раунд!';
+                else if (myDice < enemyDiceVal) status = '😔 Соперник выиграл раунд';
+                else status = '🤝 Ничья в раунде';
+            } else if (p1Dice || p2Dice) {
+                status = '⏳ Ожидание соперника...';
+            }
+            
+            if (matchOver) {
+                status = myScore > enemyScore ? '🏆 Вы победили в матче!' : '😔 Соперник победил';
+                document.getElementById('restartBtn').style.display = 'inline-block';
+            }
+            
+            document.getElementById('gameStatus').textContent = status + ` | Счёт: ${myScore} - ${enemyScore}`;
+            
+            let html = '<div class="dice-container">';
+            html += '<div class="rps-score"><div>Вы: <strong>' + myScore + '</strong></div><div>Соперник: <strong>' + enemyScore + '</strong></div></div>';
+            html += '<p style="color:#666; margin-bottom:10px;">Первый до 3 побед</p>';
+            
+            html += '<div class="dice-display">';
+            const myDiceVal = playerNumber === 1 ? p1Dice : p2Dice;
+            const enemyDiceVal = playerNumber === 1 ? p2Dice : p1Dice;
+            html += `<div class="dice">${myDiceVal || '?'}</div>`;
+            html += `<div class="dice">${p1Dice && p2Dice ? enemyDiceVal : '?'}</div>`;
+            html += '</div>';
+            
+            if (!p1Dice && !p2Dice && !matchOver) {
+                html += '<button class="btn-primary" onclick="rollDice()" style="font-size:18px; padding:16px 32px;">🎲 Бросить кости</button>';
+            } else if (p1Dice && p2Dice && !matchOver) {
+                html += '<button class="btn-primary" onclick="nextDiceRound()">Следующий раунд →</button>';
+            }
+            
+            if (matchOver) {
+                html += `<div class="winner-message"><h2>Матч окончен!</h2></div>`;
+            }
+            
+            html += '</div>';
+            content.innerHTML = html;
+        }
+
+        // ===== ДОСКА ДЛЯ РИСОВАНИЯ =====
+        let canvas, ctx;
+        let drawing = false;
+        let currentTool = 'pen';
+        let lastX = 0, lastY = 0;
+        
+        function initCanvas() {
+            canvas = document.getElementById('drawingCanvas');
+            ctx = canvas.getContext('2d');
+            ctx.fillStyle = 'white';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            canvas.onmousedown = startDraw;
+            canvas.onmousemove = draw;
+            canvas.onmouseup = stopDraw;
+            canvas.onmouseout = stopDraw;
+            
+            canvas.ontouchstart = (e) => { e.preventDefault(); startDraw(getTouchPos(e)); };
+            canvas.ontouchmove = (e) => { e.preventDefault(); draw(getTouchPos(e)); };
+            canvas.ontouchend = stopDraw;
+            
+            document.getElementById('sizeSlider').oninput = (e) => {
+                document.getElementById('sizeLabel').textContent = e.target.value + 'px';
+            };
+        }
+        
+        function getTouchPos(e) {
+            const rect = canvas.getBoundingClientRect();
+            const touch = e.touches[0];
+            return { offsetX: touch.clientX - rect.left, offsetY: touch.clientY - rect.top };
+        }
+        
+        function startDraw(e) {
+            drawing = true;
+            lastX = e.offsetX;
+            lastY = e.offsetY;
+        }
+        
+        function draw(e) {
+            if (!drawing) return;
+            ctx.beginPath();
+            ctx.moveTo(lastX, lastY);
+            ctx.lineTo(e.offsetX, e.offsetY);
+            ctx.strokeStyle = currentTool === 'eraser' ? 'white' : document.getElementById('colorPicker').value;
+            ctx.lineWidth = document.getElementById('sizeSlider').value;
+            ctx.lineCap = 'round';
+            ctx.stroke();
+            lastX = e.offsetX;
+            lastY = e.offsetY;
+        }
+        
+        function stopDraw() { drawing = false; }
+        
+        function setTool(tool) {
+            currentTool = tool;
+            document.getElementById('penTool').classList.toggle('active', tool === 'pen');
+            document.getElementById('eraserTool').classList.toggle('active', tool === 'eraser');
+        }
+        
+        function clearCanvas() {
+            if (!confirm('Очистить доску?')) return;
+            ctx.fillStyle = 'white';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+        }
+        
+        function saveCanvas() {
+            const link = document.createElement('a');
+            link.download = 'drawing_' + Date.now() + '.png';
+            link.href = canvas.toDataURL();
+            link.click();
+        }
+        
+        function sendCanvasToChat() {
+            const dataUrl = canvas.toDataURL('image/png', 0.7);
+            const myName = currentUser.displayName || currentUser.email;
+            chatMessagesRef.push({
+                author: myName,
+                image: dataUrl,
+                text: '🎨 Рисунок с доски',
+                timestamp: Date.now()
+            });
+            alert('Рисунок отправлен в чат!');
+        }
+
+        // ===== ЗАДАЧИ =====
+        function loadTasks() {
+            tasksRef.off();
+            document.getElementById('tasksList').innerHTML = '';
+            tasksRef.on('child_added', (snapshot) => {
+                const task = snapshot.val();
+                const id = snapshot.key;
+                renderTask(id, task);
+            });
+            tasksRef.on('child_changed', (snapshot) => {
+                const task = snapshot.val();
+                const id = snapshot.key;
+                const el = document.getElementById('task-' + id);
+                if (el) el.remove();
+                renderTask(id, task);
+            });
+            tasksRef.on('child_removed', (snapshot) => {
+                const el = document.getElementById('task-' + snapshot.key);
+                if (el) el.remove();
+            });
+        }
+        
+        function renderTask(id, task) {
+            const list = document.getElementById('tasksList');
+            const item = document.createElement('div');
+            item.className = 'task-item' + (task.done ? ' done' : '');
+            item.id = 'task-' + id;
+            item.innerHTML = `
+                <input type="checkbox" class="task-checkbox" ${task.done ? 'checked' : ''} onchange="toggleTask('${id}', ${!task.done})">
+                <div class="task-text">${escapeHtml(task.text)}</div>
+                <div class="task-author">👤 ${escapeHtml(task.author)}</div>
+                <button class="task-delete" onclick="deleteTask('${id}')">🗑️</button>
+            `;
+            list.appendChild(item);
+        }
+        
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+        
+        function addTask() {
+            const input = document.getElementById('taskInput');
+            const text = input.value.trim();
+            if (!text) return;
+            tasksRef.push({
+                text: text,
+                done: false,
+                author: currentUser.displayName || currentUser.email,
+                createdAt: Date.now()
+            });
+            input.value = '';
+        }
+        
+        function toggleTask(id, done) {
+            tasksRef.child(id).update({ done: done });
+        }
+        
+        function deleteTask(id) {
+            if (confirm('Удалить задачу?')) tasksRef.child(id).remove();
+        }
+
+        // ===== ЧАСЫ И ТАЙМЕР =====
+        let timerInterval = null;
+        let timerRemaining = 0;
+        let stopwatchInterval = null;
+        let stopwatchTime = 0;
+        let stopwatchRunning = false;
+        
+        function updateClock() {
+            const now = new Date();
+            const h = now.getHours().toString().padStart(2, '0');
+            const m = now.getMinutes().toString().padStart(2, '0');
+            const s = now.getSeconds().toString().padStart(2, '0');
+            document.getElementById('bigClock').textContent = `${h}:${m}:${s}`;
+            
+            const days = ['Воскресенье','Понедельник','Вторник','Среда','Четверг','Пятница','Суббота'];
+            const months = ['января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября','декабря'];
+            document.getElementById('bigDate').textContent = `${days[now.getDay()]}, ${now.getDate()} ${months[now.getMonth()]} ${now.getFullYear()}`;
+        }
+        
+        setInterval(updateClock, 1000);
+        updateClock();
+        
+        function startTimer() {
+            if (timerInterval) {
+                clearInterval(timerInterval);
+                timerInterval = null;
+                document.getElementById('startTimerBtn').textContent = '▶️ Старт';
+                return;
+            }
+            
+            if (timerRemaining === 0) {
+                const h = parseInt(document.getElementById('timerHours').value) || 0;
+                const m = parseInt(document.getElementById('timerMinutes').value) || 0;
+                const s = parseInt(document.getElementById('timerSeconds').value) || 0;
+                timerRemaining = h * 3600 + m * 60 + s;
+            }
+            
+            if (timerRemaining === 0) return;
+            
+            document.getElementById('startTimerBtn').textContent = '⏸️ Пауза';
+            timerInterval = setInterval(() => {
+                timerRemaining--;
+                updateTimerDisplay();
+                if (timerRemaining <= 0) {
+                    clearInterval(timerInterval);
+                    timerInterval = null;
+                    document.getElementById('startTimerBtn').textContent = '▶️ Старт';
+                    alert('⏰ Время вышло!');
+                }
+            }, 1000);
+        }
+        
+        function resetTimer() {
+            clearInterval(timerInterval);
+            timerInterval = null;
+            timerRemaining = 0;
+            document.getElementById('startTimerBtn').textContent = '▶️ Старт';
+            const h = parseInt(document.getElementById('timerHours').value) || 0;
+            const m = parseInt(document.getElementById('timerMinutes').value) || 0;
+            const s = parseInt(document.getElementById('timerSeconds').value) || 0;
+            timerRemaining = h * 3600 + m * 60 + s;
+            updateTimerDisplay();
+        }
+        
+        function updateTimerDisplay() {
+            const h = Math.floor(timerRemaining / 3600);
+            const m = Math.floor((timerRemaining % 3600) / 60);
+            const s = timerRemaining % 60;
+            document.getElementById('timerDisplay').textContent = 
+                h.toString().padStart(2,'0') + ':' + m.toString().padStart(2,'0') + ':' + s.toString().padStart(2,'0');
+        }
+        
+        ['timerHours','timerMinutes','timerSeconds'].forEach(id => {
+            document.getElementById(id).addEventListener('input', () => {
+                if (!timerInterval) resetTimer();
+            });
+        });
+        
+        function toggleStopwatch() {
+            if (stopwatchRunning) {
+                clearInterval(stopwatchInterval);
+                stopwatchRunning = false;
+                document.getElementById('stopwatchBtn').textContent = '▶️ Старт';
+            } else {
+                stopwatchRunning = true;
+                document.getElementById('stopwatchBtn').textContent = '⏸️ Пауза';
+                stopwatchInterval = setInterval(() => {
+                    stopwatchTime++;
+                    updateStopwatchDisplay();
+                }, 1000);
+            }
+        }
+        
+        function resetStopwatch() {
+            clearInterval(stopwatchInterval);
+            stopwatchRunning = false;
+            stopwatchTime = 0;
+            document.getElementById('stopwatchBtn').textContent = '▶️ Старт';
+            updateStopwatchDisplay();
+        }
+        
+        function updateStopwatchDisplay() {
+            const h = Math.floor(stopwatchTime / 3600);
+            const m = Math.floor((stopwatchTime % 3600) / 60);
+            const s = stopwatchTime % 60;
+            document.getElementById('stopwatchDisplay').textContent = 
+                h.toString().padStart(2,'0') + ':' + m.toString().padStart(2,'0') + ':' + s.toString().padStart(2,'0');
+        }
+
+        // ===== СТАТИСТИКА =====
+        function loadDashboard() {
+            statsRef.on('value', (snapshot) => {
+                const data = snapshot.val() || {};
+                const messageCount = data.messageCount || 0;
+                const photoCount = data.photoCount || 0;
+                const gamesPlayed = data.gamesPlayed || 0;
+                
+                document.getElementById('statsGrid').innerHTML = `
+                    <div class="stat-card">
+                        <div class="stat-value">${messageCount}</div>
+                        <div class="stat-label">💬 Сообщений</div>
+                    </div>
+                    <div class="stat-card" style="background: linear-gradient(135deg, #f093fb, #f5576c);">
+                        <div class="stat-value">${photoCount}</div>
+                        <div class="stat-label">📷 Фото</div>
+                    </div>
+                    <div class="stat-card" style="background: linear-gradient(135deg, #43e97b, #38f9d7);">
+                        <div class="stat-value">${gamesPlayed}</div>
+                        <div class="stat-label">🎮 Игр сыграно</div>
+                    </div>
+                    <div class="stat-card" style="background: linear-gradient(135deg, #fa709a, #fee140);">
+                        <div class="stat-value">5</div>
+                        <div class="stat-label">👥 Коллег в команде</div>
+                    </div>
+                `;
+                
+                const activity = data.activity || {};
+                const activityList = Object.entries(activity)
+                    .map(([k, v]) => ({ ...v, id: k }))
+                    .sort((a, b) => b.time - a.time)
+                    .slice(0, 10);
+                
+                let activityHtml = '';
+                if (activityList.length === 0) {
+                    activityHtml = '<div class="activity-item">Пока нет действий</div>';
+                } else {
+                    activityList.forEach(a => {
+                        activityHtml += `<div class="activity-item">
+                            ${escapeHtml(a.text)}
+                            <div class="activity-time">${new Date(a.time).toLocaleString('ru-RU')}</div>
+                        </div>`;
+                    });
+                }
+                document.getElementById('activityList').innerHTML = activityHtml;
+            });
+        }
+
+        // Инициализация таймера при загрузке
+        window.addEventListener('load', () => {
+            resetTimer();
+            updateStopwatchDisplay();
+        });
     </script>
 </body>
 </html>
