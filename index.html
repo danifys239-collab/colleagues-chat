@@ -1368,7 +1368,6 @@
     document.getElementById('officeDetail').style.display = 'none';
     loadOffices();
 }
-        function loadOffices() {
     const grid = document.getElementById('officesGrid');
     
     db.ref('offices').once('value', (snapshot) => {
