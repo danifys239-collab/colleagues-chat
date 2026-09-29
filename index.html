@@ -231,9 +231,8 @@
                 <h2 class="page-title">ОФИСЫ МФЦ БАШКОРТОСТАНА</h2>
                 <p class="page-subtitle">77 офисов по всей республике</p>
                 <div style="margin-bottom: 20px;">
-                    <input type="text" class="search-input" id="officeSearch" placeholder="Поиск офиса..." style="max-width: 400px;" oninput="filterOffices()">
-                    <button class="btn-primary" onclick="openOfficeModal()" id="addOfficeBtn" style="display:none; margin-left: 10px;">➕ Добавить</button>
-                </div>
+    <button class="btn-primary" onclick="openOfficeModal()" id="addOfficeBtn" style="display:none;">➕ Добавить офис</button>
+</div>
                 <div class="offices-grid" id="officesGrid"></div>
             </div>
             <div id="officeDetail" style="display:none;">
@@ -1367,28 +1366,40 @@
         function showOfficesList() {
     document.getElementById('officesList').style.display = 'block';
     document.getElementById('officeDetail').style.display = 'none';
-            loadOffices();
-        }
+    loadOffices();
+}
         function loadOffices() {
-    const searchQuery = document.getElementById('officeSearch').value.toLowerCase();
     const grid = document.getElementById('officesGrid');
     
     db.ref('offices').once('value', (snapshot) => {
         const data = snapshot.val() || {};
-        grid.innerHTML = ''; // Очищаем сетку перед отрисовкой
+        grid.innerHTML = '';
         
         const offices = Object.entries(data).map(([id, o]) => ({ id, ...o }));
         
-        // Фильтрация по поиску (ищет и в названии, и в адресе)
-        const filteredOffices = offices.filter(office => 
-            office.name.toLowerCase().includes(searchQuery) ||
-            (office.address && office.address.toLowerCase().includes(searchQuery))
-        );
+        // Сортируем по алфавиту
+        offices.sort((a, b) => a.name.localeCompare(b.name));
         
-        if (filteredOffices.length === 0) {
-            grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 40px; color: #888; font-size: 16px;">Офисы не найдены</div>';
+        if (offices.length === 0) {
+            grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 40px; color: #888; font-size: 16px;">Офисы не найдены. Нажмите "Добавить офис" чтобы создать первый.</div>';
             return;
         }
+        
+        offices.forEach(office => {
+            const card = document.createElement('div');
+            card.className = 'office-card';
+            card.onclick = () => showOfficeDetail(office.id);
+            card.innerHTML = `
+                <div class="office-name">${escapeHtml(office.name)}</div>
+                <div class="office-location">📍 Нажмите для подробной информации</div>
+            `;
+            grid.appendChild(card);
+        });
+        
+        // Показываем кнопку добавления только админу
+        document.getElementById('addOfficeBtn').style.display = isAdmin ? 'inline-block' : 'none';
+    });
+}
         
         filteredOffices.forEach(office => {
             const card = document.createElement('div');
@@ -1405,7 +1416,6 @@
         document.getElementById('addOfficeBtn').style.display = isAdmin ? 'inline-block' : 'none';
     });
 }
-        function filterOffices() { loadOffices(); }
         function showOfficeDetail(id) {
             db.ref('offices/' + id).once('value').then(snapshot => {
                 const office = snapshot.val(); if (!office) return;
