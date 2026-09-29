@@ -231,8 +231,8 @@
                 <h2 class="page-title">ОФИСЫ МФЦ БАШКОРТОСТАНА</h2>
                 <p class="page-subtitle">77 офисов по всей республике</p>
                 <div style="margin-bottom: 20px;">
-    <button class="btn-primary" onclick="openOfficeModal()" id="addOfficeBtn" style="display:none;">➕ Добавить офис</button>
-</div>
+                    <button class="btn-primary" onclick="openOfficeModal()" id="addOfficeBtn" style="display:none;">➕ Добавить офис</button>
+                </div>
                 <div class="offices-grid" id="officesGrid"></div>
             </div>
             <div id="officeDetail" style="display:none;">
@@ -491,15 +491,15 @@
 
     <script>
         const firebaseConfig = {
-  apiKey: "AIzaSyD8vC-aybeoSegmGPFDl-Fp1PzIuF_k4LM",
-  authDomain: "colleagues-chat.firebaseapp.com",
-  databaseURL: "https://colleagues-chat-default-rtdb.firebaseio.com",
-  projectId: "colleagues-chat",
-  storageBucket: "colleagues-chat.firebasestorage.app",
-  messagingSenderId: "132389783756",
-  appId: "1:132389783756:web:796795763ec6b4d62e9a69",
-  measurementId: "G-HKX8ST4RCD"
-};
+            apiKey: "AIzaSyD8vC-aybeoSegmGPFDl-Fp1PzIuF_k4LM",
+            authDomain: "colleagues-chat.firebaseapp.com",
+            databaseURL: "https://colleagues-chat-default-rtdb.firebaseio.com",
+            projectId: "colleagues-chat",
+            storageBucket: "colleagues-chat.firebasestorage.app",
+            messagingSenderId: "132389783756",
+            appId: "1:132389783756:web:796795763ec6b4d62e9a69",
+            measurementId: "G-HKX8ST4RCD"
+        };
 
         firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth();
@@ -675,25 +675,25 @@
         }
 
         async function initOffices() {
-    const snapshot = await db.ref('offices').once('value');
-    if (!snapshot.exists()) {
-        const officesData = {};
-        allOfficesList.forEach((name, index) => {
-            const officeId = 'office_' + index;
-            officesData[officeId] = {
-                name: name,
-                address: "Адрес уточняется",
-                phone: "+7 (347) 000-00-00",
-                hours: "Пн-Пт: 09:00 - 18:00",
-                services: "Все виды услуг МФЦ",
-                description: "Информация об офисе: " + name,
-                createdAt: Date.now()
-            };
-        });
-        await db.ref('offices').set(officesData);
-        console.log('Создано ' + allOfficesList.length + ' офисов');
-    }
-}
+            const snapshot = await db.ref('offices').once('value');
+            if (!snapshot.exists()) {
+                const officesData = {};
+                allOfficesList.forEach((name, index) => {
+                    const officeId = 'office_' + index;
+                    officesData[officeId] = {
+                        name: name,
+                        address: "Адрес уточняется",
+                        phone: "+7 (347) 000-00-00",
+                        hours: "Пн-Пт: 09:00 - 18:00",
+                        services: "Все виды услуг МФЦ",
+                        description: "Информация об офисе: " + name,
+                        createdAt: Date.now()
+                    };
+                });
+                await db.ref('offices').set(officesData);
+                console.log('Создано ' + allOfficesList.length + ' офисов');
+            }
+        }
 
         function showAuthTab(tab) {
             document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
@@ -1364,57 +1364,36 @@
         function escapeHtml(text) { const div = document.createElement('div'); div.textContent = text; return div.innerHTML; }
 
         function showOfficesList() {
-    document.getElementById('officesList').style.display = 'block';
-    document.getElementById('officeDetail').style.display = 'none';
-    loadOffices();
-}
-    const grid = document.getElementById('officesGrid');
-    
-    db.ref('offices').once('value', (snapshot) => {
-        const data = snapshot.val() || {};
-        grid.innerHTML = '';
-        
-        const offices = Object.entries(data).map(([id, o]) => ({ id, ...o }));
-        
-        // Сортируем по алфавиту
-        offices.sort((a, b) => a.name.localeCompare(b.name));
-        
-        if (offices.length === 0) {
-            grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 40px; color: #888; font-size: 16px;">Офисы не найдены. Нажмите "Добавить офис" чтобы создать первый.</div>';
-            return;
+            document.getElementById('officesList').style.display = 'block';
+            document.getElementById('officeDetail').style.display = 'none';
+            loadOffices();
         }
-        
-        offices.forEach(office => {
-            const card = document.createElement('div');
-            card.className = 'office-card';
-            card.onclick = () => showOfficeDetail(office.id);
-            card.innerHTML = `
-                <div class="office-name">${escapeHtml(office.name)}</div>
-                <div class="office-location">📍 Нажмите для подробной информации</div>
-            `;
-            grid.appendChild(card);
-        });
-        
-        // Показываем кнопку добавления только админу
-        document.getElementById('addOfficeBtn').style.display = isAdmin ? 'inline-block' : 'none';
-    });
-}
-        
-        filteredOffices.forEach(office => {
-            const card = document.createElement('div');
-            card.className = 'office-card';
-            card.onclick = () => showOfficeDetail(office.id);
-            card.innerHTML = `
-                <div class="office-name">${escapeHtml(office.name)}</div>
-                <div class="office-location">📍 Нажмите для подробной информации</div>
-            `;
-            grid.appendChild(card);
-        });
-        
-        // Показываем кнопку добавления только админу
-        document.getElementById('addOfficeBtn').style.display = isAdmin ? 'inline-block' : 'none';
-    });
-}
+
+        function loadOffices() {
+            const grid = document.getElementById('officesGrid');
+            db.ref('offices').once('value', (snapshot) => {
+                const data = snapshot.val() || {};
+                grid.innerHTML = '';
+                const offices = Object.entries(data).map(([id, o]) => ({ id, ...o }));
+                offices.sort((a, b) => a.name.localeCompare(b.name));
+                if (offices.length === 0) {
+                    grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 40px; color: #888; font-size: 16px;">Офисы не найдены. Нажмите "Добавить офис" чтобы создать первый.</div>';
+                    return;
+                }
+                offices.forEach(office => {
+                    const card = document.createElement('div');
+                    card.className = 'office-card';
+                    card.onclick = () => showOfficeDetail(office.id);
+                    card.innerHTML = `
+                        <div class="office-name">${escapeHtml(office.name)}</div>
+                        <div class="office-location">📍 Нажмите для подробной информации</div>
+                    `;
+                    grid.appendChild(card);
+                });
+                document.getElementById('addOfficeBtn').style.display = isAdmin ? 'inline-block' : 'none';
+            });
+        }
+
         function showOfficeDetail(id) {
             db.ref('offices/' + id).once('value').then(snapshot => {
                 const office = snapshot.val(); if (!office) return;
@@ -1698,16 +1677,16 @@
         }
 
         window.addEventListener('load', () => {
-    drawPixelLogo();
-    drawPixelMap();
-    updateHeader();
-    updateNavigation();
-    updateMenuCards();
-    initCanvas();
-    resetTimer();
-    updateStopwatchDisplay();
-    initOffices(); // <-- ЭТА СТРОКА ОБЯЗАТЕЛЬНО ДОЛЖНА БЫТЬ ЗДЕСЬ
-});
+            drawPixelLogo();
+            drawPixelMap();
+            updateHeader();
+            updateNavigation();
+            updateMenuCards();
+            initCanvas();
+            resetTimer();
+            updateStopwatchDisplay();
+            initOffices();
+        });
     </script>
 </body>
 </html>
