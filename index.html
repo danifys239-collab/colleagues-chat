@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Портал коллег</title>
+    <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         
@@ -57,7 +58,17 @@
         
         .user-info { display: flex; align-items: center; gap: 10px; font-size: 13px; }
         
-        .logout-btn {
+        .user-avatar-small {
+            width: 32px; height: 32px; border-radius: 50%;
+            background: rgba(255,255,255,0.3);
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 700; cursor: pointer; overflow: hidden;
+            border: 2px solid rgba(255,255,255,0.5);
+        }
+        
+        .user-avatar-small img { width: 100%; height: 100%; object-fit: cover; }
+        
+        .logout-btn, .avatar-btn {
             padding: 6px 14px;
             background: rgba(255,255,255,0.2);
             color: white;
@@ -67,54 +78,60 @@
             font-size: 12px;
         }
         
+        .admin-badge {
+            background: #ffd700;
+            color: #333;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 10px;
+            font-weight: 700;
+        }
+        
         /* ===== SCREENS ===== */
         .screen { display: none; flex: 1; overflow-y: auto; }
         .screen.active { display: flex; flex-direction: column; }
         
-        /* ===== MAIN MENU ===== */
-        #mainMenu { padding: 30px; justify-content: flex-start; align-items: center; }
-        
-        .welcome {
-            text-align: center;
-            margin-bottom: 30px;
+        /* ===== GUEST SCREEN ===== */
+        #guestScreen {
+            justify-content: center; align-items: center;
+            padding: 30px; text-align: center;
         }
         
-        .welcome h2 { font-size: 28px; color: #333; margin-bottom: 8px; }
-        .welcome p { color: #666; font-size: 14px; }
-        
-        .menu-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-            gap: 16px;
-            width: 100%;
-            max-width: 800px;
+        .guest-box {
+            max-width: 500px;
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
         }
         
-        .menu-card {
-            padding: 24px 16px;
-            border-radius: 16px;
+        .guest-box h2 { font-size: 28px; margin-bottom: 10px; color: #333; }
+        .guest-box p { color: #666; margin-bottom: 30px; }
+        
+        .guest-buttons { display: flex; flex-direction: column; gap: 12px; }
+        
+        .guest-btn {
+            padding: 16px;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
             cursor: pointer;
             transition: all 0.3s;
-            text-align: center;
+        }
+        
+        .guest-btn.primary {
+            background: linear-gradient(135deg, #667eea, #764ba2);
             color: white;
-            border: 3px solid transparent;
         }
         
-        .menu-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+        .guest-btn.secondary {
+            background: #f5f7fa;
+            color: #333;
+            border: 2px solid #e0e0e0;
         }
         
-        .menu-card.chat { background: linear-gradient(135deg, #667eea, #764ba2); }
-        .menu-card.games { background: linear-gradient(135deg, #f093fb, #f5576c); }
-        .menu-card.board { background: linear-gradient(135deg, #4facfe, #00f2fe); }
-        .menu-card.tasks { background: linear-gradient(135deg, #43e97b, #38f9d7); }
-        .menu-card.clock { background: linear-gradient(135deg, #fa709a, #fee140); }
-        .menu-card.dashboard { background: linear-gradient(135deg, #30cfd0, #330867); }
-        
-        .menu-card-icon { font-size: 48px; margin-bottom: 10px; }
-        .menu-card-title { font-size: 18px; font-weight: 700; margin-bottom: 4px; }
-        .menu-card-desc { font-size: 12px; opacity: 0.9; }
+        .guest-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.15); }
         
         /* ===== AUTH ===== */
         #authScreen { justify-content: center; align-items: center; padding: 30px; }
@@ -151,6 +168,46 @@
         
         .auth-error { color: #f44336; font-size: 13px; text-align: center; min-height: 20px; }
         
+        /* ===== MAIN MENU ===== */
+        #mainMenu { padding: 30px; justify-content: flex-start; align-items: center; }
+        
+        .welcome { text-align: center; margin-bottom: 30px; }
+        .welcome h2 { font-size: 28px; color: #333; margin-bottom: 8px; }
+        .welcome p { color: #666; font-size: 14px; }
+        
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+            gap: 14px;
+            width: 100%;
+            max-width: 850px;
+        }
+        
+        .menu-card {
+            padding: 22px 14px;
+            border-radius: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+            color: white;
+        }
+        
+        .menu-card:hover { transform: translateY(-5px); box-shadow: 0 15px 40px rgba(0,0,0,0.2); }
+        
+        .menu-card.chat { background: linear-gradient(135deg, #667eea, #764ba2); }
+        .menu-card.games { background: linear-gradient(135deg, #f093fb, #f5576c); }
+        .menu-card.board { background: linear-gradient(135deg, #4facfe, #00f2fe); }
+        .menu-card.tasks { background: linear-gradient(135deg, #43e97b, #38f9d7); }
+        .menu-card.clock { background: linear-gradient(135deg, #fa709a, #fee140); }
+        .menu-card.dashboard { background: linear-gradient(135deg, #30cfd0, #330867); }
+        .menu-card.excel { background: linear-gradient(135deg, #11998e, #38ef7d); }
+        .menu-card.survey { background: linear-gradient(135deg, #ff9966, #ff5e62); }
+        .menu-card.admin { background: linear-gradient(135deg, #232526, #414345); }
+        
+        .menu-card-icon { font-size: 44px; margin-bottom: 8px; }
+        .menu-card-title { font-size: 16px; font-weight: 700; margin-bottom: 4px; }
+        .menu-card-desc { font-size: 11px; opacity: 0.9; }
+        
         /* ===== CHAT ===== */
         .messages {
             flex: 1; overflow-y: auto; padding: 20px;
@@ -174,7 +231,10 @@
             width: 36px; height: 36px; border-radius: 50%;
             display: flex; align-items: center; justify-content: center;
             font-weight: 600; font-size: 14px; color: white; flex-shrink: 0;
+            overflow: hidden;
         }
+        
+        .avatar img { width: 100%; height: 100%; object-fit: cover; }
         
         .message.own .avatar { background: linear-gradient(135deg, #667eea, #764ba2); }
         .message.other .avatar { background: linear-gradient(135deg, #f093fb, #f5576c); }
@@ -235,8 +295,6 @@
             outline: none; font-size: 14px;
         }
         
-        .input-area input[type="text"]:focus { border-color: #667eea; }
-        
         .btn {
             padding: 10px 16px; border: none; border-radius: 20px;
             cursor: pointer; font-size: 14px; font-weight: 500;
@@ -263,17 +321,14 @@
         
         .image-modal img {
             max-width: 90%; max-height: 80%;
-            border-radius: 12px; box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+            border-radius: 12px;
         }
         
-        .image-modal-actions {
-            margin-top: 20px; display: flex; gap: 10px;
-        }
+        .image-modal-actions { margin-top: 20px; display: flex; gap: 10px; }
         
         .image-modal-btn {
             padding: 10px 20px; background: white; color: #333;
-            border: none; border-radius: 20px; cursor: pointer;
-            font-weight: 600;
+            border: none; border-radius: 20px; cursor: pointer; font-weight: 600;
         }
         
         .image-modal-close {
@@ -282,7 +337,34 @@
             border-radius: 50%; cursor: pointer; font-size: 20px;
         }
         
-        /* ===== GAMES MENU ===== */
+        /* ===== AVATAR MODAL ===== */
+        .modal {
+            display: none; position: fixed; top: 0; left: 0;
+            width: 100%; height: 100%; background: rgba(0,0,0,0.6);
+            z-index: 1000; justify-content: center; align-items: center;
+        }
+        
+        .modal.show { display: flex; }
+        
+        .modal-content {
+            background: white; padding: 30px; border-radius: 20px;
+            max-width: 400px; width: 90%; text-align: center;
+        }
+        
+        .modal-content h3 { margin-bottom: 20px; color: #333; }
+        
+        .avatar-preview {
+            width: 120px; height: 120px; border-radius: 50%;
+            margin: 0 auto 20px; background: #f5f7fa;
+            display: flex; align-items: center; justify-content: center;
+            overflow: hidden; border: 3px solid #667eea;
+        }
+        
+        .avatar-preview img { width: 100%; height: 100%; object-fit: cover; }
+        
+        .modal-buttons { display: flex; gap: 10px; justify-content: center; margin-top: 20px; }
+        
+        /* ===== GAMES ===== */
         #gamesMenu { padding: 30px; }
         
         .section-title { font-size: 22px; margin-bottom: 8px; color: #333; }
@@ -300,11 +382,7 @@
             transition: all 0.3s; border: 2px solid transparent;
         }
         
-        .game-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-            border-color: #667eea;
-        }
+        .game-card:hover { transform: translateY(-5px); box-shadow: 0 10px 30px rgba(0,0,0,0.2); border-color: #667eea; }
         
         .game-icon { font-size: 40px; margin-bottom: 10px; }
         .game-title { font-size: 16px; font-weight: 600; margin-bottom: 6px; color: #333; }
@@ -364,19 +442,15 @@
         
         .game-status { font-size: 15px; font-weight: 600; color: #333; }
         
-        .game-board { display: flex; justify-content: center; margin: 20px 0; }
-        
-        .ttt-board { display: grid; grid-template-columns: repeat(3, 90px); gap: 8px; }
+        .ttt-board { display: grid; grid-template-columns: repeat(3, 90px); gap: 8px; margin: 20px auto; }
         
         .ttt-cell {
             width: 90px; height: 90px; background: white;
             border: 2px solid #667eea; border-radius: 12px;
             display: flex; align-items: center; justify-content: center;
             font-size: 44px; font-weight: 700; cursor: pointer;
-            transition: all 0.2s;
         }
         
-        .ttt-cell:hover { background: #f5f7fa; }
         .ttt-cell.x { color: #667eea; }
         .ttt-cell.o { color: #f5576c; }
         
@@ -400,10 +474,7 @@
         .bs-cell.clickable { cursor: pointer; }
         .bs-cell.clickable:hover { background: #f5f7fa; }
         
-        .snake-board {
-            display: grid; gap: 2px; background: #333;
-            padding: 2px; border-radius: 8px;
-        }
+        .snake-board { display: grid; gap: 2px; background: #333; padding: 2px; border-radius: 8px; margin: 20px auto; }
         
         .snake-cell { width: 36px; height: 36px; background: white; border-radius: 4px; }
         .snake-cell.p1 { background: #667eea; }
@@ -412,7 +483,6 @@
         .snake-cell.p2-head { background: #d94a5e; }
         .snake-cell.clickable { cursor: pointer; border: 2px solid #ffd700; }
         
-        /* Камень-ножницы-бумага */
         .rps-container { text-align: center; padding: 20px; }
         .rps-choices { display: flex; gap: 20px; justify-content: center; margin: 30px 0; }
         
@@ -425,41 +495,22 @@
         }
         
         .rps-choice:hover { transform: scale(1.1); border-color: #ffd700; }
-        .rps-choice.selected { border-color: #ffd700; transform: scale(1.1); }
         
         .rps-result {
-            font-size: 24px; font-weight: 700; margin: 20px 0;
+            font-size: 20px; font-weight: 700; margin: 20px 0;
             padding: 20px; background: #f5f7fa; border-radius: 12px;
         }
         
-        .rps-score {
-            display: flex; gap: 40px; justify-content: center;
-            margin: 20px 0; font-size: 18px;
-        }
+        .rps-score { display: flex; gap: 40px; justify-content: center; margin: 20px 0; font-size: 18px; }
         
-        /* Кости */
         .dice-container { text-align: center; padding: 20px; }
-        
-        .dice-display {
-            display: flex; gap: 30px; justify-content: center;
-            margin: 30px 0;
-        }
+        .dice-display { display: flex; gap: 30px; justify-content: center; margin: 30px 0; }
         
         .dice {
             width: 100px; height: 100px; background: white;
             border: 3px solid #667eea; border-radius: 16px;
             display: flex; align-items: center; justify-content: center;
             font-size: 60px; font-weight: 700; color: #667eea;
-            transition: all 0.3s;
-        }
-        
-        .dice.rolling { animation: diceRoll 0.5s ease-in-out; }
-        
-        @keyframes diceRoll {
-            0%, 100% { transform: rotate(0deg); }
-            25% { transform: rotate(90deg); }
-            50% { transform: rotate(180deg); }
-            75% { transform: rotate(270deg); }
         }
         
         .winner-message {
@@ -476,24 +527,16 @@
         .board-tools {
             display: flex; gap: 10px; padding: 12px;
             background: #f5f7fa; border-radius: 12px;
-            margin-bottom: 16px; flex-wrap: wrap;
-            align-items: center;
+            margin-bottom: 16px; flex-wrap: wrap; align-items: center;
         }
         
-        .color-picker {
-            width: 40px; height: 40px; border: none;
-            border-radius: 8px; cursor: pointer;
-        }
-        
-        .size-slider {
-            width: 120px; cursor: pointer;
-        }
+        .color-picker { width: 40px; height: 40px; border: none; border-radius: 8px; cursor: pointer; }
+        .size-slider { width: 120px; cursor: pointer; }
         
         .tool-btn {
             padding: 8px 14px; background: white;
             border: 2px solid #667eea; border-radius: 8px;
-            cursor: pointer; font-size: 13px; font-weight: 600;
-            color: #667eea;
+            cursor: pointer; font-size: 13px; font-weight: 600; color: #667eea;
         }
         
         .tool-btn.active { background: #667eea; color: white; }
@@ -504,14 +547,12 @@
             display: flex; justify-content: center;
         }
         
-        #drawingCanvas { cursor: crosshair; display: block; }
+        #drawingCanvas { cursor: crosshair; display: block; max-width: 100%; }
         
         /* ===== TASKS ===== */
         #tasksScreen { padding: 20px; }
         
-        .task-input-container {
-            display: flex; gap: 10px; margin-bottom: 20px;
-        }
+        .task-input-container { display: flex; gap: 10px; margin-bottom: 20px; }
         
         .task-input-container input {
             flex: 1; padding: 12px 16px;
@@ -519,28 +560,19 @@
             outline: none; font-size: 14px;
         }
         
-        .task-input-container input:focus { border-color: #667eea; }
-        
         .tasks-list { display: flex; flex-direction: column; gap: 10px; }
         
         .task-item {
             display: flex; align-items: center; gap: 12px;
             padding: 14px; background: #f5f7fa;
-            border-radius: 12px; transition: all 0.2s;
+            border-radius: 12px;
         }
-        
-        .task-item:hover { background: #e9ecef; }
         
         .task-item.done { opacity: 0.6; }
         .task-item.done .task-text { text-decoration: line-through; }
         
-        .task-checkbox {
-            width: 24px; height: 24px; cursor: pointer;
-            accent-color: #667eea;
-        }
-        
+        .task-checkbox { width: 24px; height: 24px; cursor: pointer; accent-color: #667eea; }
         .task-text { flex: 1; font-size: 14px; color: #333; }
-        
         .task-author { font-size: 11px; color: #888; }
         
         .task-delete {
@@ -562,14 +594,9 @@
             font-variant-numeric: tabular-nums;
         }
         
-        .big-date {
-            font-size: 20px; color: #666; margin-bottom: 30px;
-        }
+        .big-date { font-size: 20px; color: #666; margin-bottom: 30px; }
         
-        .timer-section {
-            background: #f5f7fa; border-radius: 16px;
-            padding: 24px; margin-top: 20px;
-        }
+        .timer-section { background: #f5f7fa; border-radius: 16px; padding: 24px; margin-top: 20px; }
         
         .timer-display {
             font-size: 48px; font-weight: 700;
@@ -583,15 +610,191 @@
             text-align: center; margin: 0 4px;
         }
         
-        .timer-input:focus { border-color: #667eea; outline: none; }
+        /* ===== EXCEL ===== */
+        #excelScreen { padding: 20px; }
+        
+        .excel-tools {
+            display: flex; gap: 10px; padding: 12px;
+            background: #f5f7fa; border-radius: 12px;
+            margin-bottom: 16px; flex-wrap: wrap; align-items: center;
+        }
+        
+        .excel-container {
+            border: 2px solid #e0e0e0; border-radius: 12px;
+            overflow: auto; background: white; max-height: 60vh;
+        }
+        
+        .excel-table {
+            border-collapse: collapse; width: 100%;
+            font-size: 13px;
+        }
+        
+        .excel-table th, .excel-table td {
+            border: 1px solid #ddd;
+            padding: 6px 10px;
+            min-width: 80px;
+            text-align: left;
+        }
+        
+        .excel-table th {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white; font-weight: 600;
+            position: sticky; top: 0;
+        }
+        
+        .excel-table td {
+            background: white; cursor: cell;
+        }
+        
+        .excel-table td:focus {
+            outline: 2px solid #667eea;
+            background: #f0f4ff;
+        }
+        
+        .excel-table .row-header {
+            background: #f5f7fa;
+            font-weight: 600;
+            text-align: center;
+            color: #667eea;
+            min-width: 40px;
+            cursor: default;
+        }
+        
+        .excel-info {
+            font-size: 12px; color: #666;
+            padding: 8px; background: #fff9e6;
+            border-radius: 8px; margin-bottom: 10px;
+        }
+        
+        /* ===== SURVEYS ===== */
+        #surveysScreen { padding: 20px; }
+        
+        .survey-card {
+            background: #f5f7fa;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 16px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .survey-question {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 14px;
+        }
+        
+        .survey-options { display: flex; flex-direction: column; gap: 8px; }
+        
+        .survey-option {
+            padding: 12px 16px;
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .survey-option:hover { border-color: #667eea; background: #f0f4ff; }
+        .survey-option.voted { border-color: #43e97b; background: #e8faf0; }
+        
+        .survey-votes-count { font-size: 12px; color: #888; }
+        
+        .survey-meta {
+            font-size: 11px;
+            color: #888;
+            margin-top: 10px;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .survey-form {
+            background: #f5f7fa;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+        
+        .survey-form input, .survey-form textarea {
+            width: 100%;
+            padding: 10px 14px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            font-size: 14px;
+            outline: none;
+            font-family: inherit;
+        }
+        
+        .survey-form input:focus, .survey-form textarea:focus { border-color: #667eea; }
+        
+        .survey-options-input { display: flex; flex-direction: column; gap: 8px; margin-bottom: 10px; }
+        
+        .survey-option-input-row { display: flex; gap: 8px; }
+        .survey-option-input-row input { flex: 1; margin-bottom: 0; }
+        
+        .remove-option-btn {
+            background: #f44336; color: white;
+            border: none; border-radius: 8px;
+            padding: 0 12px; cursor: pointer;
+        }
+        
+        /* ===== ADMIN ===== */
+        #adminScreen { padding: 20px; }
+        
+        .admin-section {
+            background: #f5f7fa;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 16px;
+        }
+        
+        .admin-section h3 { margin-bottom: 14px; color: #333; }
+        
+        .admin-survey-result {
+            background: white;
+            padding: 14px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .admin-survey-result h4 { margin-bottom: 10px; color: #333; }
+        
+        .result-bar {
+            display: flex;
+            align-items: center;
+            margin-bottom: 6px;
+            gap: 10px;
+        }
+        
+        .result-bar-label { flex: 1; font-size: 13px; color: #333; }
+        
+        .result-bar-track {
+            flex: 2;
+            height: 20px;
+            background: #e0e0e0;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        .result-bar-fill {
+            height: 100%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            transition: width 0.5s;
+        }
+        
+        .result-bar-count { font-size: 12px; color: #666; min-width: 50px; text-align: right; }
         
         /* ===== DASHBOARD ===== */
         #dashboardScreen { padding: 20px; }
         
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-            gap: 16px; margin-bottom: 24px;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 14px; margin-bottom: 24px;
         }
         
         .stat-card {
@@ -600,16 +803,10 @@
             color: white; text-align: center;
         }
         
-        .stat-value {
-            font-size: 36px; font-weight: 700; margin-bottom: 4px;
-        }
+        .stat-value { font-size: 32px; font-weight: 700; margin-bottom: 4px; }
+        .stat-label { font-size: 12px; opacity: 0.9; }
         
-        .stat-label { font-size: 13px; opacity: 0.9; }
-        
-        .activity-list {
-            background: #f5f7fa; border-radius: 12px;
-            padding: 16px;
-        }
+        .activity-list { background: #f5f7fa; border-radius: 12px; padding: 16px; }
         
         .activity-item {
             padding: 10px; border-bottom: 1px solid #e0e0e0;
@@ -618,6 +815,8 @@
         
         .activity-item:last-child { border-bottom: none; }
         .activity-time { color: #888; font-size: 11px; }
+        
+        .game-board { display: flex; justify-content: center; margin: 20px 0; }
     </style>
 </head>
 <body>
@@ -628,15 +827,30 @@
                 <h1 id="headerTitle">🎉 Портал коллег</h1>
             </div>
             <div class="user-info" id="userInfo" style="display:none;">
+                <span id="adminBadge" class="admin-badge" style="display:none;">ADMIN</span>
+                <div class="user-avatar-small" id="userAvatarHeader" onclick="openAvatarModal()" title="Изменить аватар"></div>
                 <span id="currentUserName"></span>
                 <button class="logout-btn" onclick="logout()">Выйти</button>
             </div>
         </div>
 
-        <!-- АВТОРИЗАЦИЯ -->
-        <div class="screen active" id="authScreen">
-            <div class="auth-box">
+        <!-- ЭКРАН ГОСТЯ -->
+        <div class="screen active" id="guestScreen">
+            <div class="guest-box">
                 <h2>👋 Добро пожаловать!</h2>
+                <p>Войдите, чтобы получить полный доступ, или играйте как гость</p>
+                <div class="guest-buttons">
+                    <button class="guest-btn primary" onclick="showScreen('authScreen')">🔐 Войти / Регистрация</button>
+                    <button class="guest-btn secondary" onclick="enterAsGuest()">🎮 Играть как гость</button>
+                </div>
+                <p style="margin-top: 20px; font-size: 12px; color: #999;">Гости могут только играть в игры</p>
+            </div>
+        </div>
+
+        <!-- АВТОРИЗАЦИЯ -->
+        <div class="screen" id="authScreen">
+            <div class="auth-box">
+                <h2>👋 Вход в портал</h2>
                 <div class="auth-tabs">
                     <button class="auth-tab active" onclick="showTab('login')">Вход</button>
                     <button class="auth-tab" onclick="showTab('register')">Регистрация</button>
@@ -646,6 +860,7 @@
                     <input type="password" id="loginPassword" placeholder="Пароль" required>
                     <div class="auth-error" id="loginError"></div>
                     <button type="submit" class="auth-btn">Войти</button>
+                    <button type="button" class="auth-btn" style="background:#e0e0e0; color:#333;" onclick="showScreen('guestScreen', false)">← Назад</button>
                 </form>
                 <form class="auth-form" id="registerForm" onsubmit="register(event)">
                     <input type="text" id="regName" placeholder="Ваше имя" required>
@@ -654,6 +869,7 @@
                     <input type="password" id="regPassword2" placeholder="Повторите пароль" required>
                     <div class="auth-error" id="regError"></div>
                     <button type="submit" class="auth-btn">Зарегистрироваться</button>
+                    <button type="button" class="auth-btn" style="background:#e0e0e0; color:#333;" onclick="showScreen('guestScreen', false)">← Назад</button>
                 </form>
             </div>
         </div>
@@ -664,7 +880,7 @@
                 <h2 id="welcomeText">Привет!</h2>
                 <p>Выберите раздел для работы и отдыха</p>
             </div>
-            <div class="menu-grid">
+            <div class="menu-grid" id="menuGrid">
                 <div class="menu-card chat" onclick="openChat()">
                     <div class="menu-card-icon">💬</div>
                     <div class="menu-card-title">Чат</div>
@@ -674,6 +890,16 @@
                     <div class="menu-card-icon">🎮</div>
                     <div class="menu-card-title">Игры</div>
                     <div class="menu-card-desc">5 онлайн-игр</div>
+                </div>
+                <div class="menu-card excel" onclick="openExcel()">
+                    <div class="menu-card-icon">📊</div>
+                    <div class="menu-card-title">Таблицы</div>
+                    <div class="menu-card-desc">Общий Excel</div>
+                </div>
+                <div class="menu-card survey" onclick="openSurveys()">
+                    <div class="menu-card-icon">📋</div>
+                    <div class="menu-card-title">Опросы</div>
+                    <div class="menu-card-desc">Голосования</div>
                 </div>
                 <div class="menu-card board" onclick="openBoard()">
                     <div class="menu-card-icon">🎨</div>
@@ -688,12 +914,17 @@
                 <div class="menu-card clock" onclick="openClock()">
                     <div class="menu-card-icon">🕐</div>
                     <div class="menu-card-title">Часы</div>
-                    <div class="menu-card-desc">Таймер и секундомер</div>
+                    <div class="menu-card-desc">Таймер</div>
                 </div>
                 <div class="menu-card dashboard" onclick="openDashboard()">
-                    <div class="menu-card-icon">📊</div>
+                    <div class="menu-card-icon">📈</div>
                     <div class="menu-card-title">Статистика</div>
-                    <div class="menu-card-desc">Активность команды</div>
+                    <div class="menu-card-desc">Активность</div>
+                </div>
+                <div class="menu-card admin" id="adminCard" onclick="openAdmin()" style="display:none;">
+                    <div class="menu-card-icon">⚙️</div>
+                    <div class="menu-card-title">Админ</div>
+                    <div class="menu-card-desc">Управление</div>
                 </div>
             </div>
         </div>
@@ -718,10 +949,6 @@
                 <button class="emoji-btn" onclick="addEmoji('🚀')">🚀</button>
                 <button class="emoji-btn" onclick="addEmoji('💯')">💯</button>
                 <button class="emoji-btn" onclick="addEmoji('🥳')">🥳</button>
-                <button class="emoji-btn" onclick="addEmoji('😅')">😅</button>
-                <button class="emoji-btn" onclick="addEmoji('🤣')">🤣</button>
-                <button class="emoji-btn" onclick="addEmoji('😘')">😘</button>
-                <button class="emoji-btn" onclick="addEmoji('🤗')">🤗</button>
             </div>
             <div class="input-area">
                 <input type="text" id="messageInput" placeholder="Напишите сообщение...">
@@ -735,7 +962,7 @@
         <!-- МЕНЮ ИГР -->
         <div class="screen" id="gamesMenu">
             <h2 class="section-title">🎮 Выберите игру</h2>
-            <p class="section-subtitle">Создайте комнату и отправьте код коллеге в чат</p>
+            <p class="section-subtitle">Создайте комнату и отправьте код коллеге</p>
             <div class="games-grid">
                 <div class="game-card" onclick="selectGame('ttt')">
                     <div class="game-icon">❌⭕</div>
@@ -745,7 +972,7 @@
                 <div class="game-card" onclick="selectGame('battleship')">
                     <div class="game-icon">🚢💥</div>
                     <div class="game-title">Морской бой</div>
-                    <div class="game-desc">Потопи флот врага</div>
+                    <div class="game-desc">Потопи флот</div>
                 </div>
                 <div class="game-card" onclick="selectGame('snake')">
                     <div class="game-icon">🐍</div>
@@ -760,7 +987,7 @@
                 <div class="game-card" onclick="selectGame('dice')">
                     <div class="game-icon">🎲</div>
                     <div class="game-title">Кости</div>
-                    <div class="game-desc">Кто выбросит больше</div>
+                    <div class="game-desc">Кто больше выбросит</div>
                 </div>
             </div>
         </div>
@@ -772,7 +999,7 @@
                 <div id="createRoomSection">
                     <p style="margin: 20px 0;">Код вашей комнаты:</p>
                     <div class="room-code" id="roomCode">----</div>
-                    <p style="color: #666; margin: 20px 0;">Отправьте этот код коллеге в чат</p>
+                    <p style="color: #666; margin: 20px 0;">Отправьте этот код коллеге</p>
                     <div class="waiting">
                         <div class="waiting-spinner"></div>
                         <p>Ожидание второго игрока...</p>
@@ -834,9 +1061,8 @@
             <div class="clock-container">
                 <div class="big-clock" id="bigClock">00:00:00</div>
                 <div class="big-date" id="bigDate"></div>
-                
                 <div class="timer-section">
-                    <h3 style="margin-bottom: 16px;">⏱️ Таймер обратного отсчёта</h3>
+                    <h3 style="margin-bottom: 16px;">⏱️ Таймер</h3>
                     <div>
                         <input type="number" class="timer-input" id="timerHours" placeholder="Ч" min="0" max="23" value="0">
                         <input type="number" class="timer-input" id="timerMinutes" placeholder="М" min="0" max="59" value="5">
@@ -846,7 +1072,6 @@
                     <button class="btn-primary" onclick="startTimer()" id="startTimerBtn">▶️ Старт</button>
                     <button class="btn-secondary" onclick="resetTimer()">🔄 Сброс</button>
                 </div>
-                
                 <div class="timer-section" style="margin-top: 16px;">
                     <h3 style="margin-bottom: 16px;">⏲️ Секундомер</h3>
                     <div class="timer-display" id="stopwatchDisplay">00:00:00</div>
@@ -856,9 +1081,71 @@
             </div>
         </div>
 
+        <!-- EXCEL -->
+        <div class="screen" id="excelScreen">
+            <h2 class="section-title">📊 Общая таблица</h2>
+            <p class="section-subtitle">Все изменения сохраняются автоматически и видны всем</p>
+            <div class="excel-info">💡 Кликните по ячейке, чтобы редактировать. Изменения сохраняются автоматически.</div>
+            <div class="excel-tools">
+                <button class="btn-primary" onclick="addExcelRow()">➕ Строка</button>
+                <button class="btn-primary" onclick="addExcelColumn()">➕ Столбец</button>
+                <button class="btn-secondary" onclick="removeExcelRow()">➖ Строка</button>
+                <button class="btn-secondary" onclick="removeExcelColumn()">➖ Столбец</button>
+                <button class="btn-primary" onclick="exportExcelCSV()">📥 Экспорт CSV</button>
+                <label for="importExcelCSV" class="btn-secondary" style="display:inline-block;">📤 Импорт CSV</label>
+                <input type="file" id="importExcelCSV" accept=".csv" onchange="importExcelCSV(event)">
+                <button class="btn-secondary" onclick="clearExcel()">🗑️ Очистить</button>
+            </div>
+            <div class="excel-container">
+                <table class="excel-table" id="excelTable"></table>
+            </div>
+        </div>
+
+        <!-- ОПРОСЫ -->
+        <div class="screen" id="surveysScreen">
+            <h2 class="section-title">📋 Опросы</h2>
+            <p class="section-subtitle">Голосование анонимное. Результаты видны только администраторам.</p>
+            
+            <div id="surveyCreateForm" style="display:none;">
+                <div class="survey-form">
+                    <h3 style="margin-bottom: 14px;">Новый опрос</h3>
+                    <textarea id="surveyQuestion" placeholder="Вопрос..." rows="2"></textarea>
+                    <div class="survey-options-input" id="surveyOptionsInput">
+                        <div class="survey-option-input-row">
+                            <input type="text" placeholder="Вариант 1">
+                            <button class="remove-option-btn" onclick="removeSurveyOption(this)">✕</button>
+                        </div>
+                        <div class="survey-option-input-row">
+                            <input type="text" placeholder="Вариант 2">
+                            <button class="remove-option-btn" onclick="removeSurveyOption(this)">✕</button>
+                        </div>
+                    </div>
+                    <button class="btn-secondary" onclick="addSurveyOption()" style="margin-bottom: 14px;">➕ Добавить вариант</button>
+                    <div>
+                        <button class="btn-primary" onclick="createSurvey()">✅ Создать</button>
+                        <button class="btn-secondary" onclick="toggleSurveyForm()">Отмена</button>
+                    </div>
+                </div>
+            </div>
+            
+            <button class="btn-primary" id="createSurveyBtn" onclick="toggleSurveyForm()" style="margin-bottom: 20px;">➕ Создать опрос</button>
+            <div id="surveysList"></div>
+        </div>
+
+        <!-- АДМИН-ПАНЕЛЬ -->
+        <div class="screen" id="adminScreen">
+            <h2 class="section-title">⚙️ Панель администратора</h2>
+            <p class="section-subtitle">Управление опросами и просмотр результатов</p>
+            
+            <div class="admin-section">
+                <h3>📊 Результаты опросов</h3>
+                <div id="adminSurveysList"></div>
+            </div>
+        </div>
+
         <!-- СТАТИСТИКА -->
         <div class="screen" id="dashboardScreen">
-            <h2 class="section-title">📊 Статистика команды</h2>
+            <h2 class="section-title">📈 Статистика команды</h2>
             <p class="section-subtitle">Активность портала в реальном времени</p>
             <div class="stats-grid" id="statsGrid"></div>
             <h3 style="margin: 20px 0 10px;">📝 Последние действия</h3>
@@ -866,13 +1153,28 @@
         </div>
     </div>
 
-    <!-- МОДАЛЬНОЕ ОКНО ДЛЯ КАРТИНОК -->
+    <!-- МОДАЛЬНОЕ ОКНО КАРТИНОК -->
     <div class="image-modal" id="imageModal">
         <button class="image-modal-close" onclick="closeImageModal()">✕</button>
         <img id="modalImage" src="">
         <div class="image-modal-actions">
             <button class="image-modal-btn" onclick="downloadImage()">💾 Скачать</button>
             <button class="image-modal-btn" onclick="closeImageModal()">Закрыть</button>
+        </div>
+    </div>
+
+    <!-- МОДАЛЬНОЕ ОКНО АВАТАРА -->
+    <div class="modal" id="avatarModal">
+        <div class="modal-content">
+            <h3>🖼️ Изменить аватар</h3>
+            <div class="avatar-preview" id="avatarPreview"></div>
+            <input type="file" id="avatarInput" accept="image/*" onchange="previewAvatar(event)">
+            <label for="avatarInput" class="btn-primary" style="display:inline-block; margin-top:10px;">Выбрать фото</label>
+            <div class="modal-buttons">
+                <button class="btn-primary" onclick="saveAvatar()">💾 Сохранить</button>
+                <button class="btn-secondary" onclick="removeAvatar()">🗑️ Удалить</button>
+                <button class="btn-secondary" onclick="closeAvatarModal()">Отмена</button>
+            </div>
         </div>
     </div>
 
@@ -900,14 +1202,21 @@
         const gamesRef = db.ref('games');
         const tasksRef = db.ref('tasks');
         const statsRef = db.ref('stats');
+        const surveysRef = db.ref('surveys');
+        const excelRef = db.ref('excel/data');
+        const usersRef = db.ref('users');
+        const adminsRef = db.ref('admins');
 
         let currentUser = null;
+        let isGuest = false;
+        let isAdmin = false;
         let currentGame = null;
         let currentRoom = null;
         let playerNumber = 0;
-        let currentScreen = 'mainMenu';
+        let currentScreen = 'guestScreen';
         let screenHistory = [];
         let currentImageSrc = null;
+        let newAvatarData = null;
 
         // ===== НАВИГАЦИЯ =====
         function showScreen(screenId, addToHistory = true) {
@@ -935,30 +1244,68 @@
 
         function updateBackButton() {
             const btn = document.getElementById('backBtn');
-            btn.style.display = (currentScreen === 'mainMenu' || currentScreen === 'authScreen') ? 'none' : 'inline-block';
+            btn.style.display = (currentScreen === 'guestScreen' || currentScreen === 'mainMenu' || currentScreen === 'authScreen') ? 'none' : 'inline-block';
         }
 
         function updateHeaderTitle() {
             const titles = {
+                'guestScreen': '🎉 Портал коллег',
                 'mainMenu': '🎉 Портал коллег',
                 'chatScreen': '💬 Чат',
                 'gamesMenu': '🎮 Игры',
                 'lobbyScreen': '🎯 Лобби',
                 'gameScreen': '🎮 Игра',
-                'boardScreen': '🎨 Доска для рисования',
+                'boardScreen': '🎨 Доска',
                 'tasksScreen': '✅ Задачи',
-                'clockScreen': '🕐 Часы и таймер',
-                'dashboardScreen': '📊 Статистика'
+                'clockScreen': '🕐 Часы',
+                'dashboardScreen': '📈 Статистика',
+                'excelScreen': '📊 Таблицы',
+                'surveysScreen': '📋 Опросы',
+                'adminScreen': '⚙️ Админ-панель'
             };
             document.getElementById('headerTitle').textContent = titles[currentScreen] || '🎉 Портал коллег';
         }
 
-        function openChat() { showScreen('chatScreen'); loadChatMessages(); }
+        function enterAsGuest() {
+            isGuest = true;
+            currentUser = null;
+            document.getElementById('userInfo').style.display = 'none';
+            openGames();
+        }
+
+        function openChat() {
+            if (isGuest) { alert('Гости не могут пользоваться чатом. Войдите в аккаунт.'); return; }
+            showScreen('chatScreen'); loadChatMessages();
+        }
         function openGames() { showScreen('gamesMenu'); }
-        function openBoard() { showScreen('boardScreen'); initCanvas(); }
-        function openTasks() { showScreen('tasksScreen'); loadTasks(); }
-        function openClock() { showScreen('clockScreen'); }
-        function openDashboard() { showScreen('dashboardScreen'); loadDashboard(); }
+        function openBoard() {
+            if (isGuest) { alert('Гости не могут пользоваться доской. Войдите в аккаунт.'); return; }
+            showScreen('boardScreen'); initCanvas();
+        }
+        function openTasks() {
+            if (isGuest) { alert('Гости не могут пользоваться задачами. Войдите в аккаунт.'); return; }
+            showScreen('tasksScreen'); loadTasks();
+        }
+        function openClock() {
+            if (isGuest) { alert('Гости не могут пользоваться часами. Войдите в аккаунт.'); return; }
+            showScreen('clockScreen');
+        }
+        function openDashboard() {
+            if (isGuest) { alert('Гости не могут просматривать статистику. Войдите в аккаунт.'); return; }
+            showScreen('dashboardScreen'); loadDashboard();
+        }
+        function openExcel() {
+            if (isGuest) { alert('Гости не могут пользоваться таблицами. Войдите в аккаунт.'); return; }
+            showScreen('excelScreen'); loadExcel();
+        }
+        function openSurveys() {
+            if (isGuest) { alert('Гости не могут участвовать в опросах. Войдите в аккаунт.'); return; }
+            showScreen('surveysScreen'); loadSurveys();
+        }
+        function openAdmin() {
+            if (!isAdmin) { alert('Доступ только для администраторов!'); return; }
+            showScreen('adminScreen'); loadAdminPanel();
+        }
 
         // ===== АВТОРИЗАЦИЯ =====
         function showTab(tab) {
@@ -986,6 +1333,21 @@
             try {
                 const userCredential = await auth.createUserWithEmailAndPassword(email, password);
                 await userCredential.user.updateProfile({ displayName: name });
+                
+                // Сохраняем пользователя
+                await usersRef.child(userCredential.user.uid).set({
+                    name: name,
+                    email: email,
+                    createdAt: Date.now()
+                });
+                
+                // Первый пользователь становится админом
+                const adminsSnapshot = await adminsRef.once('value');
+                if (!adminsSnapshot.exists()) {
+                    await adminsRef.child(userCredential.user.uid).set(true);
+                    alert('🎉 Вы первый пользователь и стали администратором!');
+                }
+                
                 logActivity(name + ' зарегистрировался');
             } catch (error) { errorEl.textContent = error.message; }
         }
@@ -1006,38 +1368,110 @@
             cleanupGame();
             chatMessagesRef.off();
             tasksRef.off();
+            surveysRef.off();
+            excelRef.off();
             document.getElementById('messages').innerHTML = '';
             screenHistory = [];
+            isGuest = false;
         }
 
-        auth.onAuthStateChanged(function(user) {
+        auth.onAuthStateChanged(async function(user) {
             if (user) {
                 currentUser = user;
+                isGuest = false;
+                
+                // Проверяем админа
+                const adminSnap = await adminsRef.child(user.uid).once('value');
+                isAdmin = adminSnap.exists();
+                
+                // Загружаем аватар
+                const userSnap = await usersRef.child(user.uid).once('value');
+                const userData = userSnap.val() || {};
+                
                 document.getElementById('userInfo').style.display = 'flex';
-                document.getElementById('currentUserName').textContent = '👤 ' + (user.displayName || user.email);
+                document.getElementById('currentUserName').textContent = user.displayName || user.email;
                 document.getElementById('welcomeText').textContent = 'Привет, ' + (user.displayName || 'друг') + '!';
+                document.getElementById('adminBadge').style.display = isAdmin ? 'inline-block' : 'none';
+                document.getElementById('adminCard').style.display = isAdmin ? 'block' : 'none';
+                
+                updateAvatarInHeader(userData.avatar);
+                
                 showScreen('mainMenu', false);
                 logActivity((user.displayName || 'Пользователь') + ' вошёл в систему');
-            } else {
+            } else if (!isGuest) {
                 currentUser = null;
+                isAdmin = false;
                 document.getElementById('userInfo').style.display = 'none';
-                showScreen('authScreen', false);
+                showScreen('guestScreen', false);
             }
         });
 
+        function updateAvatarInHeader(avatarData) {
+            const el = document.getElementById('userAvatarHeader');
+            if (avatarData) {
+                el.innerHTML = `<img src="${avatarData}">`;
+            } else {
+                const name = currentUser?.displayName || '?';
+                el.innerHTML = getInitials(name);
+            }
+        }
+
         function logActivity(text) {
             if (!currentUser) return;
-            statsRef.child('activity').push({
-                text: text,
-                time: Date.now()
-            });
+            statsRef.child('activity').push({ text: text, time: Date.now() });
+        }
+
+        // ===== АВАТАР =====
+        function openAvatarModal() {
+            newAvatarData = null;
+            const preview = document.getElementById('avatarPreview');
+            const name = currentUser?.displayName || '?';
+            preview.innerHTML = `<div style="font-size:40px; color:#667eea;">${getInitials(name)}</div>`;
+            document.getElementById('avatarModal').classList.add('show');
+        }
+
+        function closeAvatarModal() {
+            document.getElementById('avatarModal').classList.remove('show');
+            document.getElementById('avatarInput').value = '';
+            newAvatarData = null;
+        }
+
+        function previewAvatar(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(ev) {
+                newAvatarData = ev.target.result;
+                document.getElementById('avatarPreview').innerHTML = `<img src="${newAvatarData}">`;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        async function saveAvatar() {
+            if (!newAvatarData) { alert('Выберите фото!'); return; }
+            await usersRef.child(currentUser.uid).child('avatar').set(newAvatarData);
+            updateAvatarInHeader(newAvatarData);
+            closeAvatarModal();
+            alert('✅ Аватар сохранён!');
+        }
+
+        async function removeAvatar() {
+            await usersRef.child(currentUser.uid).child('avatar').remove();
+            const name = currentUser?.displayName || '?';
+            document.getElementById('userAvatarHeader').innerHTML = getInitials(name);
+            closeAvatarModal();
+        }
+
+        async function getUserAvatar(uid) {
+            const snap = await usersRef.child(uid).child('avatar').once('value');
+            return snap.val();
         }
 
         // ===== ЧАТ =====
         function loadChatMessages() {
             chatMessagesRef.off();
             document.getElementById('messages').innerHTML = '';
-            chatMessagesRef.on('child_added', function(snapshot) {
+            chatMessagesRef.on('child_added', async function(snapshot) {
                 const message = snapshot.val();
                 const messagesDiv = document.getElementById('messages');
                 const myName = currentUser.displayName || currentUser.email;
@@ -1047,7 +1481,20 @@
 
                 const avatar = document.createElement('div');
                 avatar.className = 'avatar';
-                avatar.textContent = getInitials(message.author);
+                
+                // Загружаем аватар автора
+                if (message.authorUid) {
+                    const userSnap = await usersRef.child(message.authorUid).once('value');
+                    const userData = userSnap.val();
+                    if (userData && userData.avatar) {
+                        avatar.innerHTML = `<img src="${userData.avatar}">`;
+                    } else {
+                        avatar.textContent = getInitials(message.author);
+                    }
+                } else {
+                    avatar.textContent = getInitials(message.author);
+                }
+                
                 messageDiv.appendChild(avatar);
 
                 const contentDiv = document.createElement('div');
@@ -1101,6 +1548,7 @@
             if (text) {
                 chatMessagesRef.push({
                     author: myName,
+                    authorUid: currentUser.uid,
                     text: text,
                     timestamp: Date.now()
                 });
@@ -1122,6 +1570,7 @@
             reader.onload = function(ev) {
                 chatMessagesRef.push({
                     author: myName,
+                    authorUid: currentUser.uid,
                     image: ev.target.result,
                     timestamp: Date.now()
                 });
@@ -1172,10 +1621,12 @@
             document.getElementById('roomCode').textContent = code;
             currentRoom = code;
             
+            const playerName = isGuest ? 'Гость_' + Math.floor(Math.random() * 1000) : (currentUser.displayName || currentUser.email);
+            
             gamesRef.child(code).set({
                 game: game,
-                player1: currentUser.displayName || currentUser.email,
-                player1Id: currentUser.uid,
+                player1: playerName,
+                player1Id: currentUser ? currentUser.uid : 'guest_' + Date.now(),
                 status: 'waiting',
                 createdAt: Date.now()
             });
@@ -1215,9 +1666,11 @@
             currentGame = data.game;
             playerNumber = 2;
             
+            const playerName = isGuest ? 'Гость_' + Math.floor(Math.random() * 1000) : (currentUser.displayName || currentUser.email);
+            
             await gamesRef.child(code).update({
-                player2: currentUser.displayName || currentUser.email,
-                player2Id: currentUser.uid,
+                player2: playerName,
+                player2Id: currentUser ? currentUser.uid : 'guest_' + Date.now(),
                 status: 'ready'
             });
             
@@ -1253,7 +1706,7 @@
         function restartGame() {
             if (!currentRoom) return;
             gamesRef.child(currentRoom).update({
-                board: null,
+                board: ['','','','','','','','',''],
                 currentPlayer: 1,
                 winner: null,
                 p1Path: null,
@@ -1270,7 +1723,9 @@
                 p2Score: 0,
                 p1Dice: null,
                 p2Dice: null,
-                diceRound: 1
+                diceRound: 1,
+                matchOver: null,
+                roundScored: false
             });
             document.getElementById('restartBtn').style.display = 'none';
         }
@@ -1288,9 +1743,7 @@
             gamesRef.child(currentRoom).on('value', (snapshot) => {
                 const data = snapshot.val();
                 if (!data) return;
-                const gameBoard = data.board || board;
-                const currentPlayer = data.currentPlayer || 1;
-                renderTTT(gameBoard, currentPlayer, data.winner);
+                renderTTT(data.board || board, data.currentPlayer || 1, data.winner);
             });
             
             window.makeTTTMove = function(index) {
@@ -1333,7 +1786,6 @@
                 html += `<div class="winner-message"><h2>${winner === 'draw' ? 'Ничья!' : 'Игра окончена!'}</h2></div>`;
                 document.getElementById('restartBtn').style.display = 'inline-block';
             }
-            
             content.innerHTML = html;
         }
 
@@ -1368,11 +1820,7 @@
                 enemyShots = data[playerKey + 'Shots'] || [];
                 myShots = data[enemyKey + 'Shots'] || [];
                 
-                const phase = data.phase || 'placement';
-                const currentTurn = data.currentTurn || 1;
-                const winner = data.winner;
-                
-                renderBattleship(phase, currentTurn, winner);
+                renderBattleship(data.phase || 'placement', data.currentTurn || 1, data.winner);
             });
             
             window.placeShips = function() {
@@ -1422,11 +1870,8 @@
             window.toggleShipPlacement = function(row, col) {
                 const ship = [{ row, col }];
                 const exists = myShips.some(s => s.some(cell => cell.row === row && cell.col === col));
-                if (exists) {
-                    myShips = myShips.filter(s => !s.some(cell => cell.row === row && cell.col === col));
-                } else {
-                    myShips.push(ship);
-                }
+                if (exists) myShips = myShips.filter(s => !s.some(cell => cell.row === row && cell.col === col));
+                else myShips.push(ship);
                 renderBattleship('placement', 0, null);
             };
             
@@ -1539,9 +1984,7 @@
             gamesRef.child(currentRoom).on('value', (snapshot) => {
                 const data = snapshot.val();
                 if (!data) return;
-                const p1Path = data.p1Path || [{ row: 0, col: 0 }];
-                const p2Path = data.p2Path || [{ row: size - 1, col: size - 1 }];
-                renderSnake(data.currentTurn || 1, data.winner, size, p1Path, p2Path);
+                renderSnake(data.currentTurn || 1, data.winner, size, data.p1Path || [{row:0,col:0}], data.p2Path || [{row:9,col:9}]);
             });
             
             window.makeSnakeMove = function(row, col) {
@@ -1575,9 +2018,7 @@
                             if (!canMove) {
                                 update.winner = currentTurn;
                                 db.ref('stats/gamesPlayed').transaction(c => (c || 0) + 1);
-                            } else {
-                                update.currentTurn = nextPlayer;
-                            }
+                            } else update.currentTurn = nextPlayer;
                             gamesRef.child(currentRoom).update(update);
                         }
                     }
@@ -1673,34 +2114,24 @@
             
             if (p1Choice && p2Choice) {
                 const winner = getRPSWinner(p1Choice, p2Choice);
-                if (winner === 'draw') {
-                    status = '🤝 Ничья!';
-                } else if ((winner === 'p1' && playerNumber === 1) || (winner === 'p2' && playerNumber === 2)) {
+                if (winner === 'draw') status = '🤝 Ничья!';
+                else if ((winner === 'p1' && playerNumber === 1) || (winner === 'p2' && playerNumber === 2)) {
                     status = '🏆 Вы выиграли раунд!';
                     if (!data.roundScored) {
                         const scoreKey = playerNumber === 1 ? 'p1Score' : 'p2Score';
-                        gamesRef.child(currentRoom).update({ 
-                            [scoreKey]: (playerNumber === 1 ? p1Score : p2Score) + 1,
-                            roundScored: true
-                        });
+                        gamesRef.child(currentRoom).update({ [scoreKey]: (playerNumber === 1 ? p1Score : p2Score) + 1, roundScored: true });
                     }
                 } else {
                     status = '😔 Соперник выиграл раунд';
                     if (!data.roundScored) {
                         const scoreKey = playerNumber === 1 ? 'p2Score' : 'p1Score';
-                        gamesRef.child(currentRoom).update({ 
-                            [scoreKey]: (playerNumber === 1 ? p2Score : p1Score) + 1,
-                            roundScored: true
-                        });
+                        gamesRef.child(currentRoom).update({ [scoreKey]: (playerNumber === 1 ? p2Score : p1Score) + 1, roundScored: true });
                     }
                 }
                 
                 const myChoiceEmoji = playerNumber === 1 ? getRPSEmoji(p1Choice) : getRPSEmoji(p2Choice);
                 const enemyChoiceEmoji = playerNumber === 1 ? getRPSEmoji(p2Choice) : getRPSEmoji(p1Choice);
-                
-                resultHtml = `<div class="rps-result">
-                    <div>Вы: ${myChoiceEmoji} vs Соперник: ${enemyChoiceEmoji}</div>
-                </div>`;
+                resultHtml = `<div class="rps-result"><div>Вы: ${myChoiceEmoji} vs Соперник: ${enemyChoiceEmoji}</div></div>`;
                 
                 setTimeout(() => {
                     gamesRef.child(currentRoom).update({
@@ -1734,9 +2165,9 @@
             
             if (!p1Choice && !p2Choice) {
                 html += '<div class="rps-choices">';
-                html += `<div class="rps-choice ${rpsMyChoice === 'rock' ? 'selected' : ''}" onclick="makeRPSChoice('rock')">🪨</div>`;
-                html += `<div class="rps-choice ${rpsMyChoice === 'paper' ? 'selected' : ''}" onclick="makeRPSChoice('paper')">📄</div>`;
-                html += `<div class="rps-choice ${rpsMyChoice === 'scissors' ? 'selected' : ''}" onclick="makeRPSChoice('scissors')">✂️</div>`;
+                html += `<div class="rps-choice" onclick="makeRPSChoice('rock')">🪨</div>`;
+                html += `<div class="rps-choice" onclick="makeRPSChoice('paper')">📄</div>`;
+                html += `<div class="rps-choice" onclick="makeRPSChoice('scissors')">✂️</div>`;
                 html += '</div>';
             }
             html += '</div>';
@@ -1781,10 +2212,7 @@
             window.nextDiceRound = function() {
                 gamesRef.child(currentRoom).once('value', (snapshot) => {
                     const data = snapshot.val();
-                    const p1Score = data.p1Score || 0;
-                    const p2Score = data.p2Score || 0;
-                    
-                    let newP1 = p1Score, newP2 = p2Score;
+                    let newP1 = data.p1Score || 0, newP2 = data.p2Score || 0;
                     if (data.p1Dice > data.p2Dice) newP1++;
                     else if (data.p2Dice > data.p1Dice) newP2++;
                     
@@ -1853,15 +2281,13 @@
                 html += '<button class="btn-primary" onclick="nextDiceRound()">Следующий раунд →</button>';
             }
             
-            if (matchOver) {
-                html += `<div class="winner-message"><h2>Матч окончен!</h2></div>`;
-            }
+            if (matchOver) html += `<div class="winner-message"><h2>Матч окончен!</h2></div>`;
             
             html += '</div>';
             content.innerHTML = html;
         }
 
-        // ===== ДОСКА ДЛЯ РИСОВАНИЯ =====
+        // ===== ДОСКА =====
         let canvas, ctx;
         let drawing = false;
         let currentTool = 'pen';
@@ -1893,11 +2319,7 @@
             return { offsetX: touch.clientX - rect.left, offsetY: touch.clientY - rect.top };
         }
         
-        function startDraw(e) {
-            drawing = true;
-            lastX = e.offsetX;
-            lastY = e.offsetY;
-        }
+        function startDraw(e) { drawing = true; lastX = e.offsetX; lastY = e.offsetY; }
         
         function draw(e) {
             if (!drawing) return;
@@ -1938,6 +2360,7 @@
             const myName = currentUser.displayName || currentUser.email;
             chatMessagesRef.push({
                 author: myName,
+                authorUid: currentUser.uid,
                 image: dataUrl,
                 text: '🎨 Рисунок с доски',
                 timestamp: Date.now()
@@ -1949,17 +2372,11 @@
         function loadTasks() {
             tasksRef.off();
             document.getElementById('tasksList').innerHTML = '';
-            tasksRef.on('child_added', (snapshot) => {
-                const task = snapshot.val();
-                const id = snapshot.key;
-                renderTask(id, task);
-            });
+            tasksRef.on('child_added', (snapshot) => renderTask(snapshot.key, snapshot.val()));
             tasksRef.on('child_changed', (snapshot) => {
-                const task = snapshot.val();
-                const id = snapshot.key;
-                const el = document.getElementById('task-' + id);
+                const el = document.getElementById('task-' + snapshot.key);
                 if (el) el.remove();
-                renderTask(id, task);
+                renderTask(snapshot.key, snapshot.val());
             });
             tasksRef.on('child_removed', (snapshot) => {
                 const el = document.getElementById('task-' + snapshot.key);
@@ -2000,15 +2417,10 @@
             input.value = '';
         }
         
-        function toggleTask(id, done) {
-            tasksRef.child(id).update({ done: done });
-        }
-        
-        function deleteTask(id) {
-            if (confirm('Удалить задачу?')) tasksRef.child(id).remove();
-        }
+        function toggleTask(id, done) { tasksRef.child(id).update({ done: done }); }
+        function deleteTask(id) { if (confirm('Удалить задачу?')) tasksRef.child(id).remove(); }
 
-        // ===== ЧАСЫ И ТАЙМЕР =====
+        // ===== ЧАСЫ =====
         let timerInterval = null;
         let timerRemaining = 0;
         let stopwatchInterval = null;
@@ -2037,14 +2449,12 @@
                 document.getElementById('startTimerBtn').textContent = '▶️ Старт';
                 return;
             }
-            
             if (timerRemaining === 0) {
                 const h = parseInt(document.getElementById('timerHours').value) || 0;
                 const m = parseInt(document.getElementById('timerMinutes').value) || 0;
                 const s = parseInt(document.getElementById('timerSeconds').value) || 0;
                 timerRemaining = h * 3600 + m * 60 + s;
             }
-            
             if (timerRemaining === 0) return;
             
             document.getElementById('startTimerBtn').textContent = '⏸️ Пауза';
@@ -2081,9 +2491,7 @@
         }
         
         ['timerHours','timerMinutes','timerSeconds'].forEach(id => {
-            document.getElementById(id).addEventListener('input', () => {
-                if (!timerInterval) resetTimer();
-            });
+            document.getElementById(id).addEventListener('input', () => { if (!timerInterval) resetTimer(); });
         });
         
         function toggleStopwatch() {
@@ -2117,30 +2525,366 @@
                 h.toString().padStart(2,'0') + ':' + m.toString().padStart(2,'0') + ':' + s.toString().padStart(2,'0');
         }
 
+        // ===== EXCEL =====
+        let excelData = [];
+        let excelRows = 20;
+        let excelCols = 10;
+        
+        function loadExcel() {
+            excelRef.on('value', (snapshot) => {
+                const data = snapshot.val();
+                if (data) {
+                    excelData = data.rows || [];
+                    excelRows = data.rowsCount || 20;
+                    excelCols = data.colsCount || 10;
+                } else {
+                    excelData = [];
+                    excelRows = 20;
+                    excelCols = 10;
+                    for (let i = 0; i < excelRows; i++) {
+                        excelData[i] = [];
+                        for (let j = 0; j < excelCols; j++) excelData[i][j] = '';
+                    }
+                }
+                renderExcel();
+            });
+        }
+        
+        function renderExcel() {
+            const table = document.getElementById('excelTable');
+            let html = '<thead><tr><th class="row-header"></th>';
+            for (let c = 0; c < excelCols; c++) {
+                html += `<th>${getColumnLetter(c)}</th>`;
+            }
+            html += '</tr></thead><tbody>';
+            
+            for (let r = 0; r < excelRows; r++) {
+                html += `<tr><td class="row-header">${r + 1}</td>`;
+                for (let c = 0; c < excelCols; c++) {
+                    const value = (excelData[r] && excelData[r][c]) || '';
+                    html += `<td contenteditable="true" data-row="${r}" data-col="${c}" onblur="updateExcelCell(this)">${escapeHtml(value)}</td>`;
+                }
+                html += '</tr>';
+            }
+            html += '</tbody>';
+            table.innerHTML = html;
+        }
+        
+        function getColumnLetter(index) {
+            let letter = '';
+            while (index >= 0) {
+                letter = String.fromCharCode(65 + (index % 26)) + letter;
+                index = Math.floor(index / 26) - 1;
+            }
+            return letter;
+        }
+        
+        function updateExcelCell(cell) {
+            const row = parseInt(cell.dataset.row);
+            const col = parseInt(cell.dataset.col);
+            const value = cell.textContent;
+            
+            if (!excelData[row]) excelData[row] = [];
+            excelData[row][col] = value;
+            
+            excelRef.set({
+                rows: excelData,
+                rowsCount: excelRows,
+                colsCount: excelCols,
+                updatedAt: Date.now(),
+                updatedBy: currentUser ? currentUser.displayName : 'unknown'
+            });
+        }
+        
+        function addExcelRow() {
+            excelRows++;
+            excelData[excelRows - 1] = [];
+            for (let c = 0; c < excelCols; c++) excelData[excelRows - 1][c] = '';
+            saveExcel();
+        }
+        
+        function addExcelColumn() {
+            excelCols++;
+            for (let r = 0; r < excelRows; r++) {
+                if (!excelData[r]) excelData[r] = [];
+                excelData[r][excelCols - 1] = '';
+            }
+            saveExcel();
+        }
+        
+        function removeExcelRow() {
+            if (excelRows <= 1) return;
+            if (!confirm('Удалить последнюю строку?')) return;
+            excelRows--;
+            excelData.pop();
+            saveExcel();
+        }
+        
+        function removeExcelColumn() {
+            if (excelCols <= 1) return;
+            if (!confirm('Удалить последний столбец?')) return;
+            excelCols--;
+            for (let r = 0; r < excelRows; r++) {
+                if (excelData[r]) excelData[r].pop();
+            }
+            saveExcel();
+        }
+        
+        function clearExcel() {
+            if (!confirm('Очистить всю таблицу?')) return;
+            excelData = [];
+            for (let i = 0; i < excelRows; i++) {
+                excelData[i] = [];
+                for (let j = 0; j < excelCols; j++) excelData[i][j] = '';
+            }
+            saveExcel();
+        }
+        
+        function saveExcel() {
+            excelRef.set({
+                rows: excelData,
+                rowsCount: excelRows,
+                colsCount: excelCols,
+                updatedAt: Date.now(),
+                updatedBy: currentUser ? currentUser.displayName : 'unknown'
+            });
+        }
+        
+        function exportExcelCSV() {
+            const csv = Papa.unparse(excelData);
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = 'table_' + Date.now() + '.csv';
+            link.click();
+        }
+        
+        function importExcelCSV(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            Papa.parse(file, {
+                complete: function(results) {
+                    excelData = results.data;
+                    excelRows = excelData.length;
+                    excelCols = Math.max(...excelData.map(r => r.length));
+                    for (let r = 0; r < excelRows; r++) {
+                        if (!excelData[r]) excelData[r] = [];
+                        while (excelData[r].length < excelCols) excelData[r].push('');
+                    }
+                    saveExcel();
+                    alert('✅ Таблица импортирована!');
+                }
+            });
+            e.target.value = '';
+        }
+
+        // ===== ОПРОСЫ =====
+        let userVotes = {}; // {surveyId: optionIndex}
+        
+        function loadSurveys() {
+            surveysRef.off();
+            document.getElementById('surveysList').innerHTML = '';
+            
+            // Загружаем голоса текущего пользователя
+            if (currentUser) {
+                db.ref('votes/' + currentUser.uid).on('value', (snapshot) => {
+                    userVotes = snapshot.val() || {};
+                });
+            }
+            
+            surveysRef.on('value', (snapshot) => {
+                const data = snapshot.val() || {};
+                const list = document.getElementById('surveysList');
+                list.innerHTML = '';
+                
+                const surveys = Object.entries(data).map(([id, s]) => ({ id, ...s }));
+                surveys.sort((a, b) => b.createdAt - a.createdAt);
+                
+                if (surveys.length === 0) {
+                    list.innerHTML = '<p style="color:#888; text-align:center; padding:40px;">Пока нет опросов. Создайте первый!</p>';
+                    return;
+                }
+                
+                surveys.forEach(survey => {
+                    const card = document.createElement('div');
+                    card.className = 'survey-card';
+                    
+                    const totalVotes = Object.values(survey.votes || {}).reduce((a, b) => a + b, 0);
+                    const userVote = userVotes[survey.id];
+                    
+                    let optionsHtml = '';
+                    (survey.options || []).forEach((opt, idx) => {
+                        const count = (survey.votes && survey.votes[idx]) || 0;
+                        const isVoted = userVote === idx;
+                        optionsHtml += `
+                            <div class="survey-option ${isVoted ? 'voted' : ''}" onclick="voteSurvey('${survey.id}', ${idx})">
+                                <span>${escapeHtml(opt)} ${isVoted ? '✓' : ''}</span>
+                                <span class="survey-votes-count">${isAdmin ? count + ' голосов' : ''}</span>
+                            </div>
+                        `;
+                    });
+                    
+                    const canDelete = isAdmin || survey.authorId === currentUser.uid;
+                    
+                    card.innerHTML = `
+                        <div class="survey-question">${escapeHtml(survey.question)}</div>
+                        <div class="survey-options">${optionsHtml}</div>
+                        <div class="survey-meta">
+                            <span>👤 ${escapeHtml(survey.author || 'Аноним')} • 🗳️ Всего: ${totalVotes}</span>
+                            ${canDelete ? `<button class="task-delete" onclick="deleteSurvey('${survey.id}')">🗑️ Удалить</button>` : ''}
+                        </div>
+                    `;
+                    list.appendChild(card);
+                });
+            });
+        }
+        
+        function toggleSurveyForm() {
+            const form = document.getElementById('surveyCreateForm');
+            const btn = document.getElementById('createSurveyBtn');
+            if (form.style.display === 'none') {
+                form.style.display = 'block';
+                btn.style.display = 'none';
+            } else {
+                form.style.display = 'none';
+                btn.style.display = 'inline-block';
+            }
+        }
+        
+        function addSurveyOption() {
+            const container = document.getElementById('surveyOptionsInput');
+            const count = container.children.length + 1;
+            const row = document.createElement('div');
+            row.className = 'survey-option-input-row';
+            row.innerHTML = `
+                <input type="text" placeholder="Вариант ${count}">
+                <button class="remove-option-btn" onclick="removeSurveyOption(this)">✕</button>
+            `;
+            container.appendChild(row);
+        }
+        
+        function removeSurveyOption(btn) {
+            const container = document.getElementById('surveyOptionsInput');
+            if (container.children.length <= 2) {
+                alert('Минимум 2 варианта!');
+                return;
+            }
+            btn.parentElement.remove();
+        }
+        
+        function createSurvey() {
+            const question = document.getElementById('surveyQuestion').value.trim();
+            if (!question) { alert('Введите вопрос!'); return; }
+            
+            const optionInputs = document.querySelectorAll('#surveyOptionsInput input');
+            const options = [];
+            optionInputs.forEach(inp => {
+                const val = inp.value.trim();
+                if (val) options.push(val);
+            });
+            
+            if (options.length < 2) { alert('Минимум 2 варианта ответа!'); return; }
+            
+            surveysRef.push({
+                question: question,
+                options: options,
+                votes: {},
+                author: currentUser.displayName || currentUser.email,
+                authorId: currentUser.uid,
+                createdAt: Date.now()
+            });
+            
+            document.getElementById('surveyQuestion').value = '';
+            document.querySelectorAll('#surveyOptionsInput input').forEach(inp => inp.value = '');
+            toggleSurveyForm();
+            alert('✅ Опрос создан!');
+        }
+        
+        async function voteSurvey(surveyId, optionIndex) {
+            // Проверяем, голосовал ли уже
+            if (userVotes[surveyId] !== undefined) {
+                alert('Вы уже проголосовали в этом опросе!');
+                return;
+            }
+            
+            // Анонимное голосование - не сохраняем ID пользователя
+            await surveysRef.child(surveyId + '/votes/' + optionIndex).transaction(c => (c || 0) + 1);
+            await db.ref('votes/' + currentUser.uid + '/' + surveyId).set(optionIndex);
+            
+            userVotes[surveyId] = optionIndex;
+        }
+        
+        function deleteSurvey(id) {
+            if (!confirm('Удалить опрос?')) return;
+            surveysRef.child(id).remove();
+        }
+
+        // ===== АДМИН-ПАНЕЛЬ =====
+        function loadAdminPanel() {
+            surveysRef.on('value', (snapshot) => {
+                const data = snapshot.val() || {};
+                const list = document.getElementById('adminSurveysList');
+                list.innerHTML = '';
+                
+                const surveys = Object.entries(data).map(([id, s]) => ({ id, ...s }));
+                surveys.sort((a, b) => b.createdAt - a.createdAt);
+                
+                if (surveys.length === 0) {
+                    list.innerHTML = '<p style="color:#888;">Пока нет опросов</p>';
+                    return;
+                }
+                
+                surveys.forEach(survey => {
+                    const totalVotes = Object.values(survey.votes || {}).reduce((a, b) => a + b, 0);
+                    
+                    let barsHtml = '';
+                    (survey.options || []).forEach((opt, idx) => {
+                        const count = (survey.votes && survey.votes[idx]) || 0;
+                        const percent = totalVotes > 0 ? (count / totalVotes * 100) : 0;
+                        barsHtml += `
+                            <div class="result-bar">
+                                <div class="result-bar-label">${escapeHtml(opt)}</div>
+                                <div class="result-bar-track">
+                                    <div class="result-bar-fill" style="width: ${percent}%;"></div>
+                                </div>
+                                <div class="result-bar-count">${count} (${percent.toFixed(1)}%)</div>
+                            </div>
+                        `;
+                    });
+                    
+                    const item = document.createElement('div');
+                    item.className = 'admin-survey-result';
+                    item.innerHTML = `
+                        <h4>${escapeHtml(survey.question)}</h4>
+                        <p style="font-size:12px; color:#888; margin-bottom:10px;">👤 ${escapeHtml(survey.author || 'Аноним')} • 🗳️ Всего: ${totalVotes} голосов</p>
+                        ${barsHtml}
+                        <button class="btn-secondary" style="margin-top:10px;" onclick="deleteSurvey('${survey.id}'); loadAdminPanel();">🗑️ Удалить опрос</button>
+                    `;
+                    list.appendChild(item);
+                });
+            });
+        }
+
         // ===== СТАТИСТИКА =====
         function loadDashboard() {
             statsRef.on('value', (snapshot) => {
                 const data = snapshot.val() || {};
-                const messageCount = data.messageCount || 0;
-                const photoCount = data.photoCount || 0;
-                const gamesPlayed = data.gamesPlayed || 0;
-                
                 document.getElementById('statsGrid').innerHTML = `
                     <div class="stat-card">
-                        <div class="stat-value">${messageCount}</div>
+                        <div class="stat-value">${data.messageCount || 0}</div>
                         <div class="stat-label">💬 Сообщений</div>
                     </div>
                     <div class="stat-card" style="background: linear-gradient(135deg, #f093fb, #f5576c);">
-                        <div class="stat-value">${photoCount}</div>
+                        <div class="stat-value">${data.photoCount || 0}</div>
                         <div class="stat-label">📷 Фото</div>
                     </div>
                     <div class="stat-card" style="background: linear-gradient(135deg, #43e97b, #38f9d7);">
-                        <div class="stat-value">${gamesPlayed}</div>
+                        <div class="stat-value">${data.gamesPlayed || 0}</div>
                         <div class="stat-label">🎮 Игр сыграно</div>
                     </div>
                     <div class="stat-card" style="background: linear-gradient(135deg, #fa709a, #fee140);">
                         <div class="stat-value">5</div>
-                        <div class="stat-label">👥 Коллег в команде</div>
+                        <div class="stat-label">👥 Коллег</div>
                     </div>
                 `;
                 
@@ -2165,7 +2909,6 @@
             });
         }
 
-        // Инициализация таймера при загрузке
         window.addEventListener('load', () => {
             resetTimer();
             updateStopwatchDisplay();
