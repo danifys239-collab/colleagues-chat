@@ -676,19 +676,25 @@
         }
 
         async function initOffices() {
-            const snapshot = await db.ref('offices').once('value');
-            if (!snapshot.exists()) {
-                const officesData = {};
-                allOfficesList.forEach((name, index) => {
-                    officesData['office_' + index] = {
-                        name: name, address: "Адрес уточняется", phone: "+7 (347) 000-00-00",
-                        hours: "Пн-Пт: 09:00 - 18:00", services: "Все виды услуг МФЦ",
-                        description: "Описание офиса: " + name, createdAt: Date.now()
-                    };
-                });
-                await db.ref('offices').set(officesData);
-            }
-        }
+    const snapshot = await db.ref('offices').once('value');
+    if (!snapshot.exists()) {
+        const officesData = {};
+        allOfficesList.forEach((name, index) => {
+            const officeId = 'office_' + index;
+            officesData[officeId] = {
+                name: name,
+                address: "Адрес уточняется",
+                phone: "+7 (347) 000-00-00",
+                hours: "Пн-Пт: 09:00 - 18:00",
+                services: "Все виды услуг МФЦ",
+                description: "Информация об офисе: " + name,
+                createdAt: Date.now()
+            };
+        });
+        await db.ref('offices').set(officesData);
+        console.log('Создано ' + allOfficesList.length + ' офисов');
+    }
+}
 
         function showAuthTab(tab) {
             document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
@@ -1359,27 +1365,46 @@
         function escapeHtml(text) { const div = document.createElement('div'); div.textContent = text; return div.innerHTML; }
 
         function showOfficesList() {
-            document.getElementById('officesList').style.display = 'block';
-            document.getElementById('officeDetail').style.display = 'none';
+    document.getElementById('officesList').style.display = 'block';
+    document.getElementById('officeDetail').style.display = 'none';
             loadOffices();
         }
         function loadOffices() {
-            db.ref('offices').on('value', (snapshot) => {
-                const data = snapshot.val() || {};
-                const grid = document.getElementById('officesGrid');
-                grid.innerHTML = '';
-                const offices = Object.entries(data).map(([id, o]) => ({ id, ...o }));
-                const search = document.getElementById('officeSearch').value.toLowerCase();
-                offices.filter(o => o.name.toLowerCase().includes(search) || (o.address && o.address.toLowerCase().includes(search))).forEach(office => {
-                    const card = document.createElement('div');
-                    card.className = 'office-card';
-                    card.onclick = () => showOfficeDetail(office.id);
-                    card.innerHTML = `<div class="office-name">${escapeHtml(office.name)}</div><div class="office-location">📍 Нажмите для подробной информации</div>`;
-                    grid.appendChild(card);
-                });
-                document.getElementById('addOfficeBtn').style.display = isAdmin ? 'inline-block' : 'none';
-            });
+    const searchQuery = document.getElementById('officeSearch').value.toLowerCase();
+    const grid = document.getElementById('officesGrid');
+    
+    db.ref('offices').once('value', (snapshot) => {
+        const data = snapshot.val() || {};
+        grid.innerHTML = ''; // Очищаем сетку перед отрисовкой
+        
+        const offices = Object.entries(data).map(([id, o]) => ({ id, ...o }));
+        
+        // Фильтрация по поиску (ищет и в названии, и в адресе)
+        const filteredOffices = offices.filter(office => 
+            office.name.toLowerCase().includes(searchQuery) ||
+            (office.address && office.address.toLowerCase().includes(searchQuery))
+        );
+        
+        if (filteredOffices.length === 0) {
+            grid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 40px; color: #888; font-size: 16px;">Офисы не найдены</div>';
+            return;
         }
+        
+        filteredOffices.forEach(office => {
+            const card = document.createElement('div');
+            card.className = 'office-card';
+            card.onclick = () => showOfficeDetail(office.id);
+            card.innerHTML = `
+                <div class="office-name">${escapeHtml(office.name)}</div>
+                <div class="office-location">📍 Нажмите для подробной информации</div>
+            `;
+            grid.appendChild(card);
+        });
+        
+        // Показываем кнопку добавления только админу
+        document.getElementById('addOfficeBtn').style.display = isAdmin ? 'inline-block' : 'none';
+    });
+}
         function filterOffices() { loadOffices(); }
         function showOfficeDetail(id) {
             db.ref('offices/' + id).once('value').then(snapshot => {
@@ -1664,16 +1689,16 @@
         }
 
         window.addEventListener('load', () => {
-            drawPixelLogo();
-            drawPixelMap();
-            updateHeader();
-            updateNavigation();
-            updateMenuCards();
-            initCanvas();
-            resetTimer();
-            updateStopwatchDisplay();
-            initOffices();
-        });
+    drawPixelLogo();
+    drawPixelMap();
+    updateHeader();
+    updateNavigation();
+    updateMenuCards();
+    initCanvas();
+    resetTimer();
+    updateStopwatchDisplay();
+    initOffices(); // <-- ЭТА СТРОКА ОБЯЗАТЕЛЬНО ДОЛЖНА БЫТЬ ЗДЕСЬ
+});
     </script>
 </body>
 </html>
